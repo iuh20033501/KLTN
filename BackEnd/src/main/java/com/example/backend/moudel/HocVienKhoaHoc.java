@@ -1,19 +1,21 @@
 package com.example.backend.moudel;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HocVienLopHoc {
+@Data
+public class HocVienKhoaHoc {
     @Id
     @ManyToOne
     private HocVien idHocVien;
     @Id
     @ManyToOne
-    private LopHoc  idLop;
+    private KhoaHoc  idKhoaHoc;
 }

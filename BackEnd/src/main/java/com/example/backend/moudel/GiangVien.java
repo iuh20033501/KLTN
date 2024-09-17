@@ -17,4 +17,5 @@ public class GiangVien extends User{
     private String tenGiangVien;
     @Enumerated(EnumType.ORDINAL)
     private SkillEnum chuyenMon;
+
 }

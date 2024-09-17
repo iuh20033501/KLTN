@@ -7,17 +7,15 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+public class BaiTap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    private String hoTen;
-    private String sdt;
-    private String diaChi;
-    private String email;
+    private String maBaiTap;
+    private String tenBaiTap;
     @OneToOne
-    private TaiKhoan taiKhoan;
-
+    private BuoiHoc buoiHoc;
+    @ManyToOne
+    private HocVienBaiTap hocVien;
 }

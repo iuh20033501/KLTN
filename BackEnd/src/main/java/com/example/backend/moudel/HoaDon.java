@@ -5,19 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    private String hoTen;
-    private String sdt;
-    private String diaChi;
-    private String email;
-    @OneToOne
-    private TaiKhoan taiKhoan;
-
+    private String maHoaDon;
+    private Date ngayLap;
+    @ManyToOne
+    private NhanVien nguoiLap;
+    @ManyToOne
+    private HocVien nguoiThanhToan;
+    private Long thanhTien;
+    private Boolean trangThai;
 }

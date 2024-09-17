@@ -1,5 +1,6 @@
 package com.example.backend.moudel;
 
+import com.example.backend.enumclass.ChucVuEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,15 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class NhanVien extends User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    private String hoTen;
-    private String sdt;
-    private String diaChi;
-    private String email;
-    @OneToOne
-    private TaiKhoan taiKhoan;
-
+    private String maNhanVien;
+    @Enumerated(EnumType.ORDINAL)
+    private ChucVuEnum chucVu;
 }

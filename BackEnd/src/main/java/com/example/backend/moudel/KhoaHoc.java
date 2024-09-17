@@ -17,12 +17,9 @@ public class KhoaHoc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String maKhoaHoc;
     private String tenKhoaHoc;
-    @ManyToOne
-    private LopHoc dsLopHoc;
+    private Long giaTien;
     private  double hocPhi;
     private Date thoiGianDienRa;
     @Enumerated(EnumType.ORDINAL)
     private SkillEnum skillEnum;
-
-
 }

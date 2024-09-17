@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class TienTrinh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    private String hoTen;
-    private String sdt;
-    private String diaChi;
-    private String email;
-    @OneToOne
-    private TaiKhoan taiKhoan;
-
+    private String idTienTrinh;
+    private Long phanTram;
+    @ManyToOne
+    private HocVien hocVien;
+    @ManyToOne
+    private BaiTap baiTap;
 }
