@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CauTraLoi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idCauTraLoi;
+    private Long idCauTraLoi;
     private String noiDung;
     private Boolean ketQua;
 }

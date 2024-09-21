@@ -8,6 +8,5 @@ import lombok.Getter;
 public enum ChucVuEnum {
     ADMIN (0),
     QUANLY(1);
-
     private final int ValueChucVu;
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class TaiLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String maTaiLieu;
+    private Long idTaiLieu;
     private String tenTaiLieu;
     private String noiDung;
     private String linkLoad;

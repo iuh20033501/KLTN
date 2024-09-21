@@ -6,14 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class HocVien extends User{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  String maHocVien;
-    private String tenHocVien;
-    private SkillEnum kiNangCan;
+
+    @ElementCollection(targetClass = SkillEnum.class)
+    @Enumerated(EnumType.ORDINAL)
+    private List<SkillEnum> kiNangCan;
 }

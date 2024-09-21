@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class KetQuaTest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idKetQua;
+    private Long idKetQua;
     private Long diemTest;
     private Boolean passTest;
     @ManyToOne

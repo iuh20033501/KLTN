@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NhanVien extends User{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String maNhanVien;
+
     @Enumerated(EnumType.ORDINAL)
     private ChucVuEnum chucVu;
 }

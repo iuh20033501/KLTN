@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -15,11 +16,13 @@ import java.util.Date;
 public class KhoaHoc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String maKhoaHoc;
+    private Long idKhoaHoc;
     private String tenKhoaHoc;
     private Long giaTien;
     private  double hocPhi;
     private Date thoiGianDienRa;
+
+    @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
-    private SkillEnum skillEnum;
+    private List<SkillEnum> skillEnum;
 }

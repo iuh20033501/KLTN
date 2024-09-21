@@ -12,12 +12,10 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private  Long idUser;
     private String hoTen;
     private String sdt;
     private String diaChi;
     private String email;
-    @OneToOne
-    private TaiKhoan taiKhoan;
-
+    private Boolean trangThai;
 }

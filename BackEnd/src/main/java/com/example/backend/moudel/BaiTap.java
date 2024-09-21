@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class BaiTap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String maBaiTap;
+    private Long idBaiTap;
     private String tenBaiTap;
     @OneToOne
     private BuoiHoc buoiHoc;

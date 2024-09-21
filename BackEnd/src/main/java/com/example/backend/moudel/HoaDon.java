@@ -14,7 +14,7 @@ import java.util.Date;
 public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String maHoaDon;
+    private Long idHoaDon;
     private Date ngayLap;
     @ManyToOne
     private NhanVien nguoiLap;

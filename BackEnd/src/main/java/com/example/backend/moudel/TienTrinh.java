@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class TienTrinh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idTienTrinh;
+    private Long idTienTrinh;
     private Long phanTram;
     @ManyToOne
     private HocVien hocVien;

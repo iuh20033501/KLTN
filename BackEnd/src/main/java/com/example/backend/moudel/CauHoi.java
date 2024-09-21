@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CauHoi {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private  String idCauHoi;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  Long idCauHoi;
     private String noiDung;
     private String linkAmThanh;
     private String linkAnh;

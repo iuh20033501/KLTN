@@ -16,7 +16,7 @@ import java.util.Date;
 public class BaiTest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idTest;
+    private Long idTest;
     private Date ngayBD;
     private Date ngayKT;
     private Time thoiGianLamBai;
