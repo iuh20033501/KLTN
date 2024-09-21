@@ -7,6 +7,4 @@ import org.springframework.stereotype.Service;
 public interface TaiKhoanService {
     TaiKhoan findByTenDangNhap(String tenDangNhap);
     TaiKhoan createTaiKhoan(TaiKhoan taiKhoan);
-
-    TaiKhoan updateTaiKhoan (TaiKhoan taiKhoan);
 }

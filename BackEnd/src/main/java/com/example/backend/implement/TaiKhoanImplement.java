@@ -18,10 +18,5 @@ public class TaiKhoanImplement implements TaiKhoanService {
     public TaiKhoan createTaiKhoan(TaiKhoan taiKhoan) {
         return taiKhoanRepo.save(taiKhoan);
     }
-    @Override
-    public TaiKhoan updateTaiKhoan(TaiKhoan taiKhoan) {
-        if(taiKhoanRepo.findByTenDangNhap(taiKhoan.getTenDangNhap())!=null)
-            return taiKhoanRepo.save(taiKhoan);
-        else  return null;
-    }
+
 }
