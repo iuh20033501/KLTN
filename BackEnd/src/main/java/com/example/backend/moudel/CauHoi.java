@@ -21,4 +21,7 @@ public class CauHoi {
     private QuestionEnum loaiCau;
     @ManyToOne
     private BaiTap baiTap;
+    @ManyToOne
+    private BaiTest baiTest;
+    private String loiGiai;
 }
