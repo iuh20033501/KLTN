@@ -6,6 +6,8 @@ import com.example.backend.Service.TaiKhoanService;
 import com.example.backend.moudel.TaiKhoan;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 public class TaiKhoanImplement implements TaiKhoanService {
     @Autowired
     private TaiKhoanRepo taiKhoanRepo;
@@ -17,6 +19,11 @@ public class TaiKhoanImplement implements TaiKhoanService {
     @Override
     public TaiKhoan createTaiKhoan(TaiKhoan taiKhoan) {
         return taiKhoanRepo.save(taiKhoan);
+    }
+
+    @Override
+    public List<TaiKhoan> getAll() {
+        return taiKhoanRepo.findAll();
     }
 
 }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HocVienRepo extends JpaRepository<HocVien,Long> {
+    HocVien findByHoTen(String hoTen);
 }

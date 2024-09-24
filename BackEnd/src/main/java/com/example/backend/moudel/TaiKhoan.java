@@ -16,6 +16,7 @@ public class TaiKhoan {
     private String tenDangNhap;
     @NotNull
     private String matKhau;
+    private Boolean trangThai;
     @OneToOne
-    private User User;
+    private User user;
 }
