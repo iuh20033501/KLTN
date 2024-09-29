@@ -14,4 +14,5 @@ public class NhanVien extends User{
 
     @Enumerated(EnumType.ORDINAL)
     private ChucVuEnum chucVu;
+
 }

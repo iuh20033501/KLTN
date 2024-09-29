@@ -4,16 +4,16 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HocVienLopHoc {
+public class HocVienLopHoc  {
     @Id
-    @ManyToOne
-    private HocVien idHocVien;
-    @Id
-    @ManyToOne
-    private LopHoc  idLop;
+    private HocVienLopHocKey key;
+    private Boolean trangThai;
 }

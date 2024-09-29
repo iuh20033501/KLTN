@@ -4,6 +4,7 @@ import com.example.backend.Repository.UserRepo;
 import com.example.backend.Service.UserService;
 import com.example.backend.moudel.GiangVien;
 import com.example.backend.moudel.HocVien;
+import com.example.backend.moudel.NhanVien;
 import com.example.backend.moudel.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +30,8 @@ public class UserImplement implements UserService {
             return "GiaoVien";
         } else if (user instanceof HocVien) {
             return "HocVien";
+        }else if (user instanceof NhanVien) {
+            return "NhanVien";
         } else {
             return "null";
         }
