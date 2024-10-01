@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons, Entypo,Feather } from '@expo/vector-icons';  // Install expo icons package
 
-export default function CourseInfoScreen() {
+export default function CourseInfoScreen({navigation}: {navigation: any}) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -28,7 +28,8 @@ export default function CourseInfoScreen() {
       </View>
 
       <View style={styles.optionList}>
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option}
+         onPress={() => navigation.navigate('LessonDetailScreen')}>
           <View style={styles.optionRow}>
             <MaterialIcons name="schedule" size={24} color="orange" />
             <Text style={styles.optionText}>Lịch học</Text>
@@ -36,7 +37,8 @@ export default function CourseInfoScreen() {
           <Text style={styles.optionValue}>16/24</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option}
+        onPress={() => navigation.navigate('ScoreBoardScreen')}>
           <View style={styles.optionRow}>
             <FontAwesome name="list-alt" size={24} color="green" />
             <Text style={styles.optionText}>Bảng điểm</Text>

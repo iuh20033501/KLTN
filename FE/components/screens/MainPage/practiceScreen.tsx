@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ImageBackground } from 'react-native';
 
-export default function PracticeScreen() {
+export default function PracticeScreen({navigation}: {navigation: any}) {
     const questIMG = require('../../../image/background/questIMG.jpg')
     const questIMG2 = require('../../../image/background/questIMG2.png')
     return (
@@ -15,7 +15,8 @@ export default function PracticeScreen() {
                 <ImageBackground source={questIMG} style={[styles.card, { backgroundColor: '#D4F4C4' }]}>
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>Bài tập theo kỹ năng</Text>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#47BA43' }]}>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#47BA43' }]}
+                        onPress={() => navigation.navigate('ListEXScreen')}>
                             <Text style={styles.buttonText}>Luyện ngay</Text>
                         </TouchableOpacity>
                     </View>

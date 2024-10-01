@@ -29,8 +29,6 @@ Các giới từ khác:
     },
     
   ];
-
-  /
   const handleOptionPress = (option) => {
     setSelectedOption(option);
     if (option === questions[currentQuestion].correctOption) {
