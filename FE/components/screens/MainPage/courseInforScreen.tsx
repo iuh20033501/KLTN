@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FontAwesome, Ionicons, MaterialIcons, Entypo,Feather } from '@expo/vector-icons';  // Install expo icons package
+import { FontAwesome, Ionicons, MaterialIcons, Entypo,Feather } from '@expo/vector-icons';  
 
 export default function CourseInfoScreen({navigation}: {navigation: any}) {
   return (
@@ -80,13 +80,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width:'100%',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#fff',
   },
   header: {
     padding: 20,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
   },
   courseTitle: {
     fontSize: 18,
@@ -108,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   optionList: {
-    marginTop: 20,
+    backgroundColor:"#fff"
   },
   option: {
     flexDirection: 'row',
@@ -116,8 +114,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius:10,
+    marginTop:10,
+    width:'90%',
+    alignSelf:'center'
   },
   optionRow: {
     flexDirection: 'row',

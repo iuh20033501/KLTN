@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FontAwesome } from '@expo/vector-icons'; // Cần cài đặt @expo/vector-icons hoặc sử dụng thư viện biểu tượng khác
+import { FontAwesome } from '@expo/vector-icons'; 
 import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen({navigation}: {navigation: any}) {
@@ -25,7 +25,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
   };
 
   const handleInputChange = (text: string, setFunction: { (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (arg0: any): void; }) => {
-    // Loại bỏ tất cả khoảng trắng
+  
     setFunction(text.replace(/\s+/g, ''));
   };
   return (
@@ -71,7 +71,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
         <TouchableOpacity style={styles.button} onPress={() =>navigation.navigate('MainTabs')}>
           <Text style={styles.buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ marginTop: 30 }} onPress={() =>navigation.navigate('ForgetPassword')}>
+        <TouchableOpacity style={{ marginTop: 30 }} onPress={() =>navigation.navigate('RequestFogetPassword')}>
           <Text style={{color: 'black', fontSize: 16, fontWeight: 'bold' }}>Quên mật khẩu</Text>
         </TouchableOpacity>
 

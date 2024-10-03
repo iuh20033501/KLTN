@@ -1,28 +1,33 @@
 import HomeScreen from "@/components/screens/homeScreen/homeScreen";
-import LoginScreen from "@/components/screens/LoginScreen/login";
+import LoginScreen from "@/components/screens/loginScreen/login";
 import TermsAndConditions from "@/components/screens/terms/terms";
 import ExerciseScreen from "@/components/screens/exercise/exScreen";
-import CourseInfoScreen from "@/components/screens/MainPage/courseInforScreen";
-import DashboardScreen from "@/components/screens/MainPage/dashBoardScreen";
-import Authentication from "@/components/screens/SignUpScreen/Authentication";
-import CreateAccount from "@/components/screens/SignUpScreen/createAccount";
-import FillUpInformation from "@/components/screens/SignUpScreen/fillUpInformation";
+import CourseInfoScreen from "@/components/screens/mainPage/courseInforScreen";
+import DashboardScreen from "@/components/screens/mainPage/dashBoardScreen";
+import Authentication from "@/components/screens/signUpScreen/Authentication";
+import CreateAccount from "@/components/screens/signUpScreen/createAccount";
+import FillUpInformation from "@/components/screens/signUpScreen/fillUpInformation";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'; 
-import ForgetPassword from "@/components/screens/resetPassword/forgetPassword";
-import AuthenticationPass from "@/components/screens/resetPassword/AuthenticationPass";
+import AuthenticationPass from "@/components/screens/changePassword/authenticationPass";
 import { SafeAreaView } from "react-native";
-import PracticeScreen from "@/components/screens/MainPage/practiceScreen";
-import NewsFeedScreen from "@/components/screens/MainPage/newsFeedScreen";
-import ForumScreen from "@/components/screens/MainPage/forumScreen";
+import PracticeScreen from "@/components/screens/mainPage/practiceScreen";
+import NewsFeedScreen from "@/components/screens/mainPage/newsFeedScreen";
+import ForumScreen from "@/components/screens/mainPage/forumScreen";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Animated } from 'react-native'; 
 import LessonDetailScreen from "@/components/screens/detailScreen/lessonDetailScreen";
 import ScoreBoardScreen from "@/components/screens/detailScreen/scoreBoardScreen";
 import ListEXScreen from "@/components/screens/exercise/listEXScreen";
 import LessionListScreen from "@/components/screens/exercise/lessionScreen";
+import UserProfileScreen from "@/components/screens/profileScreen/userProfileScreen";
+import DetailProfileScreen from "@/components/screens/profileScreen/detailProfileScreen";
+import UpdateProfileScreen from "@/components/screens/profileScreen/detailProfileScreen";
+import RequestFogetPassword from "@/components/screens/resetPassword/requestFogetPassword";
+import ChangePassword from "@/components/screens/changePassword/changePassword";
+import AuthenticationForgetPassword from "@/components/screens/resetPassword/authenticationForgetPassword";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -30,7 +35,7 @@ type RootStackParamList = {
   CreateAccount: undefined;
   FillUpInformation: undefined;
   Authentication: undefined;
-  ForgetPassword: undefined;
+  AuthenticationForgetPassword: undefined;
   AuthenticationPass: undefined;
   MainTabs: undefined;
   SecondTab :undefined;
@@ -39,6 +44,10 @@ type RootStackParamList = {
   ListEXScreen: undefined;
   LessionListScreen : undefined;
   ExerciseScreen: undefined;
+  UserProfileScreen: undefined;
+  UpdateProfileScreen:undefined;
+  RequestFogetPassword: undefined;
+  ChangePassword:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -114,7 +123,7 @@ export default function Router() {
         <Stack.Screen name="FillUpInformation" component={FillUpInformation} />
         <Stack.Screen name="Authentication" component={Authentication} />
         <Stack.Screen name="AuthenticationPass" component={AuthenticationPass} />
-        <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+        <Stack.Screen name="AuthenticationForgetPassword" component={AuthenticationForgetPassword} />
         <Stack.Screen name="MainTabs" component={MainTabs}  />
         <Stack.Screen name="SecondTab" component={SecondTab} />
         <Stack.Screen name="LessonDetailScreen" component={LessonDetailScreen} />
@@ -122,6 +131,11 @@ export default function Router() {
         <Stack.Screen name="ListEXScreen" component={ListEXScreen} />
         <Stack.Screen name="LessionListScreen" component={LessionListScreen} />
         <Stack.Screen name="ExerciseScreen" component={ExerciseScreen} />
+        <Stack.Screen name="UserProfileScreen" component={UserProfileScreen} />
+        <Stack.Screen name="UpdateProfileScreen" component={UpdateProfileScreen} />
+        <Stack.Screen name="RequestFogetPassword" component={RequestFogetPassword} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
+
 
       </Stack.Navigator>
     </NavigationContainer>

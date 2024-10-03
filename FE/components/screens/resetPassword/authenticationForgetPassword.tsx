@@ -12,8 +12,8 @@ import {
 // import ArrowIcon from "../../assets/icon/ArrowIcon";
 // import http from "../../utils/http";
 
-export default function AuthenticationPass({navigation}: {navigation: any}) {
-  const backgroundImg = require("../../../image/background/bg.png"); 
+export default function AuthenticationForgetPassword({navigation}: {navigation: any}) {
+  const backgroundImg = require("../../../image/background/bg7.png"); 
   // const { phoneNumber } = route.params;
   //  const [phoneNumber, setPhoneNumber] = useState('0929635572');
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
@@ -132,7 +132,7 @@ export default function AuthenticationPass({navigation}: {navigation: any}) {
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: isCodeComplete ? "#FFC125" : "#d3d6db" },
+            { backgroundColor: isCodeComplete ? "#00bf63" : "#d3d6db" },
           ]}
           // onPress={async () => {
           //   handleSubmit();
@@ -141,7 +141,7 @@ export default function AuthenticationPass({navigation}: {navigation: any}) {
         >
           <Text
             style={{
-              color: isCodeComplete ? "#fff" : "#abaeb3",
+              color: isCodeComplete ? "black" : "#abaeb3",
               textAlign: "center",
               fontSize:18,
               fontWeight:'bold'
@@ -159,7 +159,7 @@ export default function AuthenticationPass({navigation}: {navigation: any}) {
         </TouchableOpacity>
       </View>
 
-      <View style={{ flexDirection: "row",marginLeft:30, marginTop: 250 }}>
+      <View style={{ flexDirection: "row",marginLeft:30, marginTop: 200 }}>
         <TouchableOpacity style={{ flexDirection: "row" }}>
           <Text
             style={{
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   font: {
-    top: 40,
+    marginTop:100,
     fontSize: 25,
     color: "#1a1a1a",
     fontWeight: "bold",

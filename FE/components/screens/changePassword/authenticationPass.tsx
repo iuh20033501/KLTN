@@ -12,7 +12,7 @@ import {
 // import ArrowIcon from "../../assets/icon/ArrowIcon";
 // import http from "../../utils/http";
 
-export default function ForgetPassword({navigation}: {navigation: any}) {
+export default function AuthenticationPass({navigation}: {navigation: any}) {
   const backgroundImg = require("../../../image/background/bg7.png"); 
   // const { phoneNumber } = route.params;
   //  const [phoneNumber, setPhoneNumber] = useState('0929635572');

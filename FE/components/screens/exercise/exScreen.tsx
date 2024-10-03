@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Image } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Thêm icon (Yêu cầu cài đặt expo-vector-icons)
+import { FontAwesome } from '@expo/vector-icons'; 
 
 export default function ExerciseScreen() {
-  // Câu hỏi hiện tại và lựa chọn
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
-  const [showHint, setShowHint] = useState(false); // Điều khiển hiển thị modal hint
-  const [score, setScore] = useState(0); // Khởi tạo điểm số bắt đầu từ 100
+  const [showHint, setShowHint] = useState(false); 
+  const [score, setScore] = useState(0); 
   const hintImg = require('../../../image/hint/hint.png')
-  // Danh sách các câu hỏi với giải thích
+
   const questions = [
     {
       question: "Marie is proficient ___ English.",

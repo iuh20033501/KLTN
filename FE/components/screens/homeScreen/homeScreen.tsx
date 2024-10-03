@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     top: 200,
-    marginLeft: -10,
+  
   },
   button2: {
     width: 300,
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     top: 200,
     marginTop: 20,
-    marginLeft: -10,
   },
 });
 
