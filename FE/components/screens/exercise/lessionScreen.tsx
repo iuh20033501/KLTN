@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#388E3C',
+    color: '#00bf63',
     marginBottom: 20,
     height: 40,
     marginTop: 30,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   lessonText: {
     fontSize: 18,
-    color: '#388E3C',
+    color: '#00bf63',
     textAlign: 'center',
   },
 });

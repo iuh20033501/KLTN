@@ -5,8 +5,9 @@ import { FontAwesome } from '@expo/vector-icons'; // Sử dụng icon
 export default function DashboardScreen() {
   return (
     <View style={styles.container}>
-      {/* Header */}
+       <Text style={styles.sectionTitle}>Tin tức từ trung tâm</Text>
       <View style={styles.header}>
+     
         <Text style={styles.userName}>TRẦN QUANG KHẢI</Text>
         <Text style={styles.courseName}>Tiếng Anh giao tiếp - L153304</Text>
         <TouchableOpacity style={styles.notificationIcon}>
@@ -30,7 +31,7 @@ export default function DashboardScreen() {
       {/* Nhiệm vụ hàng tuần */}
       <View style={styles.weeklyTasks}>
         <Text style={styles.taskTitle}>Nhiệm vụ hàng tuần</Text>
-        <View style={styles.taskProgress}>
+        <View style={styles.taskProgress}>  
           <Text>Nhiệm vụ cần hoàn thành</Text>
           <Text>0/4</Text>
         </View>
@@ -42,11 +43,11 @@ export default function DashboardScreen() {
       {/* Khu vực luyện tập */}
       <View style={styles.practiceArea}>
         <TouchableOpacity style={styles.practiceCard}>
-          <Image source={require('../../../image/logo/EFYLogo.png')} style={styles.practiceImage} />
+          <Image source={require('../../../image/logo/EFY.png')} style={styles.practiceImage} />
           <Text style={styles.practiceText}>Luyện tập lý thuyết</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.practiceCard}>
-          <Image source={require('../../../image/logo/EFYLogo.png')} style={styles.practiceImage} />
+          <Image source={require('../../../image/logo/EFY.png')} style={styles.practiceImage} />
           <Text style={styles.practiceText}>Luyện nghe</Text>
         </TouchableOpacity>
       </View>
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: '#FFC125',
+    backgroundColor: '#00bf63',
     padding: 10,
     borderRadius: 10,
     justifyContent: 'space-between',
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   actionButton: {
-    backgroundColor: '#FFC125',
+    backgroundColor: '#00bf63',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -177,5 +178,14 @@ const styles = StyleSheet.create({
   },
   navItem: {
     alignItems: 'center',
+  }, 
+  sectionTitle: {
+    padding:20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#00bf63',
+    textAlign:'center'
   },
+  
 });

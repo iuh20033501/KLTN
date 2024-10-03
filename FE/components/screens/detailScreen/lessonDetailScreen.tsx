@@ -38,7 +38,7 @@ export default function LessonDetailScreen() {
         <Text style={styles.legendTitle}>Chú giải</Text>
         <View style={styles.legendContainer}>
           <View style={styles.legendItem}>
-            <View style={[styles.circle, { backgroundColor: 'green' }]} />
+            <View style={[styles.circle, { backgroundColor: '#00bf63' }]} />
             <Text>Buổi học</Text>
           </View>
           <View style={styles.legendItem}>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   lessonCode: {
     fontSize: 16,
-    color: '#00A762',
+    color: '#00bf63',
     fontWeight: 'bold',
     marginTop: 5,
   },

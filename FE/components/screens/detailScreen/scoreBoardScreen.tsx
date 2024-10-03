@@ -85,7 +85,7 @@
     courseName: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: '#00A762',
+      color: '#00bf63',
     },
     statusContainer: {
       marginTop: 8,
@@ -96,7 +96,7 @@
     },
     statusText: {
       fontSize: 14,
-      color: '#388E3C',
+      color: '#00bf63',
     },
     scoresContainer: {
       marginTop: 20,

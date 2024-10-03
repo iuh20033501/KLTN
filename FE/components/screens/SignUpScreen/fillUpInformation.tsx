@@ -8,7 +8,7 @@ export default function FillUpInformation({navigation}: {navigation: any}) {
   const [phone, setPhone] = useState('');
   const [age, setAge] = useState('');
   const [gmail, setGmail] = useState('');
-  const backgroundImg = require("../../../image/background/bg.png"); // Path to your image
+  const backgroundImg = require("../../../image/background/bg7.png"); // Path to your image
 
   return (
     <ImageBackground 
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '77%',
-    backgroundColor: '#FFC125',
+    backgroundColor: '#00bf63',
     padding: 15,
     borderRadius: 20,
     alignItems: 'center',

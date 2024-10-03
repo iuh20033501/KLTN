@@ -85,7 +85,7 @@ Các giới từ khác:
             <Text style={styles.nextButtonText}>Câu tiếp theo</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowHint(true)} style={styles.hintIcon}>
-            <Image source={hintImg} style={{ width: 100, height: 100, marginLeft:200,marginTop:80 }}>
+            <Image source={hintImg} style={{ width: 80, height: 80, marginLeft:200,marginTop:80 }}>
             </Image>
           </TouchableOpacity>
         </>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 10,
-    color: 'green',
+    color: '#00bf63',
   },
   questionCounter: {
     fontSize: 18,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   questionContainer: {
-    backgroundColor: '#FFC125',
+    backgroundColor: '#00bf63',
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   nextButton: {
     alignSelf: 'center',
     marginTop: 20,
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#00bf63',
     padding: 10,
     borderRadius: 5,
   },
@@ -188,15 +188,15 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    width: 300,
+    width: 350,
   },
   hintText: {
     fontSize: 14,
     marginBottom: 20,
-    textAlign: 'center',
+    
   },
   closeButton: {
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#00bf63',
     padding: 10,
     borderRadius: 5,
   },

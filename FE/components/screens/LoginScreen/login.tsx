@@ -9,8 +9,8 @@ export default function LoginScreen({navigation}: {navigation: any}) {
   const [userName, setUserName] = useState('');
   const [passWord, setPassWord] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const backgroundImg = require("../../../image/background/bg.png"); 
-  const logoEFY = require('../../../image/logo/EFYLogo.png');
+  const backgroundImg = require("../../../image/background/bg7.png"); 
+  const logoEFY = require("../../../image/logo/EFY.png");
 
   const handleContinue = () => {
     if (!userName.trim()) {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   button: {
-    backgroundColor: '#FFC125', 
+    backgroundColor: '#00bf63', 
     width: '87%',
     paddingVertical: 15,
     borderRadius: 30,

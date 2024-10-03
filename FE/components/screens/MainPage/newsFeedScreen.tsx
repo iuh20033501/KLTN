@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 
 export default function NewsFeedScreen(){
-  const logoEFY = require('../../../image/logo/EFYLogo.png');
+  const logoEFY = require('../../../image/logo/EFY.png');
 
   return (
     <ScrollView style={styles.container}>
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#388E3C',
+    color: '#00bf63',
   },
   newsCard: {
     flexDirection: 'row',

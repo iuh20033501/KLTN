@@ -14,8 +14,8 @@ export default function PracticeScreen({navigation}: {navigation: any}) {
             }}>
                 <ImageBackground source={questIMG} style={[styles.card, { backgroundColor: '#D4F4C4' }]}>
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Bài tập theo kỹ năng</Text>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#47BA43' }]}
+                        <Text style={styles.cardTitle}>Rèn luyện kỹ năng</Text>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00bf63' }]}
                         onPress={() => navigation.navigate('ListEXScreen')}>
                             <Text style={styles.buttonText}>Luyện ngay</Text>
                         </TouchableOpacity>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#388E3C',
+        color: '#00bf63',
         textAlign: 'center',
         marginBottom: 20,
         height: 40
@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 15,
         width: 200,
-        height:50
+        height:50,
+     
     },
     buttonText: {
         color: '#fff',

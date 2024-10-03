@@ -6,7 +6,7 @@ export default function CourseInfoScreen({navigation}: {navigation: any}) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-      <Text style ={{fontSize:20,fontWeight:'bold', textAlign:"center",padding:20, color: '#388E3C',}}>Thông tin</Text>
+      <Text style ={{fontSize:20,fontWeight:'bold', textAlign:"center", color: '#00bf63', marginBottom:10}}>Thông tin</Text>
 
         <Text style={styles.courseTitle}>Tiếng Anh giao tiếp - [mã lớp]</Text>
         <View style={styles.infoBox}>

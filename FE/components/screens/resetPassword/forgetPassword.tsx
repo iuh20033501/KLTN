@@ -1,39 +1,253 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; 
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+  ImageBackground
+} from "react-native";
+// import ArrowIcon from "../../assets/icon/ArrowIcon";
+// import http from "../../utils/http";
 
 export default function ForgetPassword({navigation}: {navigation: any}) {
-  const [userName, setUserName] = useState('');
-  const backgroundImg = require("../../../image/background/bg.png"); 
+  const backgroundImg = require("../../../image/background/bg7.png"); 
+  // const { phoneNumber } = route.params;
+  //  const [phoneNumber, setPhoneNumber] = useState('0929635572');
+  const [isContinueEnabled, setIsContinueEnabled] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [failureModalVisible, setFailureModalVisible] = useState(false);
+  const [successRequest, setSuccessRequest] = useState(false);
+
+  const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
+  // const handleSubmit = async () => {
+  //   try {
+  //     const response = await http.post("/v1/verification/otp/sms/validate", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       phone: phoneNumber,
+  //       otp: verificationCode,
+  //     });
+
+  //     if (!response) {
+  //       throw new Error("Lỗi");
+  //     }
+  //     const data = await response.data;
+  //     const token = data.accessToken;
+  //     console.log(data);
+  //     setSuccessModalVisible(true);
+  //     setTimeout(() => {
+  //       navigation.navigate("Register", { accessToken: token });
+  //     }, 1500);
+  //   } catch (error) {
+  //     console.error("There was a problem with the fetch operation:", error);
+  //     setFailureModalVisible(true);
+  //   }
+  // };
+
+  // const RequestCodeAgain = async () => {
+  //   const requestBody = {
+  //     phone: phoneNumber,
+  //   };
+
+  //   await http
+  //     .post("/v1/verification/otp/sms/send", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+
+  //       phone: phoneNumber,
+  //     })
+  //     .then((response) => {
+  //       if (!response) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       return response.status;
+  //     })
+  //     .then((data) => {
+  //       console.log(data);
+  //       setSuccessRequest(true);
+  //     });
+  // };
+
+  const handleCloseModal2 = () => {
+    setSuccessRequest(false);
+  };
+
+  const handleCloseModal = () => {
+    setFailureModalVisible(false);
+  }
 
   return (
     <ImageBackground
-      source={backgroundImg}
-      style={styles.backgroundImage}
-      resizeMode="cover"
-    >
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Quên mật khẩu</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nhập tài khoản"
-            value={userName}
-            onChangeText={setUserName}
-          />
-        </View>
-        
-        <View style={styles.inputContainer}></View>
-        <Text style={styles.terms}>
-          Một đoạn mã OTP bao gồm 6 chữ số sẽ được gửi đến số điện thoại đăng ký tài khoản, vui lòng kiểm tra!
+    source={backgroundImg}
+    style={styles.backgroundImage}
+    resizeMode="cover"
+  >
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.font}>Nhập mã xác thực</Text>
+      </View>
+
+      <View>
+        <Text
+          style={{
+            color: "#868c92",
+            fontSize: 13,
+            textAlign: "center",
+            marginTop: 50,
+          }}
+        >
+          Nhập 6 dãy số được gửi đến số điện thoại{" "}
         </Text>
-        <TouchableOpacity style={styles.button}
-        onPress={() =>navigation.navigate('AuthenticationPass')}
-       >
-          <Text style={styles.buttonText}>Tiếp tục</Text>
+        <Text
+          style={{
+            color: "#000",
+            fontSize: 15,
+            textAlign: "center",
+            marginTop: 20,
+            fontWeight: "bold",
+          }}
+        >
+
+        </Text>
+      </View>
+
+      <View style={styles.phoneInputContainer}>
+        <TextInput
+          style={styles.input}
+          value={verificationCode}
+          onChangeText={(value) =>
+            setVerificationCode(value.replace(/\s/g, ""))
+          } 
+          keyboardType="numeric"
+          maxLength={6}
+        />
+      </View>
+
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { backgroundColor: isCodeComplete ? "#00bf63" : "#d3d6db" },
+          ]}
+          // onPress={async () => {
+          //   handleSubmit();
+          // }}
+          disabled={!isCodeComplete}
+        >
+          <Text
+            style={{
+              color: isCodeComplete ? "black" : "#abaeb3",
+              textAlign: "center",
+              fontSize:18,
+              fontWeight:'bold'
+            }}
+          >
+           Xác thực
+          </Text>
         </TouchableOpacity>
-      </ScrollView>
-    </ImageBackground>
+      </View>
+
+      <View style={{ flexDirection: "row", marginLeft: 50, marginTop: 20 }}>
+        <Text>Bạn không nhận được mã?</Text>
+        <TouchableOpacity>
+          <Text style={{ color: "#0867ef" }}> Gửi lại</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ flexDirection: "row",marginLeft:30, marginTop: 200 }}>
+        <TouchableOpacity style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: "#0867ef",
+              fontWeight: "bold",
+              fontSize: 15,
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            Tôi cần hỗ trợ thêm về mã xác thực
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* FAIL OTP */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={failureModalVisible}
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent2}>
+            <Text
+              style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
+            >
+              Nhập OTP thất bại
+            </Text>
+            <View style={styles.separator} />
+            <Text style={{ fontSize: 13 }}>
+              Có thể bạn đã gặp phải một số trường hợp:
+            </Text>
+            <Text>• Mã OTP không đúng</Text>
+            <Text>• Mã OTP đã hết hiệu lực</Text>
+            <TouchableOpacity onPress={() => handleCloseModal()}>
+              <Text
+                style={{
+                  color: "#0867ef",
+                  textAlign: "center",
+                  fontSize: 15,
+                  marginTop: 15,
+                }}
+              >
+                Xác nhận
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* REQUEST MORE TIME */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={successRequest}
+        onRequestClose={() => handleCloseModal2()}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent2}>
+            <Text
+              style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
+            >
+              Đã gửi lại mã OTP
+            </Text>
+            <View style={styles.separator} />
+            <Text>• Kiểm tra mã OTP trên số điện thoại của bạn</Text>
+            <Text>• Đảm bảo rằng số điện thoại của bạn vẫn còn hoạt động</Text>
+            <TouchableOpacity
+              onPress={() => {
+                handleCloseModal2();
+              }}
+            >
+              <Text
+                style={{
+                  color: "#0867ef",
+                  textAlign: "center",
+                  fontSize: 15,
+                  marginTop: 15,
+                }}
+              >
+                Xác nhận
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+        </ImageBackground>
   );
 };
 
@@ -43,87 +257,79 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: "100%",
     height: "100%",
+    alignItems:'center'
   
   },
   container: {
+    position: "relative",
     flex: 1,
-    alignItems: 'center',
-    width: '100%',
   },
-  innerContainer: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  title: {
+  font: {
+    marginTop:100,
     fontSize: 25,
-    fontWeight: 'bold',
-    marginBottom: 50,
-    marginTop: 100,
-    textAlign: 'center'
+    color: "#1a1a1a",
+    fontWeight: "bold",
+    textAlign: "center",
   },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#DADADA',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingLeft: 15,
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    fontSize: 18,
+  phoneInputContainer: {
+    width: "80%",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 50,
+    alignItems: "center",
+    marginTop: 30,
+    borderRadius: 30,
+
   },
   button: {
-    width: '77%',
-    backgroundColor: '#FFC125',
-    padding: 15,
+    width: 300,
+    height: 45,
     borderRadius: 20,
-    alignItems: 'center',
-    marginTop: 30,
-    marginLeft: -4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -20,
+    marginLeft:5
   },
-  buttonText: {
-    fontSize: 18,
-    color: '#333333',
-    fontWeight: 'bold',
-  },
-  terms: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#666666',
-    width: '77%',
-  },
-  link: {
-    color: '#007bff',
-    textDecorationLine: 'underline',
-    fontWeight: 'bold',
-    marginTop: 1,
-    textAlign: 'center',
-    fontSize: 12,
-  },
-  footerNote: {
-    marginTop: 40,
-    fontSize: 11,
-    color: '#666666',
-    marginLeft: 5,
-    width: '85%'
-  },
-  inputContainer: {
-    width: '85%',
+  input: {
+    height: 45,
+    width: 300,
+    borderColor: "gray",
+    borderWidth: 1,
     borderRadius: 10,
-    marginBottom: 10,
-    paddingHorizontal: 15,
+    fontSize: 30,
+    textAlign: "center",
+    fontWeight: "bold",
+    letterSpacing: 4,
   },
-  eyeIcon: {
-    position: 'absolute',
-    right: 25,
-    marginTop: 14,
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  link2: {
-    color: '#007bff',
-    textDecorationLine: 'underline',
-    fontWeight: 'bold',
-    marginTop: 18,
-    fontSize: 14,
-    alignSelf: 'center',
+  modalContent2: {
+    width: 250,
+    height: 240,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "black",
+    textAlign: "center",
   },
+  closeButton: {
+    position: "absolute",
+    top: 0,
+    right: 10,
+    width: 10,
+    height: 10,
+  },
+  separator: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: "black",
+    marginVertical: 10,
+    marginTop: 20,
+  },
+
 });
+
+

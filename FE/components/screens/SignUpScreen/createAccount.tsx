@@ -8,7 +8,7 @@ export default function CreateAccount({navigation}: {navigation: any}) {
   const [verifyPassWord, setVerifyPassWord] = useState('');
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const backgroundImg = require("../../../image/background/bg.png"); 
+  const backgroundImg = require("../../../image/background/bg7.png"); 
 
   const handleContinue = () => {
     if (!userName.trim()) {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '77%',
-    backgroundColor: '#FFC125',
+    backgroundColor: '#00bf63',
     padding: 15,
     borderRadius: 20,
     alignItems: 'center',

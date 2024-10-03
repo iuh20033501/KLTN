@@ -1,5 +1,3 @@
-// screens/HomeScreen.js
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -47,7 +45,7 @@ const styles = StyleSheet.create({
   button2: {
     width: 300,
     height: 45,
-    backgroundColor: "#FFC125",
+    backgroundColor: "#00bf63",
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
