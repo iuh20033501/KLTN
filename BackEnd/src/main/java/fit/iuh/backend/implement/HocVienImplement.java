@@ -14,8 +14,8 @@ public class HocVienImplement implements HocVienService {
     private HocVienRepo hocVienRepo;
 
     @Override
-    public Optional<HocVien> findByIdHocVien(Long id) {
-        return hocVienRepo.findById(id);
+    public HocVien findByIdHocVien(Long id) {
+        return hocVienRepo.findById(id).get();
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Service
 public interface HocVienService {
-     Optional<HocVien> findByIdHocVien(Long id);
+     HocVien findByIdHocVien(Long id);
      HocVien createHocVien (HocVien hocVien);
      HocVien findByName (String name);
      List<HocVien> getAll();

@@ -14,7 +14,14 @@ public class KetQuaTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idKetQua;
     private Long diemTest;
-    private Boolean passTest;
     @ManyToOne
     private BaiTest baiTest;
+    @ManyToOne
+    private HocVien hocVien;
+
+    public KetQuaTest(Long diemTest, BaiTest baiTest, HocVien hocVien) {
+        this.diemTest = diemTest;
+        this.baiTest = baiTest;
+        this.hocVien = hocVien;
+    }
 }

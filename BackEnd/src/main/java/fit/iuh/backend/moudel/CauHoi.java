@@ -1,6 +1,5 @@
 package fit.iuh.backend.moudel;
 
-import fit.iuh.backend.enumclass.QuestionEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,10 +16,25 @@ public class CauHoi {
     private String noiDung;
     private String linkAmThanh;
     private String linkAnh;
-    private QuestionEnum loaiCau;
     @ManyToOne
     private BaiTap baiTap;
     @ManyToOne
     private BaiTest baiTest;
     private String loiGiai;
+
+    public CauHoi(String noiDung, String linkAmThanh, String linkAnh, BaiTap baiTap, String loiGiai) {
+        this.noiDung = noiDung;
+        this.linkAmThanh = linkAmThanh;
+        this.linkAnh = linkAnh;
+        this.baiTap = baiTap;
+        this.loiGiai = loiGiai;
+    }
+
+    public CauHoi(String noiDung, String linkAmThanh, String linkAnh, BaiTest baiTest, String loiGiai) {
+        this.noiDung = noiDung;
+        this.linkAmThanh = linkAmThanh;
+        this.linkAnh = linkAnh;
+        this.baiTest = baiTest;
+        this.loiGiai = loiGiai;
+    }
 }
