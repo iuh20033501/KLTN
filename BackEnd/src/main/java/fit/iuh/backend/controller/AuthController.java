@@ -2,7 +2,7 @@ package fit.iuh.backend.controller;
 
 
 
-import com.example.backend.dto.*;
+
 import fit.iuh.backend.dto.*;
 import fit.iuh.backend.jwt.JwtRequest;
 import fit.iuh.backend.jwt.JwtResponse;
@@ -47,6 +47,15 @@ public class AuthController {
 //        }
 //        return "false";
 //    }
+    @Operation(
+            summary = "Gửi thông tin tạo tài khoản",
+            description = """ 
+            thông tin chung : username,name,password,address,image,coverImage,gender,phone(bắt buộc),birthday
+            nếu là role là 1 tạo ra học viên có thêm List<enumkinang>
+            nếu là role là 2 tạo ra giáo viên có thêm List<enumkinang> và lương
+            Nếu là 3, 4 là  nhân viên và admin thêm lương
+    """
+    )
 
     @PostMapping("/signup/{role}")
 //    @Operation(summary = "Đăng ký")
@@ -118,7 +127,12 @@ public class AuthController {
 //    }
 
     @PostMapping("/password/reset")
-//    @Operation(summary = "Đổi mật khẩu")
+   @Operation(
+           summary = "Đổi mật khẩu",
+           description = """ 
+            gửi tokem và New pass
+    """
+   )
     public ResponseEntity<String> resetPassword(@RequestBody ResetPassDto dto) {
         return ResponseEntity.ok(service.resetPassword(dto.getToken(), dto.getPassword()));
     }

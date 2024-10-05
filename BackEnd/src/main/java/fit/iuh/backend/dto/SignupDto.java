@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignupDto {
-//    @NotNull(message = "Mã số sinh viên là bắt buộc")
+//    @NotNull(message = "Mã số hoc viên là bắt buộc")
 //    @Pattern(regexp = "^\\d{8}$", message = "Mã số sinh viên phải gồm 8 số")
     private String username;
 //    @NotNull(message = "Tên là bắt buộc")
@@ -36,35 +36,31 @@ public class SignupDto {
     private String dto;
     private List<SkillEnum> ListKiNang;
     private Long luong;
-    public SignupDto(String username, String name, String email, String password, String address, String image, String coverImage, boolean gender, String phone, LocalDate birthday, String dto, Long luong) {
+    public SignupDto(String username, String name, String email, String password, String address, String image, boolean gender, String phone, LocalDate birthday, Long luong) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.password = password;
         this.address = address;
         this.image = image;
-        this.coverImage = coverImage;
         this.gender = gender;
         this.phone = phone;
         this.birthday = birthday;
-        this.dto = dto;
         this.luong = luong;
     }
 
 
 
-    public SignupDto(String username, String name, String email, String password, String address, String image, String coverImage, boolean gender, String phone, LocalDate birthday, String dto, List<SkillEnum> listKiNang) {
+    public SignupDto(String username, String name, String email, String password, String address, String image,  boolean gender, String phone, LocalDate birthday, List<SkillEnum> listKiNang) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.password = password;
         this.address = address;
         this.image = image;
-        this.coverImage = coverImage;
         this.gender = gender;
         this.phone = phone;
         this.birthday = birthday;
-        this.dto = dto;
         ListKiNang = listKiNang;
     }
 }
