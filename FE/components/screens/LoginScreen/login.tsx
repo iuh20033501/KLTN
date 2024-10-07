@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { useNavigation } from '@react-navigation/native';
 import http from '@/utils/http';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({navigation}: {navigation: any}) {
  
@@ -15,21 +16,24 @@ export default function LoginScreen({navigation}: {navigation: any}) {
 
   const handleLogin = async () => {
     try {
-      const response = await http.post('auth/signin', {
-        username: userName,
+      const response = await http.post("auth/signin", {
+        username: userName,  
         password: passWord,
-      }, {
       });
-  
+
       if (response.status === 200) {
-        Alert.alert('Đăng nhập thành công');
-        navigation.navigate('MainTabs');
+        const { accessToken } = response.data;  
+        await AsyncStorage.setItem('accessToken', accessToken);  
+        console.log("Đăng nhập thành công:", accessToken);
+
+        Alert.alert("Thành công", "Đăng nhập thành công");
+        navigation.navigate('MainTabs'); 
       } else {
-        Alert.alert('Đăng nhập thất bại');
+        Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
       }
     } catch (error) {
-      console.log(error);
-      Alert.alert('Lỗi mạng hoặc hệ thống');
+      console.error("Có lỗi xảy ra trong quá trình đăng nhập:", error);
+      Alert.alert("Lỗi", "Đăng nhập không thành công");
     }
   };
 
@@ -77,7 +81,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
             <Text style={styles.linkText}>điều kiện và điều khoản sử dụng ứng dụng.</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() =>handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={() =>handleLogin()}>
           <Text style={styles.buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ marginTop: 30 }} onPress={() =>navigation.navigate('RequestFogetPassword')}>

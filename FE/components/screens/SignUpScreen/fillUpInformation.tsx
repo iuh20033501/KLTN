@@ -27,15 +27,25 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
   const isValidDate = (dateString: string) => {
     const parts = dateString.split('/');
     if (parts.length !== 3) return false;
-
+  
     const [day, month, year] = parts.map(part => parseInt(part, 10));
-    const date = new Date(year, month - 1, day); 
-
+    const date = new Date(year, month - 1, day);
+  
     return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+  };
+  
+  const convertDateToYYYYMMDD = (dateString: string) => {
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month}-${day}`;
+    }
+    return dateString;
   };
 
   const handlePost = async () => {
     try {
+      const formattedBirthday = convertDateToYYYYMMDD(birthday);
       const response = await http.post('auth/send', {
         phone: phone,
       });
@@ -44,7 +54,7 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
         console.log(response.data);
         Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
         navigation.navigate('Authentication', {
-          userName, passWord, name, phone, gmail, birthday, gender
+          userName, passWord, name, phone, gmail, birthday: formattedBirthday, gender
         });
       } else {
         switch (response.status) {

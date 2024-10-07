@@ -1,5 +1,5 @@
 import http from "@/utils/http";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, } from "react";
 import {
   View,
   StyleSheet,
@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  ImageBackground
+  ImageBackground,
+  Alert
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Lưu token
 
 export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
   const { userName, passWord, name, phone, gmail, birthday, gender } = route.params || {};
-
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
@@ -29,9 +30,10 @@ export default function Authentication({ navigation, route }: { navigation: any,
         phone: phone,
         otp: verificationCode,
       });
-  
+
       if (response.status === 200) {
-        await handleSubmit(); 
+        console.log(response.data)
+        await handleSubmit();
       } else {
         throw new Error("Lỗi xác thực");
       }
@@ -40,55 +42,88 @@ export default function Authentication({ navigation, route }: { navigation: any,
       setFailureModalVisible(true);
     }
   };
- console.log(userName, passWord, name, phone, gmail, birthday, gender )
   const handleSubmit = async () => {
     try {
       const response = await http.post("auth/signup/1", {
-        userName : userName,
+        username: userName,
         name: name,
-        gmail: gmail,
-        passWord: passWord,
+        email: gmail,
+        password: passWord,
         gender: gender,
         phone: phone,
-        birthday: birthday
+        // birthday: birthday
       });
-  
-      if (response.status === 200) {   
+
+      if (response.status === 200) {
         const data = await response.data;
         console.log(data);
-        
+         handleLogin()
       } else {
         console.error("Đăng ký không thành công");
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình gửi thông tin:", error);
+      console.error("Có lỗi xảy ra trong quá trình gửi thông tin1:", error);
+
     }
   };
 
-  const RequestCodeAgain = async () => {
-    const requestBody = {
-      phone: phone,
-    };
-    await http
-      .post("auth/send", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        phone: phone,
-      })
-      .then((response) => {
-        if (!response) {
-          throw new Error("Network response was not ok");
-        }
-        return response.status;
-      })
-      .then((data) => {
-        console.log(data);
-        setSuccessRequest(true);
+  const handleLogin = async () => {
+    try {
+      const response = await http.post("auth/signin", {
+        username: userName,  
+        password: passWord,
       });
+
+      if (response.status === 200) {
+        const { accessToken } = response.data;  
+        await AsyncStorage.setItem('accessToken', accessToken);  
+        console.log("Đăng nhập thành công:", accessToken);
+
+        Alert.alert("Thành công", "Đăng nhập thành công");
+        navigation.navigate('MainTabs'); 
+      } else {
+        Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra trong quá trình đăng nhập:", error);
+      Alert.alert("Lỗi", "Đăng nhập không thành công");
+    }
   };
 
+
+  const handleRequestCodeAgain = async () => {
+    try {
+      const response = await http.post('auth/send', {
+        phone: phone,
+      });
+
+      if (response.status === 200) {
+        console.log(response.data);
+        Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
+        navigation.navigate('Authentication', {
+          userName, passWord, name, phone, gmail, birthday, gender
+        });
+      } else {
+        switch (response.status) {
+          case 400:
+            Alert.alert("Lỗi", "Số điện thoại không hợp lệ.");
+            break;
+          case 404:
+            Alert.alert("Lỗi", "Không tìm thấy thông tin.");
+            break;
+          case 500:
+            Alert.alert("Lỗi", "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.");
+            break;
+          default:
+            Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+            break;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng kiểm tra kết nối mạng và thử lại.");
+    }
+  };
   const handleCloseModal2 = () => {
     setSuccessRequest(false);
   };
@@ -170,7 +205,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
 
         <View style={{ flexDirection: "row", marginLeft: 50, marginTop: 20 }}>
           <Text>Bạn không nhận được mã?</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleRequestCodeAgain()}>
             <Text style={{ color: "#0867ef" }}> Gửi lại</Text>
           </TouchableOpacity>
         </View>
