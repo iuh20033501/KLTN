@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Keyb
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { useNavigation } from '@react-navigation/native';
+import http from '@/utils/http';
 
 export default function LoginScreen({navigation}: {navigation: any}) {
  
@@ -12,15 +13,23 @@ export default function LoginScreen({navigation}: {navigation: any}) {
   const backgroundImg = require("../../../image/background/bg7.png"); 
   const logoEFY = require("../../../image/logo/EFY.png");
 
-  const handleContinue = () => {
-    if (!userName.trim()) {
-      Alert.alert('Tài khoản không được để trống');
-    }
-    if (!passWord.trim() && userName.trim()) {
-      Alert.alert('Mật khẩu không được để trống');
-    }
-    else {
-      Alert.alert('Đăng nhập thành công');
+  const handleLogin = async () => {
+    try {
+      const response = await http.post('auth/signin', {
+        username: userName,
+        password: passWord,
+      }, {
+      });
+  
+      if (response.status === 200) {
+        Alert.alert('Đăng nhập thành công');
+        navigation.navigate('MainTabs');
+      } else {
+        Alert.alert('Đăng nhập thất bại');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Lỗi mạng hoặc hệ thống');
     }
   };
 
@@ -68,7 +77,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
             <Text style={styles.linkText}>điều kiện và điều khoản sử dụng ứng dụng.</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() =>navigation.navigate('MainTabs')}>
+        <TouchableOpacity style={styles.button} onPress={() =>handleLogin}>
           <Text style={styles.buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ marginTop: 30 }} onPress={() =>navigation.navigate('RequestFogetPassword')}>

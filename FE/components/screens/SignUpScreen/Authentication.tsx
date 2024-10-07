@@ -1,3 +1,4 @@
+import http from "@/utils/http";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -9,69 +10,84 @@ import {
   TouchableWithoutFeedback,
   ImageBackground
 } from "react-native";
-// import ArrowIcon from "../../assets/icon/ArrowIcon";
-// import http from "../../utils/http";
 
-export default function Authentication({navigation}: {navigation: any}) {
-  const backgroundImg = require("../../../image/background/bg7.png"); 
-  // const { phoneNumber } = route.params;
-  //  const [phoneNumber, setPhoneNumber] = useState('0929635572');
+export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
+  const backgroundImg = require("../../../image/background/bg7.png");
+  const { userName, passWord, name, phone, gmail, birthday, gender } = route.params || {};
+
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
-
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await http.post("/v1/verification/otp/sms/validate", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       phone: phoneNumber,
-  //       otp: verificationCode,
-  //     });
+  const handleConfirm = async () => {
+    try {
+      const response = await http.post("auth/validate", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        phone: phone,
+        otp: verificationCode,
+      });
+  
+      if (response.status === 200) {
+        await handleSubmit(); 
+      } else {
+        throw new Error("Lỗi xác thực");
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
+      setFailureModalVisible(true);
+    }
+  };
+ console.log(userName, passWord, name, phone, gmail, birthday, gender )
+  const handleSubmit = async () => {
+    try {
+      const response = await http.post("auth/signup/1", {
+        userName : userName,
+        name: name,
+        gmail: gmail,
+        passWord: passWord,
+        gender: gender,
+        phone: phone,
+        birthday: birthday
+      });
+  
+      if (response.status === 200) {   
+        const data = await response.data;
+        console.log(data);
+        
+      } else {
+        console.error("Đăng ký không thành công");
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra trong quá trình gửi thông tin:", error);
+    }
+  };
 
-  //     if (!response) {
-  //       throw new Error("Lỗi");
-  //     }
-  //     const data = await response.data;
-  //     const token = data.accessToken;
-  //     console.log(data);
-  //     setSuccessModalVisible(true);
-  //     setTimeout(() => {
-  //       navigation.navigate("Register", { accessToken: token });
-  //     }, 1500);
-  //   } catch (error) {
-  //     console.error("There was a problem with the fetch operation:", error);
-  //     setFailureModalVisible(true);
-  //   }
-  // };
+  const RequestCodeAgain = async () => {
+    const requestBody = {
+      phone: phone,
+    };
+    await http
+      .post("auth/send", {
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-  // const RequestCodeAgain = async () => {
-  //   const requestBody = {
-  //     phone: phoneNumber,
-  //   };
-
-  //   await http
-  //     .post("/v1/verification/otp/sms/send", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-
-  //       phone: phoneNumber,
-  //     })
-  //     .then((response) => {
-  //       if (!response) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       return response.status;
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setSuccessRequest(true);
-  //     });
-  // };
+        phone: phone,
+      })
+      .then((response) => {
+        if (!response) {
+          throw new Error("Network response was not ok");
+        }
+        return response.status;
+      })
+      .then((data) => {
+        console.log(data);
+        setSuccessRequest(true);
+      });
+  };
 
   const handleCloseModal2 = () => {
     setSuccessRequest(false);
@@ -83,171 +99,171 @@ export default function Authentication({navigation}: {navigation: any}) {
 
   return (
     <ImageBackground
-    source={backgroundImg}
-    style={styles.backgroundImage}
-    resizeMode="cover"
-  >
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.font}>Nhập mã xác thực</Text>
-      </View>
+      source={backgroundImg}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.font}>Nhập mã xác thực</Text>
+        </View>
 
-      <View>
-        <Text
-          style={{
-            color: "#868c92",
-            fontSize: 13,
-            textAlign: "center",
-            marginTop: 50,
-          }}
-        >
-          Nhập 6 dãy số được gửi đến số điện thoại{" "}
-        </Text>
-        <Text
-          style={{
-            color: "#000",
-            fontSize: 15,
-            textAlign: "center",
-            marginTop: 20,
-            fontWeight: "bold",
-          }}
-        >
-
-        </Text>
-      </View>
-
-      <View style={styles.phoneInputContainer}>
-        <TextInput
-          style={styles.input}
-          value={verificationCode}
-          onChangeText={(value) =>
-            setVerificationCode(value.replace(/\s/g, ""))
-          } 
-          keyboardType="numeric"
-          maxLength={6}
-        />
-      </View>
-
-      <View>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isCodeComplete ? "#00bf63" : "#d3d6db" },
-          ]}
-          // onPress={async () => {
-          //   handleSubmit();
-          // }}
-          disabled={!isCodeComplete}
-        >
+        <View>
           <Text
             style={{
-              color: isCodeComplete ? "black" : "#abaeb3",
+              color: "#868c92",
+              fontSize: 13,
               textAlign: "center",
-              fontSize:18,
-              fontWeight:'bold'
+              marginTop: 50,
             }}
           >
-           Xác thực
+            Nhập 6 dãy số được gửi đến số điện thoại{" "}
           </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={{ flexDirection: "row", marginLeft: 50, marginTop: 20 }}>
-        <Text>Bạn không nhận được mã?</Text>
-        <TouchableOpacity>
-          <Text style={{ color: "#0867ef" }}> Gửi lại</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={{ flexDirection: "row",marginLeft:30, marginTop: 200 }}>
-        <TouchableOpacity style={{ flexDirection: "row" }}>
           <Text
             style={{
-              color: "#0867ef",
-              fontWeight: "bold",
+              color: "#000",
               fontSize: 15,
               textAlign: "center",
+              marginTop: 20,
+              fontWeight: "bold",
             }}
           >
-            {" "}
-            Tôi cần hỗ trợ thêm về mã xác thực
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* FAIL OTP */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={failureModalVisible}
-        onRequestClose={handleCloseModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent2}>
-            <Text
-              style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
-            >
-              Nhập OTP thất bại
-            </Text>
-            <View style={styles.separator} />
-            <Text style={{ fontSize: 13 }}>
-              Có thể bạn đã gặp phải một số trường hợp:
-            </Text>
-            <Text>• Mã OTP không đúng</Text>
-            <Text>• Mã OTP đã hết hiệu lực</Text>
-            <TouchableOpacity onPress={() => handleCloseModal()}>
-              <Text
-                style={{
-                  color: "#0867ef",
-                  textAlign: "center",
-                  fontSize: 15,
-                  marginTop: 15,
-                }}
-              >
-                Xác nhận
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </Text>
         </View>
-      </Modal>
-      {/* REQUEST MORE TIME */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={successRequest}
-        onRequestClose={() => handleCloseModal2()}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent2}>
+
+        <View style={styles.phoneInputContainer}>
+          <TextInput
+            style={styles.input}
+            value={verificationCode}
+            onChangeText={(value) =>
+              setVerificationCode(value.replace(/\s/g, ""))
+            }
+            keyboardType="numeric"
+            maxLength={6}
+          />
+        </View>
+
+        <View>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: isCodeComplete ? "#00bf63" : "#d3d6db" },
+            ]}
+            onPress={async () => {
+              handleConfirm();
+            }}
+            disabled={!isCodeComplete}
+          >
             <Text
-              style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
-            >
-              Đã gửi lại mã OTP
-            </Text>
-            <View style={styles.separator} />
-            <Text>• Kiểm tra mã OTP trên số điện thoại của bạn</Text>
-            <Text>• Đảm bảo rằng số điện thoại của bạn vẫn còn hoạt động</Text>
-            <TouchableOpacity
-              onPress={() => {
-                handleCloseModal2();
+              style={{
+                color: isCodeComplete ? "black" : "#abaeb3",
+                textAlign: "center",
+                fontSize: 18,
+                fontWeight: 'bold'
               }}
             >
+              Xác thực
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: "row", marginLeft: 50, marginTop: 20 }}>
+          <Text>Bạn không nhận được mã?</Text>
+          <TouchableOpacity>
+            <Text style={{ color: "#0867ef" }}> Gửi lại</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: "row", marginLeft: 30, marginTop: 200 }}>
+          <TouchableOpacity style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                color: "#0867ef",
+                fontWeight: "bold",
+                fontSize: 15,
+                textAlign: "center",
+              }}
+            >
+              {" "}
+              Tôi cần hỗ trợ thêm về mã xác thực
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* FAIL OTP */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={failureModalVisible}
+          onRequestClose={handleCloseModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent2}>
               <Text
-                style={{
-                  color: "#0867ef",
-                  textAlign: "center",
-                  fontSize: 15,
-                  marginTop: 15,
+                style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
+              >
+                Nhập OTP thất bại
+              </Text>
+              <View style={styles.separator} />
+              <Text style={{ fontSize: 13 }}>
+                Có thể bạn đã gặp phải một số trường hợp:
+              </Text>
+              <Text>• Mã OTP không đúng</Text>
+              <Text>• Mã OTP đã hết hiệu lực</Text>
+              <TouchableOpacity onPress={() => handleCloseModal()}>
+                <Text
+                  style={{
+                    color: "#0867ef",
+                    textAlign: "center",
+                    fontSize: 15,
+                    marginTop: 15,
+                  }}
+                >
+                  Xác nhận
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        {/* REQUEST MORE TIME */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={successRequest}
+          onRequestClose={() => handleCloseModal2()}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent2}>
+              <Text
+                style={{ fontSize: 20, textAlign: "center", fontWeight: "bold" }}
+              >
+                Đã gửi lại mã OTP
+              </Text>
+              <View style={styles.separator} />
+              <Text>• Kiểm tra mã OTP trên số điện thoại của bạn</Text>
+              <Text>• Đảm bảo rằng số điện thoại của bạn vẫn còn hoạt động</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  handleCloseModal2();
                 }}
               >
-                Xác nhận
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={{
+                    color: "#0867ef",
+                    textAlign: "center",
+                    fontSize: 15,
+                    marginTop: 15,
+                  }}
+                >
+                  Xác nhận
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
-        </ImageBackground>
+        </Modal>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -257,15 +273,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: "100%",
     height: "100%",
-    alignItems:'center'
-  
+    alignItems: 'center'
+
   },
   container: {
     position: "relative",
     flex: 1,
   },
   font: {
-    marginTop:100,
+    marginTop: 100,
     fontSize: 25,
     color: "#1a1a1a",
     fontWeight: "bold",
@@ -288,7 +304,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: -20,
-    marginLeft:5
+    marginLeft: 5
   },
   input: {
     height: 45,

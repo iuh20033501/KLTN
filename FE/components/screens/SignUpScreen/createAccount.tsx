@@ -2,24 +2,28 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 
-export default function CreateAccount({navigation}: {navigation: any}) {
+export default function CreateAccount({ navigation, route }: { navigation: any, route: any }) {
   const [userName, setUserName] = useState('');
   const [passWord, setPassWord] = useState('');
   const [verifyPassWord, setVerifyPassWord] = useState('');
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
+
   const backgroundImg = require("../../../image/background/bg7.png"); 
 
-  const handleContinue = () => {
+  const handleContinue =  () => {
     if (!userName.trim()) {
       Alert.alert('Tài khoản không được để trống');
-    }
-    if (!passWord.trim() && userName.trim()) {
+    } else if (!passWord.trim()) {
       Alert.alert('Mật khẩu không được để trống');
+    } else if (passWord !== verifyPassWord) {
+      Alert.alert('Mật khẩu và mật khẩu nhập lại không khớp');
     } else {
-      Alert.alert('Đăng nhập thành công');
+      navigation.navigate('FillUpInformation', { userName, passWord });
     }
   };
+  
 
   return (
     <ImageBackground
@@ -42,7 +46,7 @@ export default function CreateAccount({navigation}: {navigation: any}) {
             style={styles.input}
             placeholder="Nhập mật khẩu"
             value={passWord}
-            onChangeText={setVerifyPassWord}
+            onChangeText={setPassWord}
             secureTextEntry={!isPasswordVisible}
           />
           <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
@@ -55,11 +59,11 @@ export default function CreateAccount({navigation}: {navigation: any}) {
             style={styles.input}
             placeholder="Nhập lại mật khẩu"
             value={verifyPassWord}
-            onChangeText={setPassWord}
-            secureTextEntry={!isPasswordVisible}
+            onChangeText={setVerifyPassWord}
+            secureTextEntry={!isPasswordVisible2}
           />
-          <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
-            <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={20} color="gray" />
+          <TouchableOpacity onPress={() => setIsPasswordVisible2(!isPasswordVisible2)} style={styles.eyeIcon}>
+            <FontAwesome name={isPasswordVisible2 ? 'eye-slash' : 'eye'} size={20} color="gray" />
           </TouchableOpacity>
         </View>
 
@@ -72,7 +76,7 @@ export default function CreateAccount({navigation}: {navigation: any}) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button}
-        onPress={() => navigation.navigate('FillUpInformation')}>
+        onPress={() => handleContinue()}>
           <Text style={styles.buttonText}>Tiếp tục</Text>
         </TouchableOpacity>
         <Text style={styles.footerNote}>
