@@ -15,65 +15,14 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AuthenticationPass({navigation}: {navigation: any}) {
   const backgroundImg = require("../../../image/background/bg7.png"); 
-  // const { phoneNumber } = route.params;
-  //  const [phoneNumber, setPhoneNumber] = useState('0929635572');
+
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
 
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await http.post("/v1/verification/otp/sms/validate", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       phone: phoneNumber,
-  //       otp: verificationCode,
-  //     });
-
-  //     if (!response) {
-  //       throw new Error("Lỗi");
-  //     }
-  //     const data = await response.data;
-  //     const token = data.accessToken;
-  //     console.log(data);
-  //     setSuccessModalVisible(true);
-  //     setTimeout(() => {
-  //       navigation.navigate("Register", { accessToken: token });
-  //     }, 1500);
-  //   } catch (error) {
-  //     console.error("There was a problem with the fetch operation:", error);
-  //     setFailureModalVisible(true);
-  //   }
-  // };
-
-  // const RequestCodeAgain = async () => {
-  //   const requestBody = {
-  //     phone: phoneNumber,
-  //   };
-
-  //   await http
-  //     .post("/v1/verification/otp/sms/send", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-
-  //       phone: phoneNumber,
-  //     })
-  //     .then((response) => {
-  //       if (!response) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       return response.status;
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setSuccessRequest(true);
-  //     });
-  // };
-
+ 
   const handleCloseModal2 = () => {
     setSuccessRequest(false);
   };
