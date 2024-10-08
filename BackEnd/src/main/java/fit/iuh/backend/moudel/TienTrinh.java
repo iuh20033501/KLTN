@@ -18,4 +18,10 @@ public class TienTrinh {
     private HocVien hocVien;
     @ManyToOne
     private BaiTap baiTap;
+
+    public TienTrinh(Long phanTram, HocVien hocVien, BaiTap baiTap) {
+        this.phanTram = phanTram;
+        this.hocVien = hocVien;
+        this.baiTap = baiTap;
+    }
 }

@@ -14,8 +14,10 @@ public class LopHoc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long idLopHoc;
     private  String tenLopHoc;
+    private Boolean trangThai;
     @ManyToOne
     private GiangVien giangVien;
     @ManyToOne
     private KhoaHoc khoaHoc;
+
 }

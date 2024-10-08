@@ -186,10 +186,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String resetPassword(String token, String pass) {
-        if (!jwtService.isTokenExprired(token)) {
-            String username = jwtService.extractUserName(token);
-            TaiKhoanLogin tk = repository.findByTenDangNhap(username).orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user " + username));
+    public String resetPassword(Long id, String pass) {
+        TaiKhoanLogin tk = repository.findById(id).get();
+        if (tk!=null) {
             tk.setMatKhau(passwordEncoder.encode(pass));
             repository.save(tk);
             return "passUpdateSuccess";

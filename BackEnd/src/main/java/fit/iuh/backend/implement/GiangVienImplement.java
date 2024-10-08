@@ -6,6 +6,7 @@ import fit.iuh.backend.moudel.GiangVien;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 @Component
 public class GiangVienImplement implements GiangVienService {
@@ -20,5 +21,15 @@ public class GiangVienImplement implements GiangVienService {
     @Override
     public GiangVien createGiangVien(GiangVien giangVien) {
         return giangVienRepo.save(giangVien);
+    }
+
+    @Override
+    public List<GiangVien> findAll() {
+        return giangVienRepo.findAll();
+    }
+
+    @Override
+    public GiangVien findByName(String name) {
+        return giangVienRepo.findByHoTen(name);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KhoaHoc {
+public class  KhoaHoc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idKhoaHoc;
@@ -21,7 +21,7 @@ public class KhoaHoc {
     private Long giaTien;
     private  double hocPhi;
     private Date thoiGianDienRa;
-
+    private Boolean trangThai;
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
     private List<SkillEnum> skillEnum;

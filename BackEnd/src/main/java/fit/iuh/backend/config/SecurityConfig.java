@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 "/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/reports/**","/profile/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/reports/**","/profile/**","/auth/signup/**","").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

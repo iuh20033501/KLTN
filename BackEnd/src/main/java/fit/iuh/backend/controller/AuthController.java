@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -70,7 +71,7 @@ public class AuthController {
 //    @Operation(summary = "Đăng ký")
     public ResponseEntity<ProfileDto> signup(@RequestBody SignupDto dto, @PathVariable int role) {
         if(role ==1)
-        return ResponseEntity.ok(service.signupnv(dto));
+        return ResponseEntity.ok(service.signuphv(dto));
         else if(role ==2)
         return  ResponseEntity.ok(service.signupgv(dto));
         else if(role ==3)
@@ -135,14 +136,22 @@ public class AuthController {
 //        return ResponseEntity.ok(service.forgotPassword(tenDangNhap));
 //    }
 
-    @PostMapping("/password/reset")
+    @PostMapping("/signup/reset")
    @Operation(
            summary = "Đổi mật khẩu",
            description = """ 
             gửi tokem và New pass
     """
    )
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPassDto dto) {
-        return ResponseEntity.ok(service.resetPassword(dto.getToken(), dto.getPassword()));
+    public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody String Newpass) {
+        return ResponseEntity.ok(service.resetPassword( dto.getId(), Newpass));
+    }
+    @GetMapping("/findAll")
+    public List<TaiKhoanLogin> getAll(){
+        return tkService.getAll();
+    }
+    @GetMapping("findBySdt/{sdt}")
+    public TaiKhoanLogin getBySDT(@PathVariable String sdt){
+        return tkService.findBySDT(sdt).get();
     }
 }

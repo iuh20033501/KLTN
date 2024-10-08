@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository <User,Long>{
     Optional<User> findByHoTen(String hoTen);
-//    Optional<User> findBySDT(String sdt);
+//    Optional<User> findBySdt(String sdt);
 }
