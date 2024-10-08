@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import LinearGradient from 'react-native-linear-gradient';
 import { RadioButton } from "react-native-paper";
 import http from '@/utils/http';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function FillUpInformation({ navigation, route }: { navigation: any, route: any }) {
   const { userName, passWord } = route.params || {};
@@ -12,7 +13,7 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
   const [gender, setGender] = useState(true);
   const [gmail, setGmail] = useState('');
   const [birthday, setBirthday] = useState('');
-  
+
   const backgroundImg = require("../../../image/background/bg7.png");
 
   const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -106,7 +107,11 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       resizeMode="cover"
     >
       <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
         <View style={styles.innerContainer}>
+        
           <Text style={styles.title}>Nhập thông tin của bạn</Text>
           <TextInput
             style={styles.input}
@@ -181,15 +186,14 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     height: '100%'
   },
   innerContainer: {
+    marginTop:50,
     alignItems: 'center',
     width: '100%',
-    marginTop: -100
   },
   title: {
     fontSize: 24,

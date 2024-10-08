@@ -12,6 +12,7 @@ import {
   Alert
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Lưu token
+import Icon from "react-native-vector-icons/Ionicons";
 
 export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
@@ -21,6 +22,16 @@ export default function Authentication({ navigation, route }: { navigation: any,
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
+  const avatars = [
+    require('../../../image/avatar/1.png'),
+    require('../../../image/avatar/2.png'),
+    require('../../../image/avatar/3.png'),
+    require('../../../image/avatar/4.png'),
+    require('../../../image/avatar/5.png'),
+    require('../../../image/avatar/6.png'),
+    require('../../../image/avatar/7.png'),
+    require('../../../image/avatar/8.png'),
+];
   const handleConfirm = async () => {
     try {
       const response = await http.post("auth/validate", {
@@ -52,6 +63,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
         gender: gender,
         phone: phone,
         // birthday: birthday
+        image: avatars[0] 
       });
 
       if (response.status === 200) {
@@ -138,6 +150,9 @@ export default function Authentication({ navigation, route }: { navigation: any,
       style={styles.backgroundImage}
       resizeMode="cover"
     >
+       <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
       <View style={styles.container}>
         <View>
           <Text style={styles.font}>Nhập mã xác thực</Text>
@@ -316,7 +331,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   font: {
-    marginTop: 100,
+    marginTop: 70,
     fontSize: 25,
     color: "#1a1a1a",
     fontWeight: "bold",

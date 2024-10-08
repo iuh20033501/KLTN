@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function ResetPassword({navigation}: {navigation: any}) {
   const [oldPassowrd, setOldPassowrd] = useState('');
@@ -16,6 +17,9 @@ export default function ResetPassword({navigation}: {navigation: any}) {
       style={styles.backgroundImage}
       resizeMode="cover"
     >
+      <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Đổi mật khẩu</Text>
         <View style={styles.inputContainer}>

@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   ImageBackground
 } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 // import ArrowIcon from "../../assets/icon/ArrowIcon";
 // import http from "../../utils/http";
 
@@ -87,6 +88,9 @@ export default function AuthenticationPass({navigation}: {navigation: any}) {
     style={styles.backgroundImage}
     resizeMode="cover"
   >
+     <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
     <View style={styles.container}>
       <View>
         <Text style={styles.font}>Nhập mã xác thực</Text>

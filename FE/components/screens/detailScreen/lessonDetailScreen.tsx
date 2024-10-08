@@ -26,14 +26,13 @@ export default function LessonDetailScreen() {
           </View>
         </View>
 
-        {/* Giáo viên */}
         <View style={styles.teacherContainer}>
           <Icon name="person-outline" size={16} color="gray" />
           <Text style={styles.teacherText}>Giáo viên nước ngoài</Text>
         </View>
       </View>
 
-      {/* Chú giải */}
+     
       <View style={styles.legend}>
         <Text style={styles.legendTitle}>Chú giải</Text>
         <View style={styles.legendContainer}>

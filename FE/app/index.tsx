@@ -23,11 +23,12 @@ import ScoreBoardScreen from "@/components/screens/detailScreen/scoreBoardScreen
 import ListEXScreen from "@/components/screens/exercise/listEXScreen";
 import LessionListScreen from "@/components/screens/exercise/lessionScreen";
 import UserProfileScreen from "@/components/screens/profileScreen/userProfileScreen";
-import DetailProfileScreen from "@/components/screens/profileScreen/detailProfileScreen";
-import UpdateProfileScreen from "@/components/screens/profileScreen/detailProfileScreen";
+import UpdateProfileScreen from "@/components/screens/profileScreen/updateProfileScreen";
 import RequestFogetPassword from "@/components/screens/resetPassword/requestFogetPassword";
 import ChangePassword from "@/components/screens/changePassword/changePassword";
 import AuthenticationForgetPassword from "@/components/screens/resetPassword/authenticationForgetPassword";
+import DetailProfileScreen from "@/components/screens/profileScreen/detaiProfileScreen";
+import UserInfoScreen from "@/components/screens/profileScreen/userInfoScreen";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -48,6 +49,8 @@ type RootStackParamList = {
   UpdateProfileScreen:undefined;
   RequestFogetPassword: undefined;
   ChangePassword:undefined;
+  DetailProfileScreen: undefined;
+  UserInfoScreen:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -135,7 +138,10 @@ export default function Router() {
         <Stack.Screen name="UpdateProfileScreen" component={UpdateProfileScreen} />
         <Stack.Screen name="RequestFogetPassword" component={RequestFogetPassword} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="DetailProfileScreen" component={DetailProfileScreen} />
+        <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
 
+        
 
       </Stack.Navigator>
     </NavigationContainer>

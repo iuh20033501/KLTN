@@ -1,10 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Modal } from 'react-native';
 import React, { useState } from 'react';
-import { FontAwesome, Ionicons, MaterialIcons, Entypo,Feather,AntDesign } from '@expo/vector-icons';  
+import { FontAwesome, Ionicons, MaterialIcons, Entypo, Feather, AntDesign } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function UserProfileScreen({navigation}: {navigation: any}) {
+export default function UserProfileScreen({ navigation, route }: { navigation: any, route: any }) {
     const avatarIMG = require('../../../image/avatar/1.png');
-
+    const { name, role } = route.params;
     const [selectedAvatar, setSelectedAvatar] = useState(avatarIMG);
     const [isModalVisible, setModalVisible] = useState(false);
     const avatars = [
@@ -19,13 +20,26 @@ export default function UserProfileScreen({navigation}: {navigation: any}) {
     ];
 
     const handleAvatarPress = () => {
-        setModalVisible(true); 
+        setModalVisible(true);
     };
 
     const handleAvatarSelect = (avatar: any) => {
-        setSelectedAvatar(avatar); 
-        setModalVisible(false); 
+        setSelectedAvatar(avatar);
+        setModalVisible(false);
     };
+
+    const vietHoaRole = (role: string): string => {
+        switch (role) {
+            case 'QUANLY':
+                return 'Quản lý';
+            case 'NHANVIEN':
+                return 'Nhân viên';
+            case 'HOCVIEN':
+                return 'Học viên';
+            default:
+                return 'Không xác định';
+        }
+    }
 
     const renderAvatarRows = () => {
         const rows = [];
@@ -48,18 +62,21 @@ export default function UserProfileScreen({navigation}: {navigation: any}) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.sectionTitle}>Tùy chọn</Text>
-                <TouchableOpacity style={styles.avatarContainer} onPress={handleAvatarPress}>
-                    <Image source={selectedAvatar} style={styles.avatar} />
-                </TouchableOpacity>
-            </View>
+                <View style={styles.header}>
+        <TouchableOpacity  onPress={() => navigation.goBack()}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Tùy chọn người dùng</Text>
+      </View>
+      <Image source={avatarIMG} style={styles.image} /> 
             <View style={styles.userInfoContainer}>
-                <Text style={styles.username}>Trần Quang Khải</Text>
-                <Text style={styles.phone}>khaikhua2233</Text>
+                <Text style={styles.username}>{name}</Text>
+                <Text style={styles.phone}>{vietHoaRole(role)}</Text>
             </View>
             <View style={styles.optionList}>
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option}
+                    onPress={() => navigation.navigate('UserInfoScreen')}
+                >
                     <View style={styles.optionRow}>
                         <AntDesign name="profile" size={24} color="green" />
                         <Text style={styles.optionText}>Xem thông tin cá nhân</Text>
@@ -67,9 +84,9 @@ export default function UserProfileScreen({navigation}: {navigation: any}) {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.option}
-                onPress={() => navigation.navigate('UpdateProfileScreen')}>
+                    onPress={() => navigation.navigate('UpdateProfileScreen')}>
                     <View style={styles.optionRow}>
-                    <MaterialIcons name="update" size={24} color="red" />
+                        <MaterialIcons name="update" size={24} color="red" />
                         <Text style={styles.optionText}>Cập nhật thông tin cá nhân</Text>
                     </View>
                 </TouchableOpacity>
@@ -129,14 +146,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+
     },
     header: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
     },
+    headerText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginLeft: 10,
+      },
     avatarContainer: {
         alignSelf: 'center',
     },
@@ -231,5 +252,23 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    image: {
+        width: 120,
+        height: 120,
+        borderRadius: 50,
+        marginTop:20,
+        marginBottom: 10,
+         alignSelf:'center'
+    },
+    backButton: {
+        zIndex:1,
+        bottom:47,
+        left:-160
+    },
+    backButtonText: {
+        fontSize: 30,
+        color: 'black',
+        textAlign:'left'
     },
 });

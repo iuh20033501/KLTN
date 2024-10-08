@@ -5,6 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function LoginScreen({navigation}: {navigation: any}) {
  
@@ -15,6 +16,23 @@ export default function LoginScreen({navigation}: {navigation: any}) {
   const logoEFY = require("../../../image/logo/EFY.png");
 
   const handleLogin = async () => {
+    if (userName.trim() === '') {
+      Alert.alert("Lỗi", "Tài khoản không được để trống");
+      return;
+    }
+    if (passWord.trim() === '') {
+      Alert.alert("Lỗi", "Mật khẩu không được để trống");
+      return;
+    }
+    if (userName.length < 6 || userName.length > 32) {
+      Alert.alert("Lỗi", "Tài khoản phải có độ dài từ 6 đến 32 ký tự");
+      return;
+    }
+    if (passWord.length < 6 || passWord.length > 32) {
+      Alert.alert("Lỗi", "Mật khẩu phải có độ dài từ 6 đến 32 ký tự");
+      return;
+    }
+  
     try {
       const response = await http.post("auth/signin", {
         username: userName,  
@@ -24,16 +42,13 @@ export default function LoginScreen({navigation}: {navigation: any}) {
       if (response.status === 200) {
         const { accessToken } = response.data;  
         await AsyncStorage.setItem('accessToken', accessToken);  
-        console.log("Đăng nhập thành công:", accessToken);
-
-        Alert.alert("Thành công", "Đăng nhập thành công");
+        console.log("Đăng nhập thành công: ", accessToken);
         navigation.navigate('MainTabs'); 
       } else {
         Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình đăng nhập:", error);
-      Alert.alert("Lỗi", "Đăng nhập không thành công");
+      Alert.alert("Đăng nhập thất bại","Vui lòng kiểm tra lại tài khoản và mật khẩu của bạn");
     }
   };
 
@@ -47,7 +62,11 @@ export default function LoginScreen({navigation}: {navigation: any}) {
       style={styles.backgroundImage}
       resizeMode="cover"
     >
-    <SafeAreaView style={{ flex: 1, marginTop: 200 }}>
+        <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
+        <Icon  name="arrow-back-outline" size={24} color="black" />
+        </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1, marginTop: 150 }}>
+      
       <View style={styles.innerContainer}>
         <Image source={logoEFY} style={styles.logo} />
         <Text style={styles.welcomeText}>Xin chào!</Text>

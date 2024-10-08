@@ -3,24 +3,24 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import http from "@/utils/http";  
+import http from "@/utils/http";
 
-export default function DashboardScreen({navigation}: {navigation: any}) {
+export default function DashboardScreen({ navigation }: { navigation: any }) {
   const avatarIMG = require('../../../image/avatar/2.png');
-  const [user, setUser] = useState<any>(null);  
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const getUserInfo = async () => {
     try {
-      const token = await AsyncStorage.getItem('accessToken');  
+      const token = await AsyncStorage.getItem('accessToken');
       if (token) {
         const response = await http.get('auth/profile', {
           headers: {
-            Authorization: `Bearer ${token}`,  
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.status === 200) {
-          setUser(response.data); 
+          setUser(response.data);
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
         }
@@ -30,12 +30,12 @@ export default function DashboardScreen({navigation}: {navigation: any}) {
     } catch (error) {
       console.error('Có lỗi xảy ra khi lấy thông tin người dùng:', error);
     } finally {
-      setLoading(false);  
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUserInfo();  
+    getUserInfo();
   }, []);
 
   console.log(user);
@@ -44,19 +44,22 @@ export default function DashboardScreen({navigation}: {navigation: any}) {
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Trang chủ</Text>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('UserProfileScreen')} >
+        <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('UserProfileScreen', {
+          name: user?.u?.hoTen,
+          role: user?.cvEnum,
+        })} >
           <Image source={avatarIMG} style={styles.avatar} />
         </TouchableOpacity>
         <View style={styles.userInfo}>
-          {loading ? ( 
+          {loading ? (
             <Text style={styles.userName}>Loading...</Text>
-          ) : user ? ( 
+          ) : user ? (
             <>
               <Text style={styles.userName}>{user.u.hoTen}</Text>
               <Text style={styles.courseName}>Tiếng Anh giao tiếp - L153304</Text>
             </>
           ) : (
-            <Text style={styles.userName}>User not found</Text>  
+            <Text style={styles.userName}>User not found</Text>
           )}
         </View>
         <TouchableOpacity style={styles.notificationIcon}>
