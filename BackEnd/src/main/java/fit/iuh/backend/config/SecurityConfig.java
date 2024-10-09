@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "/baitest/**",
                                 "/cauhoi/**",
                                 "/users/**",
-                                "/auth/**",
+                                "/auth/noauth/**",
                                 "/error",
                                 "/actuator/**",
                                 "/swagger-ui/**",
@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 "/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/reports/**","/profile/**","/auth/signup/**","").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
+                        .requestMatchers("/reports/**","/auth/signup/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

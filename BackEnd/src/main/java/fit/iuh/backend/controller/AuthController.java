@@ -49,7 +49,7 @@ public class AuthController {
         } else throw new RuntimeException("không tìm thấy profile user có hoc viên: " + u.getTenDangNhap());
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/noauth/profile")
     @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ")
     public SigninDTO validAdmin(@AuthenticationPrincipal TaiKhoanDto dto) {
             User u = authenProfile(dto);
@@ -79,13 +79,13 @@ public class AuthController {
         else return  ResponseEntity.ok(service.signupadmin(dto));
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/noauth/signin")
 
     public ResponseEntity<JwtResponse> signin(@RequestBody JwtRequest dto) {
         return ResponseEntity.ok(service.signin(dto));
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/noauth/refresh")
 //    @Operation(summary = "cập nhập lại token")
     public ResponseEntity<JwtResponse> refresh(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(service.refreshToken(request));
@@ -93,7 +93,7 @@ public class AuthController {
     @Autowired
     private TwilioSMSService twilioSMSService;
 
-    @PostMapping("/send")
+    @PostMapping("/noauth/send")
     @Operation(
             summary = "Gửi mã OTP tới số điện thoại. Dùng xác nhận số điện thoại để đăng ký tài khoản",
             description = """
@@ -111,7 +111,7 @@ public class AuthController {
         return twilioSMSService.sendSMSToVerifyV(phoneNumberDTO);
     }
 
-    @PostMapping("/validate")
+    @PostMapping("/noauth/validate")
     @Operation(
             summary = "Xác thực mã OTP",
             description = """
@@ -146,11 +146,11 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody String Newpass) {
         return ResponseEntity.ok(service.resetPassword( dto.getId(), Newpass));
     }
-    @GetMapping("/findAll")
+    @GetMapping("/noauth/findAll")
     public List<TaiKhoanLogin> getAll(){
         return tkService.getAll();
     }
-    @GetMapping("findBySdt/{sdt}")
+    @GetMapping("/noauth/findBySdt/{sdt}")
     public TaiKhoanLogin getBySDT(@PathVariable String sdt){
         return tkService.findBySDT(sdt).get();
     }
