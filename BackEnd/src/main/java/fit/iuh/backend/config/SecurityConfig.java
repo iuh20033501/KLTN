@@ -52,15 +52,15 @@ public class SecurityConfig {
                                 "/baitest/**",
                                 "/cauhoi/**",
                                 "/users/**",
-                                "/auth/noauth/**",
+                                "/auth/**",
                                 "/error",
                                 "/actuator/**",
                                 "/swagger-ui/**",
-                                "v3/**",
+                                "/v3/**",
                                 "/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/reports/**","/auth/signup/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
+                        .requestMatchers("/reports/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
