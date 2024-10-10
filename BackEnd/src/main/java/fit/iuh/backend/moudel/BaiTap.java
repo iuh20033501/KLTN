@@ -16,6 +16,4 @@ public class BaiTap {
     private String tenBaiTap;
     @OneToOne
     private BuoiHoc buoiHoc;
-    @ManyToOne
-    private HocVienBaiTap hocVien;
 }

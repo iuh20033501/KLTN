@@ -18,8 +18,6 @@ public class HoaDon {
     private Date ngayLap;
     @ManyToOne
     private NhanVien nguoiLap;
-    @ManyToOne
-    private HocVien nguoiThanhToan;
     private Long thanhTien;
     private Boolean trangThai;
 }

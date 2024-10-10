@@ -52,12 +52,7 @@ public class SecurityConfig {
                                 "/baitest/**",
                                 "/cauhoi/**",
                                 "/users/**",
-                                "/auth/**",
-                                "/error",
-                                "/actuator/**",
-                                "/swagger-ui/**",
-                                "/v3/**",
-                                "/api-docs/**"
+                                "/auth/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/reports/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")

@@ -33,8 +33,8 @@ public class BaiTapImplement implements BaiTapService {
         return baiTapRepo.FindByIdBH(idBuoi);
     }
 
-    @Override
-    public List<BaiTap> findByIdHV(Long idHV) {
-        return baiTapRepo.FindByIdHV(idHV);
-    }
+//    @Override
+//    public List<BaiTap> findByIdHV(Long idHV) {
+//        return baiTapRepo.FindByIdHV(idHV);
+//    }
 }

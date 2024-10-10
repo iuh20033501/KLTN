@@ -1,5 +1,6 @@
 package fit.iuh.backend.controller;
 
+import fit.iuh.backend.dto.ResetPassDto;
 import fit.iuh.backend.dto.SigninDTO;
 import fit.iuh.backend.dto.TaiKhoanDto;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
@@ -58,11 +59,11 @@ public class HocVienController {
     @Operation(
             summary = "Đổi mật khẩu",
             description = """ 
-            gửi  New pass
+            truyền resetDTO chứa password
     """
     )
-    public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody String newPass) {
-        return ResponseEntity.ok(service.resetPassword( dto.getId(), newPass));
+    public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ResetPassDto resetPassdto) {
+        return ResponseEntity.ok(service.resetPassword( dto.getId(), resetPassdto.getPassword()));
     }
 
     public User authenProfile(TaiKhoanDto dto) {
