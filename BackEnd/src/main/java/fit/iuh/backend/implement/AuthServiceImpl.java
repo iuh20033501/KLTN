@@ -50,7 +50,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ProfileDto signuphv(SignupDto dto) {
         Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
-        if (opUser.isEmpty()) {
+        Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
+        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
 
             HocVien p = new HocVien();
             p.setNgaySinh(dto.getBirthday());
@@ -74,7 +75,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ProfileDto signupgv(SignupDto dto) {
         Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
-        if (opUser.isEmpty()) {
+        Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
+        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
 
             GiangVien p = new GiangVien();
             p.setNgaySinh(dto.getBirthday());
@@ -97,7 +99,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ProfileDto signupadmin(SignupDto dto) {
         Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
-        if (opUser.isEmpty()) {
+        Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
+        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
             NhanVien p = new NhanVien();
             p.setNgaySinh(dto.getBirthday());
             p.setGioiTinh(dto.isGender());
@@ -119,7 +122,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ProfileDto signupnv(SignupDto dto) {
         Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
-        if (opUser.isEmpty()) {
+        Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
+        if (opUser.isEmpty()&&tkLogin.isEmpty()) {
             NhanVien p = new NhanVien();
             p.setNgaySinh(dto.getBirthday());
             p.setGioiTinh(dto.isGender());
