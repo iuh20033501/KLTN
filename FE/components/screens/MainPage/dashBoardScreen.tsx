@@ -66,7 +66,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
               onPress={() => navigation.navigate('UserProfileScreen', {
                 name: user?.u?.hoTen,
                 role: user?.cvEnum,
-                image : user?.u?.image
+                image : user?.u?.i
               })}
             >
               <Image source={getAvatar(user?.u?.image)} style={styles.avatar} /> 

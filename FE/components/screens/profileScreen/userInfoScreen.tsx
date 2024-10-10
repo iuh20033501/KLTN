@@ -20,34 +20,32 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
 
 
   const getUserInfo = async () => {
-    const token = await AsyncStorage.getItem('accessToken');
-
-    if (token) {
-      try {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (token) {
         const response = await http.get('auth/profile', {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.status === 200) {
-          setUser(response.data); 
-          console.log(response.data);
+          setUser(response.data);
         } else {
-          console.error('Lấy thông tin người dùng thất bại.'); 
+          console.error('Lấy thông tin người dùng thất bại.');
         }
-      } catch (error) {
-        console.error('Có lỗi xảy ra khi lấy thông tin người dùng:', error); 
+      } else {
+        console.error('Token không tồn tại');
       }
-    } else {
-      console.error('Token không tồn tại'); 
+    } catch (error) {
+      console.error('Có lỗi xảy ra khi lấy thông tin người dùng:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false); 
   };
 
   useEffect(() => {
-    getUserInfo(); 
+    getUserInfo();
   }, []);
-
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     const dateParts = dateString.split('-');
