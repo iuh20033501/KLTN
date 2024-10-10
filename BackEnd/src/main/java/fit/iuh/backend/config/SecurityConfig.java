@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/auth/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/reports/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
+                        .requestMatchers("/auth/profile").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

@@ -55,30 +55,7 @@ public class HocVienController {
         return hocVienService.getAll();
     }
 
-    @PostMapping("/account/reset")
-    @Operation(
-            summary = "Đổi mật khẩu",
-            description = """ 
-            truyền resetDTO chứa password
-    """
-    )
-    public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ResetPassDto resetPassdto) {
-        return ResponseEntity.ok(service.resetPassword( dto.getId(), resetPassdto.getPassword()));
-    }
 
-    public User authenProfile(TaiKhoanDto dto) {
-        TaiKhoanLogin u = tkService.findByTenDangNhap(dto.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Not found"));
-        Optional<User> p = userService.findById(u.getUser().getIdUser());
-        if (p.isPresent()) {
-            return p.get();
-        } else throw new RuntimeException("không tìm thấy profile user có hoc viên: " + u.getTenDangNhap());
-    }
 
-    @GetMapping("/noauth/profile")
-    @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ")
-    public SigninDTO validAdmin(@AuthenticationPrincipal TaiKhoanDto dto) {
-        User u = authenProfile(dto);
-        SigninDTO signinDTO= new SigninDTO(u,dto.getRole());
-        return signinDTO;
-    }
+
 }
