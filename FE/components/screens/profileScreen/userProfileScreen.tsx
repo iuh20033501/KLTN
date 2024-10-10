@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function UserProfileScreen({ navigation, route }: { navigation: any, route: any }) {
     const avatarIMG = require('../../../image/avatar/1.png');
-    const { name, role } = route.params;
+    const { name, role, image } = route.params;
     const [selectedAvatar, setSelectedAvatar] = useState(avatarIMG);
     const [isModalVisible, setModalVisible] = useState(false);
     const avatars = [
@@ -34,31 +34,35 @@ export default function UserProfileScreen({ navigation, route }: { navigation: a
                 return 'Quản lý';
             case 'NHANVIEN':
                 return 'Nhân viên';
-            case 'HOCVIEN':
+            case 'STUDENT':
                 return 'Học viên';
             default:
                 return 'Không xác định';
         }
     }
-
-    const renderAvatarRows = () => {
-        const rows = [];
-        for (let i = 0; i < avatars.length; i += 2) {
-            rows.push(
-                <View key={i} style={styles.avatarRow}>
-                    <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i])}>
-                        <Image source={avatars[i]} style={styles.modalAvatar} />
-                    </TouchableOpacity>
-                    {avatars[i + 1] && (
-                        <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i + 1])}>
-                            <Image source={avatars[i + 1]} style={styles.modalAvatar} />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            );
-        }
-        return rows;
-    };
+    const getAvatar = (imageIndex: string) => {
+        const index = parseInt(imageIndex, 10) - 1; 
+        return avatars[index] || avatars[0]; 
+      }
+    
+    // const renderAvatarRows = () => {
+    //     const rows = [];
+    //     for (let i = 0; i < avatars.length; i += 2) {
+    //         rows.push(
+    //             <View key={i} style={styles.avatarRow}>
+    //                 <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i])}>
+    //                     <Image source={avatars[i]} style={styles.modalAvatar} />
+    //                 </TouchableOpacity>
+    //                 {avatars[i + 1] && (
+    //                     <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i + 1])}>
+    //                         <Image source={avatars[i + 1]} style={styles.modalAvatar} />
+    //                     </TouchableOpacity>
+    //                 )}
+    //             </View>
+    //         );
+    //     }
+    //     return rows;
+    // };
 
     return (
         <View style={styles.container}>
@@ -68,7 +72,7 @@ export default function UserProfileScreen({ navigation, route }: { navigation: a
         </TouchableOpacity>
         <Text style={styles.headerText}>Tùy chọn người dùng</Text>
       </View>
-      <Image source={avatarIMG} style={styles.image} /> 
+      <Image source={getAvatar(image)} style={styles.image} />
             <View style={styles.userInfoContainer}>
                 <Text style={styles.username}>{name}</Text>
                 <Text style={styles.phone}>{vietHoaRole(role)}</Text>
@@ -112,7 +116,9 @@ export default function UserProfileScreen({ navigation, route }: { navigation: a
                     </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option}
+                 onPress={() => navigation.navigate('Home')}>
+                    
                     <View style={styles.optionRow}>
                         <Feather name="user" size={24} color="orange" />
                         <Text style={styles.optionText}>Đăng xuất</Text>
@@ -120,7 +126,7 @@ export default function UserProfileScreen({ navigation, route }: { navigation: a
                 </TouchableOpacity>
             </View>
 
-            <Modal
+            {/* <Modal
                 visible={isModalVisible}
                 animationType="slide"
                 transparent={true}
@@ -137,7 +143,7 @@ export default function UserProfileScreen({ navigation, route }: { navigation: a
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
         </View>
     );
 }

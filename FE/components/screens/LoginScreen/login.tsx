@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function LoginScreen({navigation}: {navigation: any}) {
- 
   const [userName, setUserName] = useState('');
   const [passWord, setPassWord] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -34,7 +33,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
     }
   
     try {
-      const response = await http.post("auth/signin", {
+      const response = await http.post("auth/noauth/signin", {
         username: userName,  
         password: passWord,
       });

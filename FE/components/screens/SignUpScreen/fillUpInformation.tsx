@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import LinearGradient from 'react-native-linear-gradient';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground, Platform } from 'react-native';
 import { RadioButton } from "react-native-paper";
 import http from '@/utils/http';
 import Icon from 'react-native-vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function FillUpInformation({ navigation, route }: { navigation: any, route: any }) {
   const { userName, passWord } = route.params || {};
@@ -13,49 +12,66 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
   const [gender, setGender] = useState(true);
   const [gmail, setGmail] = useState('');
   const [birthday, setBirthday] = useState('');
+  const image = "1";
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const backgroundImg = require("../../../image/background/bg7.png");
 
   const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083',
-    '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
+  const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
 
+  // Format sdt
   const validatePhone = (phone: string) => {
     const phonePrefix = phone.slice(0, 3);
     return validPhonePrefixes.includes(phonePrefix) && phone.length === 10;
   };
-
-  const isValidDate = (dateString: string) => {
-    const parts = dateString.split('/');
-    if (parts.length !== 3) return false;
-  
-    const [day, month, year] = parts.map(part => parseInt(part, 10));
-    const date = new Date(year, month - 1, day);
-  
-    return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+  // Format date theo db
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (`0${date.getMonth() + 1}`).slice(-2);
+    const day = (`0${date.getDate()}`).slice(-2);
+    return `${year}-${month}-${day}`;
   };
-  
-  const convertDateToYYYYMMDD = (dateString: string) => {
-    const parts = dateString.split('/');
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      return `${year}-${month}-${day}`;
+  //Chọn date
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || new Date();
+    setShowDatePicker(Platform.OS === 'ios');
+    setSelectedDate(currentDate);
+    setBirthday(formatDate(currentDate));
+  };
+
+  // Hàm tính tuổi
+  const calculateAge = (birthday: string) => {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
     }
-    return dateString;
-  };
 
+    return age;
+  };
+  // Format hiển thị date
+  const displayDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  };
   const handlePost = async () => {
     try {
-      const formattedBirthday = convertDateToYYYYMMDD(birthday);
-      const response = await http.post('auth/send', {
+      const response = await http.post('auth/noauth/send', {
         phone: phone,
       });
-  
+
       if (response.status === 200) {
         console.log(response.data);
         Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
         navigation.navigate('Authentication', {
-          userName, passWord, name, phone, gmail, birthday: formattedBirthday, gender
+          userName, passWord, name, phone, gmail, birthday, gender, image
         });
       } else {
         switch (response.status) {
@@ -78,23 +94,22 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng kiểm tra kết nối mạng và thử lại.");
     }
   };
-  
 
   const handleContinue = () => {
-    if (!name.trim()) {
-      Alert.alert('Họ tên không được để trống');
-    } else if (!phone.trim()) {
-      Alert.alert('Số điện thoại không được để trống');
+    if (!phone.trim()) {
+      Alert.alert('Lỗi nhập', 'Số điện thoại không được để trống');
     } else if (!validatePhone(phone)) {
-      Alert.alert('Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại của nhà mạng Việt Nam');
+      Alert.alert('Lỗi nhập', 'Đầu số không hợp lệ');
+    } else if (!name.trim()) {
+      Alert.alert('Lỗi nhập', "Họ tên không được để trống");
     } else if (!gmail.trim()) {
-      Alert.alert('Gmail không được để trống');
+      Alert.alert('Lỗi nhập', 'Gmail không được để trống');
     } else if (!gmailRegex.test(gmail)) {
-      Alert.alert('Vui lòng nhập đúng định dạng Gmail (@gmail.com)');
+      Alert.alert('Lỗi nhập', 'Vui lòng nhập đúng định dạng Gmail (@gmail.com)');
     } else if (!birthday.trim()) {
       Alert.alert('Ngày sinh không được để trống');
-    } else if (!isValidDate(birthday)) {
-      Alert.alert('Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng dd/mm/yyyy');
+    } else if (calculateAge(birthday) < 8) {
+      Alert.alert('Người dùng phải trên 8 tuổi');
     } else {
       handlePost();
     }
@@ -107,11 +122,11 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       resizeMode="cover"
     >
       <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
-        <Icon  name="arrow-back-outline" size={24} color="black" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 15, alignSelf: 'baseline' }}>
+          <Icon name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.innerContainer}>
-        
+
           <Text style={styles.title}>Nhập thông tin của bạn</Text>
           <TextInput
             style={styles.input}
@@ -129,7 +144,7 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
             value={name}
             onChangeText={setName}
           />
-          
+
           <TextInput
             style={styles.input}
             placeholder="Nhập gmail của bạn"
@@ -138,14 +153,20 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
             onChangeText={setGmail}
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Ngày sinh (dd/mm/yyyy)"
-            placeholderTextColor="#A8A8A8"
-            keyboardType="phone-pad"
-            value={birthday}
-            onChangeText={setBirthday}
-          />
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
+            <Text style={{ color: birthday ? '#000' : '#A8A8A8', fontSize: 18, marginTop: 10 }}>
+              {birthday ? displayDate(birthday) : 'Chọn ngày sinh của bạn'}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={onDateChange}
+              maximumDate={new Date()}
+            />
+          )}
 
           <View style={styles.radioContainer}>
             <RadioButton.Group
@@ -153,9 +174,9 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
               value={gender + ""}
             >
               <View style={{ flexDirection: "row", alignItems: "center", marginTop: -5 }}>
-                <Text>Nam</Text>
+                <Text style={{ fontSize: 18 }}>Nam</Text>
                 <RadioButton value="true" />
-                <Text>Nữ</Text>
+                <Text style={{ fontSize: 18 }}>Nữ</Text>
                 <RadioButton value="false" />
               </View>
             </RadioButton.Group>
@@ -191,7 +212,7 @@ const styles = StyleSheet.create({
     height: '100%'
   },
   innerContainer: {
-    marginTop:50,
+    marginTop: 50,
     alignItems: 'center',
     width: '100%',
   },
@@ -237,6 +258,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   radioContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
   }
 });

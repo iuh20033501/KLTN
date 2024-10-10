@@ -16,25 +16,17 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
-  const { userName, passWord, name, phone, gmail, birthday, gender } = route.params || {};
+  const { userName, passWord, name, phone, gmail, birthday, gender} = route.params || {};
+  const defaultAVT = "1";
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
-  const avatars = [
-    require('../../../image/avatar/1.png'),
-    require('../../../image/avatar/2.png'),
-    require('../../../image/avatar/3.png'),
-    require('../../../image/avatar/4.png'),
-    require('../../../image/avatar/5.png'),
-    require('../../../image/avatar/6.png'),
-    require('../../../image/avatar/7.png'),
-    require('../../../image/avatar/8.png'),
-];
+ 
   const handleConfirm = async () => {
     try {
-      const response = await http.post("auth/validate", {
+      const response = await http.post("auth/noauth/validate", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -61,9 +53,9 @@ export default function Authentication({ navigation, route }: { navigation: any,
         email: gmail,
         password: passWord,
         gender: gender,
-        phone: phone,
-        // birthday: birthday
-        image: avatars[0] 
+        phone: phone,   
+        birthday: birthday,
+        image: defaultAVT
       });
 
       if (response.status === 200) {
@@ -81,7 +73,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
 
   const handleLogin = async () => {
     try {
-      const response = await http.post("auth/signin", {
+      const response = await http.post("auth/noauth/signin", {
         username: userName,  
         password: passWord,
       });
@@ -91,7 +83,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
         await AsyncStorage.setItem('accessToken', accessToken);  
         console.log("Đăng nhập thành công:", accessToken);
 
-        Alert.alert("Thành công", "Đăng nhập thành công");
+        Alert.alert("Thành công", "Đăng ký thành công");
         navigation.navigate('MainTabs'); 
       } else {
         Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
@@ -105,7 +97,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
 
   const handleRequestCodeAgain = async () => {
     try {
-      const response = await http.post('auth/send', {
+      const response = await http.post('auth/noauth/send', {
         phone: phone,
       });
 

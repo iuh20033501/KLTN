@@ -25,7 +25,7 @@ const getUserInfo = async () => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
     if (token) {
-      const response = await http.get('auth/profile', {
+      const response = await http.get('hocvien/noauth/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

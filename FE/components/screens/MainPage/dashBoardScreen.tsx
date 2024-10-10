@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from "@/utils/http";
 
 export default function DashboardScreen({ navigation }: { navigation: any }) {
-  const avatarIMG = require('../../../image/avatar/2.png');
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const avatars = [
+    require('../../../image/avatar/1.png'),
+    require('../../../image/avatar/2.png'),
+    require('../../../image/avatar/3.png'),
+    require('../../../image/avatar/4.png'),
+    require('../../../image/avatar/5.png'),
+    require('../../../image/avatar/6.png'),
+    require('../../../image/avatar/7.png'),
+    require('../../../image/avatar/8.png'),
+  ];
 
   const getUserInfo = async () => {
     try {
@@ -38,30 +47,38 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     getUserInfo();
   }, []);
 
-  console.log(user);
+  const getAvatar = (imageIndex: string) => {
+    const index = parseInt(imageIndex, 10) - 1; 
+    return avatars[index] || avatars[0]; 
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Trang chủ</Text>
+      
       <View style={styles.header}>
-        <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('UserProfileScreen', {
-          name: user?.u?.hoTen,
-          role: user?.cvEnum,
-        })} >
-          <Image source={avatarIMG} style={styles.avatar} />
-        </TouchableOpacity>
-        <View style={styles.userInfo}>
-          {loading ? (
-            <Text style={styles.userName}>Loading...</Text>
-          ) : user ? (
-            <>
+        {loading ? ( 
+          <Text style={styles.userName}>Loading...</Text>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() => navigation.navigate('UserProfileScreen', {
+                name: user?.u?.hoTen,
+                role: user?.cvEnum,
+                image : user?.u?.image
+              })}
+            >
+              <Image source={getAvatar(user?.u?.image)} style={styles.avatar} /> 
+            </TouchableOpacity>
+            
+            <View style={styles.userInfo}>
               <Text style={styles.userName}>{user.u.hoTen}</Text>
               <Text style={styles.courseName}>Tiếng Anh giao tiếp - L153304</Text>
-            </>
-          ) : (
-            <Text style={styles.userName}>User not found</Text>
-          )}
-        </View>
+            </View>
+          </>
+        )}
+
         <TouchableOpacity style={styles.notificationIcon}>
           <FontAwesome name="bell-o" size={25} color="black" />
         </TouchableOpacity>

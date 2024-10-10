@@ -11,7 +11,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'; 
-import AuthenticationPass from "@/components/screens/changePassword/authenticationPass";
 import { SafeAreaView } from "react-native";
 import PracticeScreen from "@/components/screens/mainPage/practiceScreen";
 import NewsFeedScreen from "@/components/screens/mainPage/newsFeedScreen";
@@ -29,6 +28,7 @@ import ChangePassword from "@/components/screens/changePassword/changePassword";
 import AuthenticationForgetPassword from "@/components/screens/resetPassword/authenticationForgetPassword";
 import DetailProfileScreen from "@/components/screens/profileScreen/detaiProfileScreen";
 import UserInfoScreen from "@/components/screens/profileScreen/userInfoScreen";
+import ResetPassword from "@/components/screens/resetPassword/resetPassword";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -37,7 +37,6 @@ type RootStackParamList = {
   FillUpInformation: undefined;
   Authentication: undefined;
   AuthenticationForgetPassword: undefined;
-  AuthenticationPass: undefined;
   MainTabs: undefined;
   SecondTab :undefined;
   LessonDetailScreen: undefined;
@@ -51,6 +50,7 @@ type RootStackParamList = {
   ChangePassword:undefined;
   DetailProfileScreen: undefined;
   UserInfoScreen:undefined;
+  ResetPassword:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -125,7 +125,6 @@ export default function Router() {
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
         <Stack.Screen name="FillUpInformation" component={FillUpInformation} />
         <Stack.Screen name="Authentication" component={Authentication} />
-        <Stack.Screen name="AuthenticationPass" component={AuthenticationPass} />
         <Stack.Screen name="AuthenticationForgetPassword" component={AuthenticationForgetPassword} />
         <Stack.Screen name="MainTabs" component={MainTabs}  />
         <Stack.Screen name="SecondTab" component={SecondTab} />
@@ -140,6 +139,8 @@ export default function Router() {
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="DetailProfileScreen" component={DetailProfileScreen} />
         <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+
 
         
 

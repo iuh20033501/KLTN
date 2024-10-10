@@ -7,7 +7,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 export default function UserInfoScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true); 
-  const avatarIMG = require('../../../image/avatar/2.png');
+  const avatars = [
+    require('../../../image/avatar/1.png'),
+    require('../../../image/avatar/2.png'),
+    require('../../../image/avatar/3.png'),
+    require('../../../image/avatar/4.png'),
+    require('../../../image/avatar/5.png'),
+    require('../../../image/avatar/6.png'),
+    require('../../../image/avatar/7.png'),
+    require('../../../image/avatar/8.png'),
+  ];
+
 
   const getUserInfo = async () => {
     const token = await AsyncStorage.getItem('accessToken');
@@ -38,6 +48,15 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
     getUserInfo(); 
   }, []);
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const dateParts = dateString.split('-');
+    if (dateParts.length !== 3) return dateString;
+
+    const [year, month, day] = dateParts;
+    return `${day}/${month}/${year}`;
+  };
+
   if (loading) {
     return <Text>Loading...</Text>; 
   }
@@ -45,19 +64,26 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
     return <Text>User not found.</Text>; 
   }
 
+  const getAvatar = (imageIndex: string) => {
+    const index = parseInt(imageIndex, 10) - 1; 
+    return avatars[index] || avatars[0]; 
+  }
+  
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
+      <View style={styles.header}>
         <TouchableOpacity  onPress={() => navigation.goBack()}>
-        <Icon  name="arrow-back-outline" size={24} color="black" />
+          <Icon  name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Thông tin cá nhân</Text>
+        <Text style={styles.headerText}>Hồ sơ học viên</Text>
       </View>
       <View style={styles.infoContainer}>
-      <Image source={avatarIMG} style={styles.image} /> 
+        <Image source={getAvatar(user?.u?.image)} style={styles.image} /> 
         <Text style={styles.label}>Họ tên: <Text style={styles.value}>{user.u?.hoTen || 'N/A'}</Text></Text>
-        <Text style={styles.label}>Giới tính: <Text style={styles.value}>{user.u?.gioiTinh || 'N/A'}</Text></Text>
-        <Text style={styles.label}>Ngày sinh: <Text style={styles.value}>{user.u?.ngaySinh || 'N/A'}</Text></Text>
+        <Text style={styles.label}>
+          Giới tính: <Text style={styles.value}>{user.u?.gioiTinh === true ? 'Nam' : 'Nữ'}</Text>
+        </Text>
+        <Text style={styles.label}>Ngày sinh: <Text style={styles.value}>{formatDate(user.u?.ngaySinh)}</Text></Text>
         <Text style={styles.label}>Số điện thoại: <Text style={styles.value}>{user.u?.sdt || 'N/A'}</Text></Text>
         <Text style={styles.label}>Email: <Text style={styles.value}>{user.u?.email || 'N/A'}</Text></Text>
         <Text style={styles.label}>Khóa học: <Text style={styles.value}>TAGT</Text></Text>
@@ -69,11 +95,11 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     padding: 15,
     backgroundColor: '#fff',
-    width:'100%',
-    height:'100%'
+    width: '100%',
+    height: '100%'
   },
   header: {
     flexDirection: 'row',
@@ -83,10 +109,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    marginTop:-20,
+    marginTop: -20,
     color: '#00bf63',
     textAlign: 'center',
-    marginRight:25,
+    marginRight: 25,
   },
   headerText: {
     fontSize: 18,
@@ -94,18 +120,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     borderRadius: 50,
     marginBottom: 10,
-    alignSelf:'center'
+    alignSelf: 'center'
   },
   linkText: {
     color: '#007BFF',
     marginBottom: 20,
   },
   infoContainer: {
-    marginTop:30,
     width: '100%',
     paddingHorizontal: 20,
     backgroundColor: '#F9F9F9',
@@ -116,19 +141,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    marginTop:100
+  
   },
   label: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 10,
   },
   value: {
     fontWeight: 'normal',
-    fontSize: 16,
+    fontSize: 18,
   },
   backButton: {
-    left:-65,
-    top:-20
+    left: -65,
+    top: -20
   },
   backButtonText: {
     fontSize: 30,
