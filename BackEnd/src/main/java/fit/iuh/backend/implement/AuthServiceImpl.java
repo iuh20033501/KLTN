@@ -61,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
             p.setKiNangCan(dto.getListKiNang());
+            p.setImage(dto.getImage());
 
             HocVien c = hvService.createHocVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVuEnum.STUDENT);
@@ -86,6 +87,7 @@ public class AuthServiceImpl implements AuthService {
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
             p.setChuyenMon(dto.getListKiNang());
+            p.setImage(dto.getImage());
             GiangVien c = giangVienService.createGiangVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.TEACHER);
             TaiKhoanLogin us = repository.save(u);
@@ -109,6 +111,7 @@ public class AuthServiceImpl implements AuthService {
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
             p.setLuongThang(dto.getLuong());
+            p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.ADMIN);
             TaiKhoanLogin us = repository.save(u);
@@ -132,6 +135,7 @@ public class AuthServiceImpl implements AuthService {
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
             p.setLuongThang(dto.getLuong());
+            p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.QUANLY);
             TaiKhoanLogin us = repository.save(u);
