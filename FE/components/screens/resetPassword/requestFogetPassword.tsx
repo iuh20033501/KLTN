@@ -37,6 +37,7 @@ export default function RequestFogetPassword({ navigation }: { navigation: any }
         const { accessToken } = response.data;  
         await AsyncStorage.setItem('accessToken', accessToken);  
         navigation.navigate('AuthenticationForgetPassword', { phoneNumber });
+        console.log(response.data)
       } else {
         Alert.alert('Lỗi', response.data.message || 'Có lỗi xảy ra, vui lòng thử lại.');
       }

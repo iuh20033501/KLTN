@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from "@/utils/http";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function DashboardScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
@@ -47,6 +48,12 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     getUserInfo();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserInfo();
+    }, [])
+);
+
   const getAvatar = (imageIndex: string) => {
     const index = parseInt(imageIndex, 10) - 1; 
     return avatars[index] || avatars[0]; 
@@ -62,7 +69,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
         ) : (
           <>
             <TouchableOpacity
-              style={styles.avatarContainer}
+              style={styles.avatarContainer}  
               onPress={() => navigation.navigate('UserProfileScreen', {
                 name: user?.u?.hoTen,
                 role: user?.cvEnum,
