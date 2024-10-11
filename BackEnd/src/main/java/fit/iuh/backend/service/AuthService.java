@@ -1,6 +1,7 @@
 package fit.iuh.backend.service;
 
 
+import fit.iuh.backend.dto.ChangePassDTO;
 import fit.iuh.backend.dto.ProfileDto;
 import fit.iuh.backend.dto.SignupDto;
 
@@ -19,4 +20,5 @@ public interface AuthService {
     JwtResponse refreshToken(RefreshTokenRequest request);
     JwtResponse forgotPassword(String username);
     String resetPassword(Long id, String pass);
+    String changePassword(Long id, ChangePassDTO dto);
 }

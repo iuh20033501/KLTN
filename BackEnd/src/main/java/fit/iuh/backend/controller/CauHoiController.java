@@ -15,7 +15,7 @@ public class CauHoiController {
     @Qualifier("cauTraLoiImplement")
     @Autowired
     private CauTraLoiService service;
-    @PostMapping("/")
+    @PostMapping("/create")
     public CauTraLoi createAwser(@RequestBody CauTraLoi c){
         return service.createCauTraLoi(c);
     }

@@ -1,5 +1,6 @@
 package fit.iuh.backend.implement;
 
+import fit.iuh.backend.dto.ChangePassDTO;
 import fit.iuh.backend.dto.ProfileDto;
 import fit.iuh.backend.dto.SignupDto;
 import fit.iuh.backend.dto.TaiKhoanDto;
@@ -204,4 +205,19 @@ public class AuthServiceImpl implements AuthService {
         throw new RuntimeException("passUpdateFailed");
     }
 
+    @Override
+    public String changePassword(Long id,ChangePassDTO dto) {
+        TaiKhoanLogin tk = repository.findById(id).get();
+        if (tk != null) {
+            // Sử dụng matches để so sánh mật khẩu
+            if (passwordEncoder.matches(dto.getOldPass(), tk.getMatKhau())) {
+                tk.setMatKhau(passwordEncoder.encode(dto.getNewPass()));
+                repository.save(tk);
+                return "passChangeSuccess";
+            }
+            return "passChangeFaile";
+        }
+        throw new RuntimeException("passChangeFailed");
+
+    }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 public class BuoiHocController {
     @Autowired
     private BuoiHocService buoiHocService;
-
     @PostMapping("/createBuoiHoc")
     private BuoiHoc createBuoiHoc(@RequestBody BuoiHoc buoiHoc){
         return buoiHocService.createBuoiHoc(buoiHoc);
@@ -30,6 +29,10 @@ public class BuoiHocController {
     private BuoiHoc updateBuoiHoc(@PathVariable Long id ,@RequestBody BuoiHoc buoiHoc){
         buoiHoc.setIdBuoiHoc(id);
         return buoiHocService.createBuoiHoc(buoiHoc);
+    }
+    @GetMapping("/getByHocVien/{id}")
+    private List<BuoiHoc> getByHocVien(@PathVariable Long id ){
+        return buoiHocService.getBuoiByHocVien(id);
     }
 
 }

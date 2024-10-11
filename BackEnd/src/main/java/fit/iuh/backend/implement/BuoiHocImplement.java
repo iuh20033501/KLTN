@@ -32,4 +32,9 @@ public class BuoiHocImplement implements BuoiHocService {
     public List<BuoiHoc> getAll() {
         return buoiHocRepo.findAll();
     }
+
+    @Override
+    public List<BuoiHoc> getBuoiByHocVien(Long id) {
+        return buoiHocRepo.getBuoiHocTheoIdHocVien(id);
+    }
 }

@@ -49,8 +49,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
-                                "/baitest/**",
-                                "/cauhoi/**",
                                 "/users/**",
                                 "/auth/**",
                                 "/error",
@@ -60,7 +58,7 @@ public class SecurityConfig {
                                 "/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/auth/profile","/auth/account/reset").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
+                        .requestMatchers("/auth/profile","/auth/account/**").hasAnyAuthority("QUANLY", "ADMIN","STUDENT","TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

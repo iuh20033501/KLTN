@@ -11,8 +11,6 @@ public interface UserService {
     Optional<User> findById(Long id);
     User createUser (User user);
     String getRole (Long id);
-
-
     List<User> findAll();
 
     Optional<User> findByHoTen(String name);

@@ -22,15 +22,23 @@ public class BaiTestController {
     private CauTraLoiService cauTraLoiService;
     @Autowired
     private KetQuaTestService ketQuaTestService;
-//    Long soLuongCauHoi ;
-//    @GetMapping("/getCauHoi/{id}")
-//    public List<CauHoi> getListCauHoi (@PathVariable long id){
-//        List<CauHoi> list = cauHoiService.findByIdBaiTest(id);
-//        soLuongCauHoi = (long) list.size();
-//
-//        return list;
-//    }
+    Long soLuongCauHoi ;
+    @GetMapping("/getCauHoi/{id}")
+    public List<CauHoi> getListCauHoi (@PathVariable Long id){
+        List<CauHoi> list = cauHoiService.findByIdBaiTest(id);
+        soLuongCauHoi = (long) list.size();
+
+        return list;
+    }
     @PostMapping("/create")
+    public BaiTest createBaiTest(@RequestBody BaiTest baiTest){
+        return baiTestService.createBaiTest(baiTest);
+    }
+    @GetMapping("/getBaiTest/{id}")
+    public BaiTest findById (@PathVariable Long id){
+        return baiTestService.findById(id);
+    }
+    @PostMapping("/createCauHoi")
     public CauHoi createCauHoi (@RequestBody CauHoi cauHoi){
         CauHoi ch= cauHoiService.createCauHoi(cauHoi);
         return  ch;
@@ -52,9 +60,10 @@ public class BaiTestController {
         }
         BaiTest baiTest = baiTestService.findById(tinhDiemDTO.getIdBaiTest());
         HocVien hocVien = hocVienService.findByIdHocVien(tinhDiemDTO.getIdHocVien());
-        diemSo =soCauDung/10;
+        diemSo =soCauDung/soLuongCauHoi;
         return ketQuaTestService.crateKQT(new KetQuaTest(diemSo,baiTest,hocVien));
     }
+
 
 
 }

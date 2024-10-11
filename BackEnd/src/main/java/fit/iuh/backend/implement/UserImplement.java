@@ -35,7 +35,7 @@ public class UserImplement implements UserService {
         }else if (user instanceof NhanVien) {
             return "NhanVien";
         } else {
-            return "null";
+            return "ADMIN";
         }
     }
 

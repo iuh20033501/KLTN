@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GiangVienRepo extends JpaRepository<GiangVien,Long> {
     GiangVien findByHoTen(String hoTen);
+
 }

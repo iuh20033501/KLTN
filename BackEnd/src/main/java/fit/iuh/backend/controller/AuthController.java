@@ -112,7 +112,7 @@ public class AuthController {
     }
     @PostMapping("/account/reset")
     @Operation(
-            summary = "Đổi mật khẩu",
+            summary = "Reset mật khẩu",
             description = """ 
             truyền resetDTO chứa password
     """
@@ -120,7 +120,16 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ResetPassDto resetPassdto) {
         return ResponseEntity.ok(service.resetPassword( dto.getId(), resetPassdto.getPassword()));
     }
-
+    @PostMapping("/account/changepass")
+    @Operation(
+            summary = "Đổi mật khẩu",
+            description = """ 
+            truyền changePassDTO chứa oldPass, newPass
+    """
+    )
+    public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ChangePassDTO changePassdto) {
+        return ResponseEntity.ok(service.changePassword( dto.getId(), changePassdto));
+    }
     @PostMapping("/noauth/validate")
     @Operation(
             summary = "Xác thực mã OTP",

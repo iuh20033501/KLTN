@@ -12,6 +12,4 @@ public interface TwilioSMSService {
 //    OTPResponseDTO verifyOTP(OTPRequestDTO otpRequestDTO);
     String sendSMSToVerifyV(PhoneNumberDTO phoneNumberDTO);
     OTPResponseDTO verifyOTPV(OTPRequestDTO otpRequestDTO);
-
-
 }

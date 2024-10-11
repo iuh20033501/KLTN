@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,5 +21,7 @@ public class LopHoc {
     private GiangVien giangVien;
     @ManyToOne
     private KhoaHoc khoaHoc;
+//    @OneToMany(mappedBy = "HocVienLopHocKey.lopHoc")
+//    private List<HocVienLopHoc> hocVienLopHocs;
 
 }

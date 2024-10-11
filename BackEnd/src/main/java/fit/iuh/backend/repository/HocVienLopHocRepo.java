@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 
 public interface HocVienLopHocRepo extends JpaRepository<HocVienLopHoc, HocVienLopHocKey> {
- @Query("select hv from HocVienLopHoc hv join hocvien h on  h.idUser= hv.key.HocVien.idUser  where h.idUser =: id")
-  List<HocVien> getAllLopByIdHV(@Param("id") Long id);
+ @Query("select hv from HocVienLopHoc hv join hocvien h on  h.idUser= hv.key.HocVien.idUser  where hv.key.HocVien.idUser =: id")
+  List<HocVienLopHoc> getAllLopByIdHV(@Param("id") Long id);
  @Query("select lop from HocVienLopHoc lop join LopHoc lh on  lh.idLopHoc= lop.key.LopHoc.idLopHoc where  lh.idLopHoc=: id ")
- List<LopHoc> getAllHocVienonLop( @Param("id") Long id);
+ List<HocVienLopHoc> getAllHocVienonLop( @Param("id") Long id);
 
 }

@@ -1,5 +1,6 @@
 package fit.iuh.backend.moudel;
 
+import fit.iuh.backend.enumclass.ThanhToanEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ public class ThanhToan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTT;
-    private Boolean trangThai;
+    private ThanhToanEnum trangThai;
     @ManyToOne
     private HocVien nguoiThanhToan;
     @ManyToOne
@@ -21,7 +22,7 @@ public class ThanhToan {
     @ManyToOne
     private LopHoc lopHoc;
 
-    public ThanhToan(Boolean trangThai, HocVien nguoiThanhToan, HoaDon hoaDon, LopHoc lopHoc) {
+    public ThanhToan(ThanhToanEnum trangThai, HocVien nguoiThanhToan, HoaDon hoaDon, LopHoc lopHoc) {
         this.trangThai = trangThai;
         this.nguoiThanhToan = nguoiThanhToan;
         this.hoaDon = hoaDon;

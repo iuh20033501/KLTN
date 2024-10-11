@@ -6,6 +6,7 @@ import fit.iuh.backend.moudel.NhanVien;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 @Component
 public class NhanVienImplement implements NhanVienService {
@@ -20,5 +21,10 @@ public class NhanVienImplement implements NhanVienService {
     @Override
     public NhanVien createNhanVien(NhanVien nhanVien) {
         return nhanVienRepo.save(nhanVien);
+    }
+
+    @Override
+    public List<NhanVien> findAlL() {
+        return nhanVienRepo.findAll();
     }
 }

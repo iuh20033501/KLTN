@@ -12,4 +12,5 @@ public interface BuoiHocService {
     BuoiHoc createBuoiHoc(BuoiHoc buoiHoc);
     List<BuoiHoc> getByIdLop(Long id);
     List<BuoiHoc> getAll();
+    List<BuoiHoc> getBuoiByHocVien(Long id);
 }

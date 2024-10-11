@@ -3,13 +3,8 @@ package fit.iuh.backend.controller;
 import fit.iuh.backend.dto.ResetPassDto;
 import fit.iuh.backend.dto.SigninDTO;
 import fit.iuh.backend.dto.TaiKhoanDto;
-import fit.iuh.backend.moudel.TaiKhoanLogin;
-import fit.iuh.backend.moudel.User;
-import fit.iuh.backend.service.AuthService;
-import fit.iuh.backend.service.HocVienService;
-import fit.iuh.backend.moudel.HocVien;
-import fit.iuh.backend.service.TaiKhoanService;
-import fit.iuh.backend.service.UserService;
+import fit.iuh.backend.moudel.*;
+import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +32,9 @@ public class HocVienController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private HocVienLopHocService hocVienLopHocService;
+
     @PutMapping("/update/{id}")
     private HocVien updateHocVien( @PathVariable Long id,@RequestBody HocVien hocVien){
         hocVien.setIdUser(id);
@@ -54,7 +53,15 @@ public class HocVienController {
     private List<HocVien> findAll(){
         return hocVienService.getAll();
     }
-
+    @GetMapping("/getByLop/{id}")
+    private List<HocVien> findByHocVIEN (@PathVariable Long id){
+        List<HocVienLopHoc> listHVLH = hocVienLopHocService.findByidLop(id);
+        List<HocVien> list = new ArrayList<>();
+        for (HocVienLopHoc hvlh : listHVLH) {
+            list.add(hvlh.getKey().getHocVien());
+        }
+        return list;
+    }
 
 
 
