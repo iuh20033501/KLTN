@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 export default function UserInfoScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
@@ -17,7 +18,6 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
     require('../../../image/avatar/7.png'),
     require('../../../image/avatar/8.png'),
   ];
-
 
   const getUserInfo = async () => {
     try {
@@ -46,6 +46,7 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
   useEffect(() => {
     getUserInfo();
   }, []);
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     const dateParts = dateString.split('-');
@@ -56,107 +57,131 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>; 
+    return <Text style={styles.loadingText}>Đang tải thông tin...</Text>;
   }
+
   if (!user) {
-    return <Text>User not found.</Text>; 
+    return <Text style={styles.errorText}>Không tìm thấy thông tin người dùng.</Text>;
   }
 
   const getAvatar = (imageIndex: string) => {
     const index = parseInt(imageIndex, 10) - 1; 
     return avatars[index] || avatars[0]; 
-  }
-  
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity  onPress={() => navigation.goBack()}>
-          <Icon  name="arrow-back-outline" size={24} color="black" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back-outline" size={28} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Hồ sơ học viên</Text>
+        <Text style={styles.headerText}>Thông tin cá nhân</Text>
       </View>
+
       <View style={styles.infoContainer}>
-        <Image source={getAvatar(user?.u?.image)} style={styles.image} /> 
-        <Text style={styles.label}>Họ tên: <Text style={styles.value}>{user.u?.hoTen || 'N/A'}</Text></Text>
-        <Text style={styles.label}>
-          Giới tính: <Text style={styles.value}>{user.u?.gioiTinh === true ? 'Nam' : 'Nữ'}</Text>
-        </Text>
-        <Text style={styles.label}>Ngày sinh: <Text style={styles.value}>{formatDate(user.u?.ngaySinh)}</Text></Text>
-        <Text style={styles.label}>Số điện thoại: <Text style={styles.value}>{user.u?.sdt || 'N/A'}</Text></Text>
-        <Text style={styles.label}>Email: <Text style={styles.value}>{user.u?.email || 'N/A'}</Text></Text>
-        <Text style={styles.label}>Khóa học: <Text style={styles.value}>TAGT</Text></Text>
-        <Text style={styles.label}>Lớp học: <Text style={styles.value}>TAGT-101</Text></Text>
+        <Image source={getAvatar(user?.u?.image)} style={styles.image} />
+        
+        <View style={styles.row}>
+          <FontAwesome name="user" size={24} color="#00bf63" />
+          <Text style={styles.label}>Họ tên: <Text style={styles.value}>{user.u?.hoTen || 'N/A'}</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name="venus-mars" size={24} color="#00bf63" />
+          <Text style={styles.label}>Giới tính: <Text style={styles.value}>{user.u?.gioiTinh === true ? 'Nam' : 'Nữ'}</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name="birthday-cake" size={24} color="#00bf63" />
+          <Text style={styles.label}>Ngày sinh: <Text style={styles.value}>{formatDate(user.u?.ngaySinh)}</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name="phone" size={24} color="#00bf63" />
+          <Text style={styles.label}>Số điện thoại: <Text style={styles.value}>{user.u?.sdt || 'N/A'}</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name="envelope" size={24} color="#00bf63" />
+          <Text style={styles.label}>Email: <Text style={styles.value}>{user.u?.email || 'N/A'}</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <MaterialIcons name="class" size={24} color="#00bf63" />
+          <Text style={styles.label}>Khóa học: <Text style={styles.value}>TAGT</Text></Text>
+        </View>
+
+        <View style={styles.row}>
+          <MaterialIcons name="school" size={24} color="#00bf63" />
+          <Text style={styles.label}>Lớp học: <Text style={styles.value}>TAGT-101</Text></Text>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
+    backgroundColor: '#F5F5F5',
     padding: 15,
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '100%'
   },
   header: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: -20,
-    color: '#00bf63',
-    textAlign: 'center',
-    marginRight: 25,
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingVertical: 10,
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  image: {
-    width: 150,
-    height: 150,
-    borderRadius: 50,
-    marginBottom: 10,
-    alignSelf: 'center'
-  },
-  linkText: {
-    color: '#007BFF',
-    marginBottom: 20,
+    color: '#333',
+    marginLeft: 20,
   },
   infoContainer: {
-    width: '100%',
-    paddingHorizontal: 20,
-    backgroundColor: '#F9F9F9',
-    paddingVertical: 20,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    marginTop:100
-  
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    alignSelf: 'center',
   },
   label: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 10,
   },
   value: {
-    fontWeight: 'normal',
     fontSize: 18,
+    fontWeight: '400',
+    color: '#666',
   },
-  backButton: {
-    left: -65,
-    top: -20
+  loadingText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#00bf63',
+    marginTop: 20,
   },
-  backButtonText: {
-    fontSize: 30,
-    color: 'black',
+  errorText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: 'red',
+    marginTop: 20,
   },
 });
