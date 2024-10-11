@@ -1,3 +1,4 @@
+import http from "@/utils/http";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -10,69 +11,39 @@ import {
   ImageBackground
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-// import ArrowIcon from "../../assets/icon/ArrowIcon";
-// import http from "../../utils/http";
 
-export default function AuthenticationForgetPassword({navigation}: {navigation: any}) {
+
+export default function AuthenticationForgetPassword({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png"); 
-  // const { phoneNumber } = route.params;
-  //  const [phoneNumber, setPhoneNumber] = useState('0929635572');
+  const { phoneNumber } = route.params;
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
 
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await http.post("/v1/verification/otp/sms/validate", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       phone: phoneNumber,
-  //       otp: verificationCode,
-  //     });
+  console.log(phoneNumber)
+  const handleConfirm = async () => {
+    try {
+      const response = await http.post("auth/noauth/validate", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        phone: phoneNumber,
+        otp: verificationCode,
+      });
 
-  //     if (!response) {
-  //       throw new Error("Lỗi");
-  //     }
-  //     const data = await response.data;
-  //     const token = data.accessToken;
-  //     console.log(data);
-  //     setSuccessModalVisible(true);
-  //     setTimeout(() => {
-  //       navigation.navigate("Register", { accessToken: token });
-  //     }, 1500);
-  //   } catch (error) {
-  //     console.error("There was a problem with the fetch operation:", error);
-  //     setFailureModalVisible(true);
-  //   }
-  // };
-
-  // const RequestCodeAgain = async () => {
-  //   const requestBody = {
-  //     phone: phoneNumber,
-  //   };
-
-  //   await http
-  //     .post("/v1/verification/otp/sms/send", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-
-  //       phone: phoneNumber,
-  //     })
-  //     .then((response) => {
-  //       if (!response) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       return response.status;
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setSuccessRequest(true);
-  //     });
-  // };
+      if (response.status === 200) {
+        console.log(response.data)
+        // await handleSubmit();
+      } else {
+        throw new Error("Lỗi xác thực");
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
+      setFailureModalVisible(true);
+    }
+  };
 
   const handleCloseModal2 = () => {
     setSuccessRequest(false);

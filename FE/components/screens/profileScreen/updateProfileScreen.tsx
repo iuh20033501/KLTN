@@ -4,6 +4,7 @@ import { FontAwesome, Ionicons, MaterialIcons, Entypo,Feather,AntDesign } from '
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function UpdateProfileScreen({navigation}: {navigation: any}) {
+  
     return (
         <View style={styles.container}>
             <View style={styles.header}>
