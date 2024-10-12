@@ -41,8 +41,8 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     const [day, month, year] = dateString.split('/');
     return `${year}-${month}-${day}`;
   };
-  
-  
+
+
   const validateForm = () => {
     if (!phone.trim()) {
       Alert.alert('Lỗi nhập', 'Số điện thoại không được để trống');
@@ -73,6 +73,11 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     return true;
   };
 
+  const handleAvatarSelect = (avatar: any) => {
+    setSelectedAvatar(avatar);
+    setModalVisible(false);
+  };
+
   const handleUpdate = async () => {
     if (!validateForm()) {
       return;
@@ -82,15 +87,16 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       const genderValue = gender === 'Nam' ? true : false;
       const formattedBirthday = formatDateForServer(birthday);
       const token = await AsyncStorage.getItem('accessToken');
+      const avatarIndex = avatars.indexOf(selectedAvatar) + 1; 
+
       const response = await http.put(`hocvien/update/${user.u.idUser}`, {
         idUser: user.u.idUser,
         hoTen: user.u.hoTen,
         sdt: phone,
-        email:email,
+        email: email,
         ngaySinh: formattedBirthday,
         gioiTinh: genderValue,
-        image: '1', 
-        
+        image: avatarIndex.toString(), 
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,7 +105,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
 
       if (response.status === 200) {
         Alert.alert('Thành công', 'Cập nhật thông tin thành công');
-        navigation.goBack();
+        navigation.navigate('MainTabs');
       } else {
         Alert.alert('Lỗi', 'Cập nhật thông tin thất bại');
       }
@@ -108,7 +114,6 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin');
     }
   };
-
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -118,13 +123,17 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
             Authorization: `Bearer ${token}`,
           },
         });
+
         if (response.status === 200) {
           const userData = response.data;
-          console.log(userData)
+          console.log(userData);
+          const avatarIndex = parseInt(userData.u.image) - 1;
+          const selectedAvatarImage = avatars[avatarIndex] || avatars[0];
           setPhone(userData.u.sdt || '');
           setEmail(userData.u.email || '');
           setBirthday(formatDate(userData.u.ngaySinh || ''));
           setGender(userData.u.gioiTinh === true ? 'Nam' : 'Nữ');
+          setSelectedAvatar(selectedAvatarImage);
           setUser(userData);
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
@@ -157,11 +166,6 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     setShowDatePicker(Platform.OS === 'ios');
     setSelectedDate(currentDate);
     setBirthday(formatDate(currentDate.toISOString().split('T')[0]));
-  };
-
-  const handleAvatarSelect = (avatar: any) => {
-    setSelectedAvatar(avatar);
-    setModalVisible(false);
   };
 
   const renderAvatarRows = () => {

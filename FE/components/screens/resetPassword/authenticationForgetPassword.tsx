@@ -1,4 +1,5 @@
 import http from "@/utils/http";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -32,12 +33,14 @@ export default function AuthenticationForgetPassword({ navigation, route }: { na
         phone: phoneNumber,
         otp: verificationCode,
       });
-
-      if (response.status === 200) {
-        console.log(response.data)
-        // await handleSubmit();
+      console.log(response.data); 
+      if (response.data.accessToken) {
+        const accessToken = response.data.accessToken;
+        console.log('Access Token:', accessToken);
+        await AsyncStorage.setItem('accessToken', accessToken);
+        navigation.navigate('ResetPassword');
       } else {
-        throw new Error("Lỗi xác thực");
+        throw new Error('AccessToken is null');
       }
     } catch (error) {
       console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
@@ -109,9 +112,9 @@ export default function AuthenticationForgetPassword({ navigation, route }: { na
             styles.button,
             { backgroundColor: isCodeComplete ? "#00bf63" : "#d3d6db" },
           ]}
-          // onPress={async () => {
-          //   handleSubmit();
-          // }}
+          onPress={async () => {
+            handleConfirm();
+          }}
           disabled={!isCodeComplete}
         >
           <Text
