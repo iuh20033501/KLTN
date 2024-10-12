@@ -106,10 +106,10 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       Alert.alert('Lỗi nhập', 'Gmail không được để trống');
     } else if (!gmailRegex.test(gmail)) {
       Alert.alert('Lỗi nhập', 'Vui lòng nhập đúng định dạng Gmail (@gmail.com)');
-    } else if (!birthday.trim()) {
-      Alert.alert('Ngày sinh không được để trống');
-    } else if (calculateAge(birthday) < 8) {
-      Alert.alert('Người dùng phải trên 8 tuổi');
+    // } else if (!birthday.trim()) {
+    //   Alert.alert('Ngày sinh không được để trống');
+    // } else if (calculateAge(birthday) < 8) {
+    //   Alert.alert('Người dùng phải trên 8 tuổi');
     } else {
       handlePost();
     }
