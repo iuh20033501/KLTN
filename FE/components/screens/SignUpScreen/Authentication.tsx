@@ -104,9 +104,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
       if (response.status === 200) {
         console.log(response.data);
         Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
-        navigation.navigate('Authentication', {
-          userName, passWord, name, phone, gmail, birthday, gender
-        });
+        
       } else {
         switch (response.status) {
           case 400:
