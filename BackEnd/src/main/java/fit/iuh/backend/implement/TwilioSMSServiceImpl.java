@@ -5,6 +5,7 @@ import fit.iuh.backend.dto.OTPRequestDTO;
 import fit.iuh.backend.dto.OTPResponseDTO;
 import fit.iuh.backend.dto.PhoneNumberDTO;
 import fit.iuh.backend.dto.TaiKhoanDto;
+import fit.iuh.backend.enumclass.ChucVuEnum;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.repository.TaiKhoanRepo;
 import fit.iuh.backend.service.JwtService;
@@ -76,8 +77,10 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
             Optional<TaiKhoanLogin> tkOptional = taiKhoanService.findBySDT(otpRequestDTO.getPhone());
 //            var tk = tkRepo.findBySDT(otpRequestDTO.getPhone()).orElseThrow(() -> {}
              TaiKhoanLogin tk = new TaiKhoanLogin();
-             tk.setTenDangNhap(phone);
-            TaiKhoanDto dto = new TaiKhoanDto(tk);
+             tk.setRole(ChucVuEnum.STUDENT);
+             tk.setTenDangNhap("123");
+             TaiKhoanLogin tk0 = tkRepo.save(tk);
+            TaiKhoanDto dto = new TaiKhoanDto(tk0);
             var jwt = jwtService.generateToken(dto);
             var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), dto);
             return new OTPResponseDTO(jwt, refreshToken);

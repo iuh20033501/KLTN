@@ -50,11 +50,13 @@ public class AuthServiceImpl implements AuthService {
     private NhanVienService nhanVienService;
     @Override
     public ProfileDto signuphv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
-        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
+        if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
 
             HocVien p = new HocVien();
+
             p.setNgaySinh(dto.getBirthday());
             p.setGioiTinh(dto.isGender());
             p.setHoTen(dto.getName());
@@ -65,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             p.setImage(dto.getImage());
 
             HocVien c = hvService.createHocVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVuEnum.STUDENT);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVuEnum.STUDENT);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -76,9 +78,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupgv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
-        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
+        if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
 
             GiangVien p = new GiangVien();
             p.setNgaySinh(dto.getBirthday());
@@ -90,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
             p.setChuyenMon(dto.getListKiNang());
             p.setImage(dto.getImage());
             GiangVien c = giangVienService.createGiangVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.TEACHER);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.TEACHER);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -101,9 +104,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupadmin(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
-        if (opUser.isEmpty()&& tkLogin.isEmpty()) {
+        if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
             NhanVien p = new NhanVien();
             p.setNgaySinh(dto.getBirthday());
             p.setGioiTinh(dto.isGender());
@@ -114,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
             p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.ADMIN);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.ADMIN);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -125,9 +129,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupnv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getUsername());
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
-        if (opUser.isEmpty()&&tkLogin.isEmpty()) {
+        if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
             NhanVien p = new NhanVien();
             p.setNgaySinh(dto.getBirthday());
             p.setGioiTinh(dto.isGender());
@@ -138,9 +143,9 @@ public class AuthServiceImpl implements AuthService {
             p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.QUANLY);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.QUANLY);
             TaiKhoanLogin us = repository.save(u);
-            JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
+            JwtResponse r = signin(new JwtRequest(u.getTenDangNhap(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
         } else {
             throw new RuntimeException("existedUser");
@@ -197,6 +202,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String resetPassword(Long id, String pass) {
         TaiKhoanLogin tk = repository.findById(id).get();
+        Optional<TaiKhoanLogin> tk1 = repository.findByTenDangNhap("123");
+        if(tk1.isPresent()){
+            repository.delete(tk1.get());
+        }
+
         if (tk!=null) {
             tk.setMatKhau(passwordEncoder.encode(pass));
             repository.save(tk);

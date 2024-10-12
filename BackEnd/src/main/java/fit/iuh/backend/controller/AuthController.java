@@ -46,16 +46,16 @@ public class AuthController {
     @Operation(
             summary = "Gửi thông tin tạo tài khoản",
             description = """ 
-            thông tin chung : username,name,password,address,image,coverImage,gender,phone(bắt buộc),birthday
+            thông tin chung : username(đặt điều kiện độ dài lớn hơn 5),name,password,address,image,coverImage,gender,phone(bắt buộc),birthday
             nếu là role là 1 tạo ra học viên có thêm List<enumkinang>
             nếu là role là 2 tạo ra giáo viên có thêm List<enumkinang> và lương
             Nếu là 3, 4 là  nhân viên và admin thêm lương
     """
     )
 
-    @PostMapping("/signup/{role}")
+    @PostMapping("/account/signup/{role}")
 //    @Operation(summary = "Đăng ký")
-    public ResponseEntity<ProfileDto> signup(@RequestBody SignupDto dto, @PathVariable int role) {
+    public ResponseEntity<ProfileDto> signup(@RequestBody SignupDto dto, @PathVariable int role, @AuthenticationPrincipal TaiKhoanDto tkdto) {
         if(role ==1)
         return ResponseEntity.ok(service.signuphv(dto));
         else if(role ==2)
@@ -104,7 +104,8 @@ public class AuthController {
         } else throw new RuntimeException("không tìm thấy profile user có hoc viên: " + u.getTenDangNhap());
     }
     @GetMapping("/profile")
-    @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ")
+    @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ" +
+            "Mỗi làn chạy một làn xác thực bắt buộc phải chạy mọt hàm reset hoặc signup")
     public SigninDTO validAdmin(@AuthenticationPrincipal TaiKhoanDto dto) {
         User u = authenProfile(dto);
         SigninDTO signinDTO= new SigninDTO(u,dto.getRole());
