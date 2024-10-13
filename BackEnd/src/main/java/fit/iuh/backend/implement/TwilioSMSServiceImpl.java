@@ -78,7 +78,7 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
 //            var tk = tkRepo.findBySDT(otpRequestDTO.getPhone()).orElseThrow(() -> {}
              TaiKhoanLogin tk = new TaiKhoanLogin();
              tk.setRole(ChucVuEnum.STUDENT);
-             tk.setTenDangNhap("123");
+             tk.setTenDangNhap(phone);
              TaiKhoanLogin tk0 = tkRepo.save(tk);
             TaiKhoanDto dto = new TaiKhoanDto(tk0);
             var jwt = jwtService.generateToken(dto);

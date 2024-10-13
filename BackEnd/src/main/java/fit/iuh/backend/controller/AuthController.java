@@ -46,7 +46,7 @@ public class AuthController {
     @Operation(
             summary = "Gửi thông tin tạo tài khoản",
             description = """ 
-            thông tin chung : username(đặt điều kiện độ dài lớn hơn 5),name,password,address,image,coverImage,gender,phone(bắt buộc),birthday
+            thông tin chung : username(đặt điều kiện không là dạng sdt),name,password,address,image,coverImage,gender,phone(bắt buộc),birthday
             nếu là role là 1 tạo ra học viên có thêm List<enumkinang>
             nếu là role là 2 tạo ra giáo viên có thêm List<enumkinang> và lương
             Nếu là 3, 4 là  nhân viên và admin thêm lương
@@ -119,7 +119,7 @@ public class AuthController {
     """
     )
     public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ResetPassDto resetPassdto) {
-        return ResponseEntity.ok(service.resetPassword( dto.getId(), resetPassdto.getPassword()));
+        return ResponseEntity.ok(service.resetPassword( dto.getUsername(), resetPassdto.getPassword()));
     }
     @PostMapping("/account/changepass")
     @Operation(

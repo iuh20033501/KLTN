@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
     private NhanVienService nhanVienService;
     @Override
     public ProfileDto signuphv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getPhone());
         Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
         if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
@@ -78,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupgv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getPhone());
         Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
         if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupadmin(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getPhone());
         Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
         if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
@@ -129,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ProfileDto signupnv(SignupDto dto) {
-        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap("123");
+        Optional<TaiKhoanLogin> opUser = repository.findByTenDangNhap(dto.getPhone());
         Optional<TaiKhoanLogin> opUser2 = repository.findByTenDangNhap(dto.getUsername());
         Optional<TaiKhoanLogin> tkLogin = repository.findSDT(dto.getPhone());
         if (opUser.isPresent()&&opUser2.isEmpty()&& tkLogin.isEmpty()) {
@@ -200,9 +200,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String resetPassword(Long id, String pass) {
-        TaiKhoanLogin tk = repository.findById(id).get();
-        Optional<TaiKhoanLogin> tk1 = repository.findByTenDangNhap("123");
+    public String resetPassword(String sdt, String pass) {
+        TaiKhoanLogin tk = repository.findSDT(sdt).get();
+        Optional<TaiKhoanLogin> tk1 = repository.findByTenDangNhap(sdt);
         if(tk1.isPresent()){
             repository.delete(tk1.get());
         }
