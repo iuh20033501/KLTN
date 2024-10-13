@@ -49,7 +49,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
       if (response.status === 200) {
         console.log(response.data);
         Alert.alert('Thành công', 'Đã cập nhật lại mật khẩu');
-        navigation.navigate('MainTabs');
+        navigation.navigate('LoginScreen');
       } else {
         throw new Error("Lỗi đổi mật khẩu");
       }
