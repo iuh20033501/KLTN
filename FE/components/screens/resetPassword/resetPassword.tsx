@@ -12,7 +12,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
 
   const handleChangePassword = async () => {
-    if (passWord.length < 6 || passWord.length > 32) {
+    if (passWord.length < 5 || passWord.length > 32) {
       Alert.alert('Lỗi', 'Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
       return;
     }
@@ -28,13 +28,12 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
         Alert.alert('Lỗi', 'Token không tồn tại hoặc đã hết hạn.');
         return;
       }
-
       console.log('Token:', token);
       
       const response = await http.post(
         "auth/account/reset",
         {
-          password: passWord,  // Đảm bảo đúng trường "password" hoặc thay bằng "newPassword" nếu API yêu cầu
+          password: passWord,  
         },
         {
           headers: {
@@ -44,7 +43,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
       );
 
       console.log({
-        password: passWord,  // Đảm bảo đây là thông tin đúng như API yêu cầu
+        password: passWord,  
       });
 
       if (response.status === 200) {
@@ -55,18 +54,18 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
         throw new Error("Lỗi đổi mật khẩu");
       }
     } catch (error: unknown) {
-      // Kiểm tra xem lỗi có phải là từ axios không
+     
       if (error instanceof AxiosError) {
         if (error.response) {
-          console.error("Response error:", error.response.data);  // Hiển thị thông báo chi tiết từ server
+          console.error("Response error:", error.response.data); 
           Alert.alert('Thất bại', error.response.data.message || 'Đã có lỗi xảy ra khi reset mật khẩu.');
         } else if (error.request) {
           console.error("Request error:", error.request);
           Alert.alert('Thất bại', 'Không có phản hồi từ server. Vui lòng kiểm tra kết nối.');
         }
       } else {
-        // Nếu lỗi không phải từ axios, xử lý chung
-        console.error("General error:", (error as Error).message);  // Ép kiểu về Error
+        
+        console.error("General error:", (error as Error).message);  
         Alert.alert('Thất bại', 'Đã có lỗi xảy ra khi reset mật khẩu.');
       }
     }

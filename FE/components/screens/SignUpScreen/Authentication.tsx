@@ -16,14 +16,14 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
-  const { userName, passWord, name, phone, gmail, birthday, gender} = route.params || {};
+  const { userName, passWord, name, phone, gmail, birthday, gender } = route.params || {};
   const defaultAVT = "1";
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
- 
+  let signToken = "";
   const handleConfirm = async () => {
     try {
       const response = await http.post("auth/noauth/validate", {
@@ -36,6 +36,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
 
       if (response.status === 200) {
         console.log(response.data)
+        signToken = response.data.accessToken;
         await handleSubmit();
       } else {
         throw new Error("Lỗi xác thực");
@@ -47,44 +48,51 @@ export default function Authentication({ navigation, route }: { navigation: any,
   };
   const handleSubmit = async () => {
     try {
-      const response = await http.post("auth/signup/1", {
-        username: userName,
-        name: name,
-        email: gmail,
-        password: passWord,
-        gender: gender,
-        phone: phone,   
-        birthday: birthday,
-        image: defaultAVT
-      });
-
+      const response = await http.post(
+        "auth/signup/1",
+        {
+          username: userName,
+          name: name,
+          email: gmail,
+          password: passWord,
+          gender: gender,
+          phone: phone,
+          birthday: birthday,
+          image: defaultAVT,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${signToken}`, 
+          },
+        }
+      );
+  
       if (response.status === 200) {
-        const data = await response.data;
+        const data = response.data;
         console.log(data);
-         handleLogin()
+        handleLogin();
       } else {
         console.error("Đăng ký không thành công");
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình gửi thông tin1:", error);
-
+      console.error("Có lỗi xảy ra trong quá trình gửi thông tin:", error);
     }
   };
-
   const handleLogin = async () => {
     try {
       const response = await http.post("auth/noauth/signin", {
-        username: userName,  
+        username: userName,
         password: passWord,
       });
 
       if (response.status === 200) {
-        const { accessToken } = response.data;  
-        await AsyncStorage.setItem('accessToken', accessToken);  
+        const { accessToken } = response.data;
+        await AsyncStorage.setItem('accessToken', accessToken);
         console.log("Đăng nhập thành công:", accessToken);
 
         Alert.alert("Thành công", "Đăng ký thành công");
-        navigation.navigate('MainTabs'); 
+        navigation.navigate('MainTabs');
       } else {
         Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
       }
@@ -104,7 +112,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
       if (response.status === 200) {
         console.log(response.data);
         Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
-        
+
       } else {
         switch (response.status) {
           case 400:
@@ -140,9 +148,9 @@ export default function Authentication({ navigation, route }: { navigation: any,
       style={styles.backgroundImage}
       resizeMode="cover"
     >
-       <TouchableOpacity  onPress={() => navigation.goBack()} style={{padding:15, alignSelf:'baseline'}}>
-        <Icon  name="arrow-back-outline" size={24} color="black" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 15, alignSelf: 'baseline' }}>
+        <Icon name="arrow-back-outline" size={24} color="black" />
+      </TouchableOpacity>
       <View style={styles.container}>
         <View>
           <Text style={styles.font}>Nhập mã xác thực</Text>
