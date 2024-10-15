@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
-import { AxiosError } from 'axios'; // Import AxiosError từ axios để kiểm tra lỗi
+import { AxiosError } from 'axios'; 
 
 export default function ResetPassword({ navigation }: { navigation: any }) {
   const [passWord, setPassWord] = useState('');
