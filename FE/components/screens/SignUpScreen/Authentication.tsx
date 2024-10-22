@@ -22,6 +22,7 @@ export default function Authentication({ navigation, route }: { navigation: any,
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
+  
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
   let signToken = "";
   const handleConfirm = async () => {
@@ -38,15 +39,15 @@ export default function Authentication({ navigation, route }: { navigation: any,
   
       if (response.status === 200) {
         console.log(response.data);
-        signToken = response.data.accessToken; // Lưu token
+        signToken = response.data.accessToken; 
   
-        await handleSubmit(); // Tiến hành đăng ký
+        await handleSubmit(); 
       } else {
         throw new Error("Lỗi xác thực");
       }
     } catch (error) {
       console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
-      setFailureModalVisible(true); // Hiển thị modal báo lỗi
+      setFailureModalVisible(true); 
     }
   };
   
