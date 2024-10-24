@@ -16,42 +16,51 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 export default function Authentication({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png");
-  const { userName, passWord, name, phone, gmail, birthday, gender } = route.params || {};
+  const { userName, passWord, name, phone, gmail, birthday, gender,otpConfirm } = route.params || {};
   const defaultAVT = "1";
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
-  
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
   let signToken = "";
   const handleConfirm = async () => {
-    try {
-      const response = await http.post(
-        "auth/noauth/validate",
-        { phone: phone, otp: verificationCode },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-  
-      if (response.status === 200) {
-        console.log(response.data);
-        signToken = response.data.accessToken; 
-  
-        await handleSubmit(); 
-      } else {
-        throw new Error("Lỗi xác thực");
-      }
-    } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
-      setFailureModalVisible(true); 
+    let isValid = true;
+
+    if (String(verificationCode.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
+      Alert.alert("Xác thực OTP thất bại", "Bạn nhập sai mã OTP");
+      isValid = false;
+      console.log(`otp: ${verificationCode}, otpConfirm: ${otpConfirm}`);
     }
+    if(isValid) {
+      try {
+        const response = await http.post(
+          "auth/noauth/validate",
+          { phone: phone, otp: verificationCode },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+    
+        if (response.status === 200) {
+          console.log(response.data);
+          signToken = response.data.accessToken; 
+          await handleSubmit(); 
+        } else {
+          throw new Error("Lỗi xác thực");
+        }
+      } catch (error) {
+        console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
+        setFailureModalVisible(true); 
+      }
+    }
+   
   };
   
   const handleSubmit = async () => {
+
     try {
       const response = await http.post(
         "auth/account/signup/1",
@@ -105,7 +114,10 @@ export default function Authentication({ navigation, route }: { navigation: any,
       Alert.alert("Lỗi", "Đăng nhập không thành công");
     }
   };
-
+   const validateOTP = (otp: string) => {
+        const otpRegex = /^[0-9]{6}$/;
+        return otpRegex.test(otp);
+    };
 
   const handleRequestCodeAgain = async () => {
     try {

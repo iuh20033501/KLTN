@@ -9,43 +9,53 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  ImageBackground
+  ImageBackground,
+  Alert
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 
 export default function AuthenticationForgetPassword({ navigation, route }: { navigation: any, route: any }) {
   const backgroundImg = require("../../../image/background/bg7.png"); 
-  const { phoneNumber } = route.params;
+  const { phoneNumber,otpConfirm } = route.params;
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
-
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
   console.log(phoneNumber)
   const handleConfirm = async () => {
-    try {
-      const response = await http.post("auth/noauth/validate", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        phone: phoneNumber,
-        otp: verificationCode,
-      });
-      console.log(response.data); 
-      if (response.data.accessToken) {
-        const accessToken = response.data.accessToken;
-        console.log('Access Token:', accessToken);
-        await AsyncStorage.setItem('accessToken', accessToken);
-        navigation.navigate('ResetPassword');
-      } else {
-        throw new Error('AccessToken is null');
-      }
-    } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
-      setFailureModalVisible(true);
+    let isValid = true;
+
+    if (String(verificationCode.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
+      Alert.alert("Xác thực OTP thất bại", "Bạn nhập sai mã OTP");
+      isValid = false;
+      console.log(`otp: ${verificationCode}, otpConfirm: ${otpConfirm}`);
     }
+    if(isValid) {
+      try {
+        const response = await http.post("auth/noauth/validate", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          phone: phoneNumber,
+          otp: verificationCode,
+        });
+        console.log(response.data); 
+        if (response.data.accessToken) {
+          const accessToken = response.data.accessToken;
+          console.log('Access Token:', accessToken);
+          await AsyncStorage.setItem('accessToken', accessToken);
+          navigation.navigate('ResetPassword');
+        } else {
+          throw new Error('AccessToken is null');
+        }
+      } catch (error) {
+        console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
+        setFailureModalVisible(true);
+      }
+    }
+   
   };
 
   const handleCloseModal2 = () => {

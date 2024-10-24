@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import http from "@/utils/http";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function DetailProfileScreen({ navigation }: { navigation: any }) {
   const [phone, setPhone] = useState('');
@@ -15,18 +16,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(require('../../../image/avatar/1.png'));
-
-  const avatars = [
-    require('../../../image/avatar/1.png'),
-    require('../../../image/avatar/2.png'),
-    require('../../../image/avatar/3.png'),
-    require('../../../image/avatar/4.png'),
-    require('../../../image/avatar/5.png'),
-    require('../../../image/avatar/6.png'),
-    require('../../../image/avatar/7.png'),
-    require('../../../image/avatar/8.png'),
-  ];
+  const [selectedAvatar, setSelectedAvatar] = useState('');
 
   const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
   const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -87,7 +77,6 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       const genderValue = gender === 'Nam' ? true : false;
       const formattedBirthday = formatDateForServer(birthday);
       const token = await AsyncStorage.getItem('accessToken');
-      const avatarIndex = avatars.indexOf(selectedAvatar) + 1; 
 
       const response = await http.put(`hocvien/update/${user.u.idUser}`, {
         idUser: user.u.idUser,
@@ -96,7 +85,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
         email: email,
         ngaySinh: formattedBirthday,
         gioiTinh: genderValue,
-        image: avatarIndex.toString(), 
+        image: selectedAvatar
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -126,14 +115,12 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
 
         if (response.status === 200) {
           const userData = response.data;
-          console.log(userData);
-          const avatarIndex = parseInt(userData.u.image) - 1;
-          const selectedAvatarImage = avatars[avatarIndex] || avatars[0];
+          console.log(userData);   
           setPhone(userData.u.sdt || '');
           setEmail(userData.u.email || '');
           setBirthday(formatDate(userData.u.ngaySinh || ''));
           setGender(userData.u.gioiTinh === true ? 'Nam' : 'Nữ');
-          setSelectedAvatar(selectedAvatarImage);
+          setSelectedAvatar(userData.u.image);
           setUser(userData);
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
@@ -167,25 +154,30 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     setSelectedDate(currentDate);
     setBirthday(formatDate(currentDate.toISOString().split('T')[0]));
   };
-
-  const renderAvatarRows = () => {
-    const rows = [];
-    for (let i = 0; i < avatars.length; i += 2) {
-      rows.push(
-        <View key={i} style={styles.avatarRow}>
-          <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i])}>
-            <Image source={avatars[i]} style={styles.modalAvatar} />
-          </TouchableOpacity>
-          {avatars[i + 1] && (
-            <TouchableOpacity onPress={() => handleAvatarSelect(avatars[i + 1])}>
-              <Image source={avatars[i + 1]} style={styles.modalAvatar} />
-            </TouchableOpacity>
-          )}
-        </View>
-      );
+  const pickImage = async (useLibrary: boolean) => {
+    let result = null;
+    if (useLibrary) {
+        result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            base64: true,
+            quality: 1,
+        });
+    } else {
+        await ImagePicker.requestCameraPermissionsAsync();
+        result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            base64: true,
+            quality: 1,
+        });
     }
-    return rows;
-  };
+
+    if (result && !result.canceled) {
+        const base64String: string = result.assets[0].base64 || '';
+        setSelectedAvatar(base64String);
+
+    }
+};
+ 
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row' }}>
@@ -196,8 +188,8 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       </View>
 
       <View style={styles.avatarSection}>
-        <Image source={selectedAvatar} style={styles.avatar} />
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
+        <Image source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/avatar/1.png')} style={styles.avatar} />
+        <TouchableOpacity onPress={() => pickImage(true)}>
           <Text style={styles.editAvatarText}>Đổi ảnh đại diện</Text>
         </TouchableOpacity>
       </View>
@@ -256,9 +248,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chọn Avatar</Text>
-            <ScrollView>
-              {renderAvatarRows()}
-            </ScrollView>
+           
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Đóng</Text>
             </TouchableOpacity>
@@ -299,7 +289,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 150,
     height: 150,
-    borderRadius: 40,
+    borderRadius: 50,
     marginBottom: 10,
   },
   editAvatarText: {

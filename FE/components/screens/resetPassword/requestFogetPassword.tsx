@@ -33,10 +33,10 @@ export default function RequestFogetPassword({ navigation }: { navigation: any }
     try {
       const response = await http.post('auth/noauth/send', { phone: phoneNumber });
       if (response.status === 200) {
-        Alert.alert('Thành công', 'Mã OTP đã được gửi đến số điện thoại của bạn.');
-        const { accessToken } = response.data;  
-        await AsyncStorage.setItem('accessToken', accessToken);  
-        navigation.navigate('AuthenticationForgetPassword', { phoneNumber });
+        
+        const otpConfirm  = response.data;  
+        Alert.alert('Thành công', 'Mã OTP đã được gửi đến số điện thoại của bạn.' + otpConfirm);
+        navigation.navigate('AuthenticationForgetPassword', { phoneNumber,otpConfirm });
         console.log(response.data)
       } else {
         Alert.alert('Lỗi', response.data.message || 'Có lỗi xảy ra, vui lòng thử lại.');
