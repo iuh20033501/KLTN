@@ -10,19 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/khoahoc")
 public class KhoaHocController {
     @Autowired
     private KhoaHocService khoaHocService;
 
     @PostMapping("/create")
-    private KhoaHoc createLop ( @RequestBody KhoaHoc khoa){
+    public KhoaHoc createLop ( @RequestBody KhoaHoc khoa){
+        khoa.setTrangThai(true);
         return khoaHocService.createKhoaHoc(khoa);
     }
     //
     @GetMapping("/getKhoa/{id}")
-    private KhoaHoc findByidKhoa (@PathVariable Long idKhoa){
+    public KhoaHoc findByidKhoa (@PathVariable Long idKhoa){
         Optional<KhoaHoc> k = khoaHocService.findById(idKhoa);
         if (k.isPresent()){
             return k.get();
@@ -31,13 +32,13 @@ public class KhoaHocController {
     }
     //
     @GetMapping("/xoaKhoa/{id}")
-    private KhoaHoc deleteKhoa (@PathVariable Long idKhoa){
+    public KhoaHoc deleteKhoa (@PathVariable Long idKhoa){
         KhoaHoc khoaHoc = khoaHocService.findById(idKhoa).orElseThrow(() -> new RuntimeException("Hoc vien not found"));
         khoaHoc.setTrangThai(false);
         return khoaHocService.createKhoaHoc(khoaHoc);
     }
     @GetMapping("/getAll")
-    private List<KhoaHoc> findAll (){
+    public List<KhoaHoc> findAll (){
         return  khoaHocService.getAll();
     }
 

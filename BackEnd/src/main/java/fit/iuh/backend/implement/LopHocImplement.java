@@ -1,5 +1,6 @@
 package fit.iuh.backend.implement;
 
+import fit.iuh.backend.enumclass.LopEnum;
 import fit.iuh.backend.moudel.LopHoc;
 import fit.iuh.backend.repository.LopHocRepo;
 import fit.iuh.backend.service.LopHocService;
@@ -21,6 +22,7 @@ public class LopHocImplement implements LopHocService {
 
     @Override
     public LopHoc createLopHoc(LopHoc lopHoc) {
+        lopHoc.setTrangThai(LopEnum.READY);
         return lopHocRepo.save(lopHoc);
     }
 

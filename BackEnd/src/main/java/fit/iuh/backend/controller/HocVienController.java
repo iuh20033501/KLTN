@@ -8,6 +8,7 @@ import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +37,7 @@ public class HocVienController {
     private HocVienLopHocService hocVienLopHocService;
     //
     @PutMapping("/update/{id}")
-    private HocVien updateHocVien( @PathVariable Long id,@RequestBody HocVien hocVien){
+    public HocVien updateHocVien( @PathVariable Long id,@RequestBody HocVien hocVien){
         HocVien f=hocVienService.findByIdHocVien(id).orElseThrow(()->new RuntimeException("hoc vien not found "));
         f.setEmail(hocVien.getEmail());
         f.setKiNangCan(hocVien.getKiNangCan());
@@ -50,25 +51,56 @@ public class HocVienController {
     }
     //
     @GetMapping("/findbyId/{id}")
-    private HocVien findById(@PathVariable Long id){
+    public HocVien findById(@PathVariable Long id){
         return hocVienService.findByIdHocVien(id).orElse(null);
     }
 
     @GetMapping("/findByName/{name}")
-    private HocVien findByName(@PathVariable String name){
+    public HocVien findByName(@PathVariable String name){
         return hocVienService.findByName(name);
     }
     @GetMapping("/findAll")
-    private List<HocVien> findAll(){
+    public List<HocVien> findAll(){
         return hocVienService.getAll();
     }
 
-    @GetMapping("/getByLop/{id}")
-    private List<HocVien> findByHocVIEN (@PathVariable Long id){
-        List<HocVienLopHoc> listHVLH = hocVienLopHocService.findByidLop(id);
-        List<HocVien> list = new ArrayList<>();
+    @Operation(
+            summary = "Đăng ký lớp của học viên",
+            description = """ 
+            truyền HocVienLopHocKey chứa idlop, idhocvien
+            trước khi đăng kí cần chạy hàm get list hoc viên lấy số lượng so sánh đầy chưa
+            nếu đầy thành viên đó nữa đầy thì dky xong chạy hàm setfull của lớp
+    """
+    )
+    @PostMapping("/dangkyLop")
+    public ResponseEntity<HocVienLopHoc> dangKyLop(@RequestBody HocVienLopHocKey key) {
+        if (key.getLopHoc() == null || key.getHocVien() == null) {
+            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu dữ liệu không hợp lệ
+        }
+        int siSo = hocVienLopHocService.findByidLop(key.getLopHoc().getIdLopHoc()).size();
+        if(key.getLopHoc().getSoHocVien()>=siSo){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        HocVienLopHoc result = hocVienLopHocService.dangKyLopHoc(key);
+
+        if (result != null) {
+            return ResponseEntity.ok(result); // Trả về kết quả thành công
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Trả về lỗi nếu không thể đăng ký
+        }
+    }
+    @Operation(
+            summary = "lấy  lớp tù học viên",
+            description = """ 
+           truyền id học viên
+    """
+    )
+    @GetMapping("/getByHV/{id}")
+    public List<LopHoc> findByHocVIEN (@PathVariable Long id){
+        List<HocVienLopHoc> listHVLH = hocVienLopHocService.findByIdHocVien(id);
+        List<LopHoc> list = new ArrayList<>();
         for (HocVienLopHoc hvlh : listHVLH) {
-            list.add(hvlh.getKey().getHocVien());
+            list.add(hvlh.getKey().getLopHoc());
         }
         return list;
     }

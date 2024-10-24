@@ -57,13 +57,14 @@ public class AuthController {
 //    @Operation(summary = "Đăng ký")
     public ResponseEntity<ProfileDto> signup(@RequestBody SignupDto dto, @PathVariable int role, @AuthenticationPrincipal TaiKhoanDto tkdto) {
         if(role ==1)
-        return ResponseEntity.ok(service.signuphv(dto));
+            return ResponseEntity.ok(service.signuphv(dto));
         else if(role ==2)
-        return  ResponseEntity.ok(service.signupgv(dto));
+            return  ResponseEntity.ok(service.signupgv(dto));
         else if(role ==3)
             return  ResponseEntity.ok(service.signupnv(dto));
         else return  ResponseEntity.ok(service.signupadmin(dto));
     }
+
 
     @PostMapping("/noauth/signin")
 
@@ -96,6 +97,32 @@ public class AuthController {
     public String sendOTP( @RequestBody PhoneNumberDTO phoneNumberDTO) {
         return twilioSMSService.sendSMSToVerifyV(phoneNumberDTO);
     }
+    @PostMapping("/noauth/validate")
+    @Operation(
+            summary = "Xác thực mã OTP",
+            description = """
+                    Nếu xác thực đúng thì trả về JWT và tạo ra tài khoản trong database với status là UNVERIFIED
+                    
+                    Gọi tới v1/auth/register để cập nhật lại các thông tin cơ bản
+                    
+                    Lưu ý: Số điện thoại phải là 10 và các đầu số phải thuộc các nhà mạng:
+                    - Viettel (032, 033, 034, 035, 036, 037, 038, 039)
+                    - Vinaphone (081, 082, 083, 084, 085, 088)
+                    - MobiFone (070, 076, 077, 078, 079)
+                    - Vietnamobile (052, 056, 058, 092)
+                    - Gmobile (059, 099)
+                    """)
+    public OTPResponseDTO verifyOTP(@RequestBody OTPRequestDTO otpRequestDTO) {
+        OTPResponseDTO response = twilioSMSService.verifyOTPV(otpRequestDTO);
+
+        // Kiểm tra xem phản hồi có null hay không
+        if (response.getAccessToken() == null && response.getRefreshToken() == null) {
+            throw new IllegalArgumentException("OTP không chính xác hoặc đã hết hạn.");
+        }
+
+        return response;
+    }
+
     public User authenProfile(TaiKhoanDto dto) {
         TaiKhoanLogin u = tkService.findByTenDangNhap(dto.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Not found"));
         Optional<User> p = userService.findById(u.getUser().getIdUser());
@@ -131,24 +158,7 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ChangePassDTO changePassdto) {
         return ResponseEntity.ok(service.changePassword( dto.getId(), changePassdto));
     }
-    @PostMapping("/noauth/validate")
-    @Operation(
-            summary = "Xác thực mã OTP",
-            description = """
-                    Nếu xác thực đúng thì trả về JWT và tạo ra tài khoản trong database với status là UNVERIFIED
-                    
-                    Gọi tới v1/auth/register để cập nhật lại các thông tin cơ bản
-                    
-                    Lưu ý: Số điện thoại phải là 10 và các đầu số phải thuộc các nhà mạng:
-                    - Viettel (032, 033, 034, 035, 036, 037, 038, 039)
-                    - Vinaphone (081, 082, 083, 084, 085, 088)
-                    - MobiFone (070, 076, 077, 078, 079)
-                    - Vietnamobile (052, 056, 058, 092)
-                    - Gmobile (059, 099)
-                    """)
-    public OTPResponseDTO verifyOTP(@RequestBody OTPRequestDTO otpRequestDTO) {
-        return twilioSMSService.verifyOTPV(otpRequestDTO);
-    }
+
 
 //    @PostMapping("/password/forgot")
 //    @Operation(summary = "Quên mật khẩu")

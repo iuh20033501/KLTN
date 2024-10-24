@@ -50,7 +50,7 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
             PhoneNumber to = new PhoneNumber(chinhSoPhone(phoneNumberDTO.getPhone()));
             PhoneNumber from = new PhoneNumber(twilioConfig.getPhoneNumberTrial()); // from
             String otp = generateOTP();
-            String otpMessage = "Chào bạn, chúng tôi là EYL. Mã OTP của bạn là  " + otp + ", xin cảm ơn.";
+            String otpMessage = otp;
             Message message = Message
                     .creator(to, from,
                             otpMessage)
@@ -67,28 +67,30 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
 
     @Override
     public OTPResponseDTO verifyOTPV(OTPRequestDTO otpRequestDTO) {
+        String storedOtp = otpMap.get(otpRequestDTO.getPhone());
 
-        Set<String> keys = otpMap.keySet();
-        String phone = null;
-        for(String key : keys)
-            phone = key;
-        if (otpRequestDTO.getPhone().equals(phone)) {
-            otpMap.remove(phone,otpRequestDTO.getOtp());
-            Optional<TaiKhoanLogin> tkOptional = taiKhoanService.findBySDT(otpRequestDTO.getPhone());
-//            var tk = tkRepo.findBySDT(otpRequestDTO.getPhone()).orElseThrow(() -> {}
-             TaiKhoanLogin tk = new TaiKhoanLogin();
-             tk.setRole(ChucVuEnum.STUDENT);
-             tk.setTenDangNhap(phone);
-             TaiKhoanLogin tk0 = tkRepo.save(tk);
-            TaiKhoanDto dto = new TaiKhoanDto(tk0);
-            var jwt = jwtService.generateToken(dto);
-            var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), dto);
-            return new OTPResponseDTO(jwt, refreshToken);
-
+        // Kiểm tra xem OTP nhập vào có khác với OTP đã lưu không
+        if (storedOtp == null || !otpRequestDTO.getOtp().equals(storedOtp)) {
+            return new OTPResponseDTO(null, null);
         }
 
-        return new OTPResponseDTO(null,null);
+        // Nếu OTP đúng, xóa OTP đã lưu
+        otpMap.remove(otpRequestDTO.getPhone());
+
+        // Tiến hành tìm kiếm tài khoản
+        Optional<TaiKhoanLogin> tkOptional = taiKhoanService.findBySDT(otpRequestDTO.getPhone());
+        TaiKhoanLogin tk = new TaiKhoanLogin();
+        tk.setRole(ChucVuEnum.STUDENT);
+        tk.setTenDangNhap(otpRequestDTO.getPhone());
+        TaiKhoanLogin tk0 = tkRepo.save(tk);
+
+        TaiKhoanDto dto = new TaiKhoanDto(tk0);
+        var jwt = jwtService.generateToken(dto);
+        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), dto);
+
+        return new OTPResponseDTO(jwt, refreshToken);
     }
+
     private String generateOTP() {
         return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));

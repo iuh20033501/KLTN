@@ -19,4 +19,9 @@ public class BuoiHoc {
     private Date ngayHoc;
     @ManyToOne
     private LopHoc lopHoc;
+
+    public BuoiHoc(String chuDe, Date ngayHoc) {
+        this.chuDe = chuDe;
+        this.ngayHoc = ngayHoc;
+    }
 }

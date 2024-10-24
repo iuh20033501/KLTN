@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+//@Table(name = "giang_vien")
 public class GiangVien extends User{
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
