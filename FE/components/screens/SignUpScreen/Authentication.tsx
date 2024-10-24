@@ -22,34 +22,39 @@ export default function Authentication({ navigation, route }: { navigation: any,
   const [verificationCode, setVerificationCode] = useState("");
   const [failureModalVisible, setFailureModalVisible] = useState(false);
   const [successRequest, setSuccessRequest] = useState(false);
+  
   const isCodeComplete = verificationCode.replace(/\s/g, "").length === 6;
   let signToken = "";
   const handleConfirm = async () => {
     try {
-      const response = await http.post("auth/noauth/validate", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        phone: phone,
-        otp: verificationCode,
-      });
-
+      const response = await http.post(
+        "auth/noauth/validate",
+        { phone: phone, otp: verificationCode },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
       if (response.status === 200) {
-        console.log(response.data)
-        signToken = response.data.accessToken;
-        await handleSubmit();
+        console.log(response.data);
+        signToken = response.data.accessToken; 
+  
+        await handleSubmit(); 
       } else {
         throw new Error("Lỗi xác thực");
       }
     } catch (error) {
       console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
-      setFailureModalVisible(true);
+      setFailureModalVisible(true); 
     }
   };
+  
   const handleSubmit = async () => {
     try {
       const response = await http.post(
-        "auth/signup/1",
+        "auth/account/signup/1",
         {
           username: userName,
           name: name,
@@ -69,9 +74,8 @@ export default function Authentication({ navigation, route }: { navigation: any,
       );
   
       if (response.status === 200) {
-        const data = response.data;
-        console.log(data);
-        handleLogin();
+        console.log(response.data);
+        handleLogin(); 
       } else {
         console.error("Đăng ký không thành công");
       }
