@@ -9,11 +9,22 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedAvatar, setSelectedAvatar] = useState('');
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-
+  const parseCvEnum = (cvEnum: string): string => {
+    switch (cvEnum) {
+      case 'STUDENT':
+        return 'Học viên';
+      case 'TEACHER':
+        return 'Giảng viên';
+      default:
+        return 'Không xác định';
+    }
+  };
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -26,6 +37,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         console.log("Response Data:", response.data);
         if (response.status === 200) {
           setUser(response.data);
+          setSelectedAvatar(response.data.u.image);
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
         }
@@ -67,10 +79,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
   }
   return (
     <ImageBackground
-    source={require('../../../image/bglogin.png')}
-    style={styles.background}
-    resizeMode='cover'
->
+      source={require('../../../image/bglogin.png')}
+      style={styles.background}
+      resizeMode='cover'
+    >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Image
@@ -88,11 +100,11 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
             <Text style={{ textAlign: 'center', marginLeft: 5, marginTop: 3 }}>Tin tức</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}
-           onPress={toggleModal} >
-            
+            onPress={toggleModal} >
+
             <Image
               style={styles.profileImageHeader}
-              source={{ uri: 'https://i.imgur.com/kXS2Ifk.png' }}
+              source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/efy.png')}
             />
           </TouchableOpacity>
         </View>
@@ -101,10 +113,8 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.studentOverviewContainer}>
           <View style={styles.studentInfoCard}>
             <View style={styles.studentImageContainer}>
-              <Image style={styles.studentImage} source={{ uri: 'https://i.imgur.com/kXS2Ifk.png' }} />
-              <TouchableOpacity>
-                <Text style={styles.linkText}>Xem chi tiết</Text>
-              </TouchableOpacity>
+              <Image style={styles.studentImage} source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/efy.png')} />
+                <Text style={{fontSize:18}}>{parseCvEnum(user.cvEnum)}</Text>
             </View>
             <View style={styles.studentDetails}>
               <Text style={styles.studentLabel}>Họ tên: <Text style={styles.studentData}>{user.u?.hoTen}</Text></Text>
@@ -180,10 +190,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           <View style={[styles.section, { marginLeft: 10 }]}>
             <Text style={styles.sectionTitle}>Tiến độ học tập</Text>
             <View style={styles.classList}>
-            <Text style={styles.classItem}>Unit 1: Hello!</Text>
-            <Text style={styles.classItem}>Unit 2: Watch movie</Text>
-            <Text style={styles.classItem}>Unit 3: Go to school</Text>
-          </View>
+              <Text style={styles.classItem}>Unit 1: Hello!</Text>
+              <Text style={styles.classItem}>Unit 2: Watch movie</Text>
+              <Text style={styles.classItem}>Unit 3: Go to school</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -195,15 +205,46 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
       >
         <TouchableOpacity style={styles.modalOverlay} onPress={toggleModal} />
         <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.modalItem} onPress={() => alert("Thông tin cá nhân")}>
+          <TouchableOpacity style={styles.modalItem} onPress={() => {
+            setModalVisible(false);
+            navigation.navigate('EditProfileScreen');
+          }}>
             <Text style={styles.modalText}>Thông tin cá nhân</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.modalItem} onPress={() => navigation.navigate('ChangePassword')}>
+          <TouchableOpacity style={styles.modalItem}
+            onPress={() => {
+              setModalVisible(false);
+              navigation.navigate('ChangePassword');
+            }}>
             <Text style={styles.modalText}>Đổi mật khẩu</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.modalItem} onPress={() => navigation.navigate('LoginScreen')}>
+          <TouchableOpacity
+            style={styles.modalItem}
+            onPress={() => {
+              setLogoutModalVisible(true);
+              setTimeout(() => {
+                setLogoutModalVisible(false);
+                navigation.navigate('LoginScreen');
+              }, 1000);
+            }}
+          >
             <Text style={styles.modalText}>Đăng xuất</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={logoutModalVisible}
+        onRequestClose={() => {
+          setLogoutModalVisible(false);
+        }}
+      >
+        <View style={styles.modalOverlay2}>
+          <View style={styles.modalContainer2}>
+            <Text style={styles.modalText2}>Đang đăng xuất...</Text>
+          </View>
         </View>
       </Modal>
     </ImageBackground>
@@ -214,9 +255,10 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     paddingHorizontal: 400,
-    height:990
-},
+    height: 990
+  },
   header: {
+    borderRadius: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -265,6 +307,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   studentInfoCard: {
+    borderRadius: 15,
+
     flexDirection: 'row',
     backgroundColor: '#fff',
     padding: 15,
@@ -295,7 +339,6 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   studentData: {
-
     color: '#333',
   },
   linkText: {
@@ -306,9 +349,12 @@ const styles = StyleSheet.create({
   scheduleContainer: {
     flexDirection: 'column',
     flex: 0.4,
-    height: 140
+    height: 140,
+
   },
   scheduleCard: {
+    borderRadius: 15,
+
     backgroundColor: '#fff',
     padding: 15,
     marginBottom: 10,
@@ -317,6 +363,8 @@ const styles = StyleSheet.create({
     height: 150
   },
   scheduleCard2: {
+    borderRadius: 15,
+
     backgroundColor: '#fff',
     padding: 15,
     height: 140,
@@ -338,11 +386,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   featureRow: {
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 10,
   },
   featureCard: {
+    borderRadius: 15,
+
     width: '19%',
     backgroundColor: '#fff',
     padding: 15,
@@ -360,9 +411,11 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   section: {
+    borderRadius: 15,
+
     width: '49%',
     backgroundColor: '#fff',
-    height:400,
+    height: 400,
     padding: 15,
     marginVertical: 10,
     shadowColor: '#000',
@@ -403,7 +456,7 @@ const styles = StyleSheet.create({
   },
   classList: {
     marginTop: 10,
-    marginLeft:20
+    marginLeft: 20
   },
   classItem: {
     fontSize: 18,
@@ -429,7 +482,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
- 
+
   },
   modalItem: {
     padding: 10,
@@ -437,7 +490,39 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 16,
     color: '#333',
-  }
+  },
+  modalOverlay2: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+
+  },
+  modalContainer2: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText2: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  closeButton2: {
+    backgroundColor: '#00405d',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeButtonText2: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
+
 
 export default DashboardScreen;

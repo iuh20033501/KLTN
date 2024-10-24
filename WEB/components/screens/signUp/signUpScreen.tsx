@@ -11,6 +11,7 @@ import {
     ImageBackground,
     Modal,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [username, setUsername] = useState('');
@@ -18,10 +19,10 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [verifyPassword, setVerifyPassword] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
+    const [gender, setGender] = useState('Nam');
     const [phone, setPhone] = useState('');
-    const defaultAVT = "1";
+    const defaultAVT = "";
     const [birthday, setBirthday] = useState('');
-    const [gender, setGender] = useState(true);
     let signToken = "";
     const [showUserForm, setShowUserForm] = useState(true);
     const [showInfoForm, setShowInfoForm] = useState(false);
@@ -29,6 +30,9 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [otp, setOTP] = useState('');
+    const [otpConfirm, setOTPConfirm] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showVerifyPassword, setShowVerifyPassword] = useState(false);
 
     const validateUsername = (name: string) => {
         const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{5,31}$/;
@@ -61,44 +65,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         }
         return null;
-    };
-
-    const handleSubmit = async () => {
-        const formattedBirthday = handleDateFormat(birthday);
-        try {
-            const response = await http.post(
-                "auth/account/signup/1",
-                {
-                    username,
-                    name,
-                    email,
-                    password,
-                    gender,
-                    phone,
-                    birthday: formattedBirthday,
-                    image: defaultAVT,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${signToken}`,
-                    },
-                }
-            );
-
-            if (response.status === 200) {
-                console.log('Đăng ký thành công.');
-                setErrorMessage('Đăng ký thành công.');
-                await handleLogin();
-            } else {
-                setErrorMessage('Đăng ký thất bại. Vui lòng thử lại.');
-                setModalVisible(true);
-            }
-        } catch (error) {
-            console.error("Lỗi khi đăng ký:", error);
-            setErrorMessage('Không thể hoàn tất đăng ký. Vui lòng kiểm tra kết nối mạng.');
-            setModalVisible(true);
-        }
     };
 
     const handleNext = async () => {
@@ -145,10 +111,11 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                 try {
                     const response = await http.post('auth/noauth/send', { phone });
                     if (response.status === 200) {
-                        setShowInfoForm(false);
-                        setShowOTPForm(true);
+                        setOTPConfirm(response.data)
                         setErrorMessage('');
                         console.log('OTP đã được gửi thành công đến số điện thoại.', response.data);
+                        setShowInfoForm(false);
+                        setShowOTPForm(true);
                     } else {
                         setErrorMessage('Không thể gửi mã OTP. Vui lòng thử lại.');
                         setModalVisible(true);
@@ -163,12 +130,17 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
             }
         }
         else if (showOTPForm) {
-            const formattedBirthday = handleDateFormat(birthday);
-            if (isValid) {
+            if (String(otp.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
+                setErrorMessage('Mã OTP không đúng');
+                setModalVisible(true);
+                isValid = false;
+                console.log(`otp: ${otp}, otpConfirm: ${otpConfirm}`);
+            }
+             if (isValid) {
                 try {
                     const response = await http.post(
                         "auth/noauth/validate",
-                        { phone, otp }, 
+                        { phone:phone, otp:otp }, 
                         {
                             headers: {
                                 "Content-Type": "application/json",
@@ -177,14 +149,14 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                     );
                     if (response.status === 200) {
                         console.log(response.data);
-                        const accessToken = response.data.accessToken;
-                        await AsyncStorage.setItem('accessToken', accessToken);
+                        signToken = response.data.accessToken; 
+                        console.log(signToken)
                         await handleSubmit(); 
                     } else {
-                        throw new Error("Lỗi xác thực OTP");
+                        setErrorMessage('Xác thực otp thất bại');
+                        setModalVisible(true);
                     }
                 } catch (error) {
-                    console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
                     setErrorMessage("Xác thực OTP không thành công. Vui lòng thử lại.");
                     setModalVisible(true);
                 }
@@ -194,6 +166,64 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
         }
     };
 
+    const handleSubmit = async () => {
+        try {
+            const formattedBirthday = handleDateFormat(birthday);
+            const genderValue = gender === 'Nam' ? true : false;
+          const response = await http.post(
+            "auth/account/signup/1",
+            {
+              username: username,
+              name: name,
+              email: email,
+              password: password,
+              gender: genderValue,
+              phone: phone,
+              birthday: formattedBirthday,
+              image: defaultAVT,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${signToken}`, 
+              },
+            }
+          );
+      
+          if (response.status === 200) {
+            console.log(response.data);
+            await handleLogin(); 
+          } else {
+            setErrorMessage('Lỗi đăng ký');
+            setModalVisible(true);
+          }
+        } catch (error) {
+          console.error("Có lỗi xảy ra trong quá trình gửi thông tin:", error);
+        }
+      };
+      const handleLogin = async () => {
+        try {
+          const response = await http.post("auth/noauth/signin", {
+            username: username,
+            password: password,
+          });
+    
+          if (response.status === 200) {
+            const { accessToken } = response.data;
+            await AsyncStorage.setItem('accessToken', accessToken);
+            setErrorMessage('Đăng ký thành công');
+            setModalVisible(true);
+            setTimeout(() => {
+                setModalVisible(false);
+                navigation.navigate('DashboardScreen');
+            }, 1000);
+          } 
+        } catch (error) {
+            setErrorMessage('Đăng ký thất bại');
+            setModalVisible(true);
+        }
+      };
+    
     const handleBack = () => {
         if (showUserForm) {
             navigation.navigate('HomeScreen');
@@ -203,26 +233,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
         } else if (showOTPForm) {
             setShowOTPForm(false);
             setShowInfoForm(true);
-        }
-    };
-
-    const handleLogin = async () => {
-        try {
-            const response = await http.post("auth/noauth/signin", {
-                username,
-                password,
-            });
-            if (response.status === 200) {
-                const { accessToken } = response.data;
-                await AsyncStorage.setItem('accessToken', accessToken);
-                setErrorMessage('');
-                navigation.navigate('DashboardScreen');
-            } else {
-                setErrorMessage("Sai thông tin đăng nhập");
-            }
-        } catch (error) {
-            console.error("Có lỗi xảy ra trong quá trình đăng nhập:", error);
-            setErrorMessage("Đăng nhập không thành công. Vui lòng thử lại.");
         }
     };
 
@@ -251,24 +261,41 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                             />
 
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { flex: 1 }]}
                                 placeholder="Mật khẩu"
                                 placeholderTextColor="#888"
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry
+                                secureTextEntry={!showPassword}
                                 maxLength={32}
                             />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                <Ionicons
+                                    name={showPassword ? "eye-off" : "eye"}
+                                    size={26}
+                                    color="gray"
+                                    style={styles.eyeIcon}
+                                />
+                            </TouchableOpacity>
 
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { flex: 1 }]}
                                 placeholder="Nhập lại mật khẩu"
                                 placeholderTextColor="#888"
                                 value={verifyPassword}
                                 onChangeText={setVerifyPassword}
-                                secureTextEntry
+                                secureTextEntry={!showVerifyPassword}
                                 maxLength={32}
                             />
+                            <TouchableOpacity onPress={() => setShowVerifyPassword(!showVerifyPassword)}>
+                                <Ionicons
+                                    name={showVerifyPassword ? "eye-off" : "eye"}
+                                    size={26}
+                                    color="gray"
+                                    style={styles.eyeIcon2}
+                                />
+                            </TouchableOpacity>
+
 
                             <TouchableOpacity style={styles.useful}>
                                 <Text style={styles.linkText}>Hướng dẫn đăng ký</Text>
@@ -308,13 +335,18 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 value={email}
                                 onChangeText={setEmail}
                             />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Ngày sinh (dd/mm/yyyy)"
-                                placeholderTextColor="#888"
-                                value={birthday}
-                                onChangeText={setBirthday}
-                            />
+                            <View style={styles.rowContainer}>
+                                <TextInput
+                                    style={[styles.input, { flex: 7 }]}
+                                    placeholder="Ngày sinh (dd/mm/yyyy)"
+                                    placeholderTextColor="#888"
+                                    value={birthday}
+                                    onChangeText={setBirthday}
+                                />
+                                <TouchableOpacity onPress={() => setGender(gender === 'Nam' ? 'Nữ' : 'Nam')} style={{ flex: 2 }}>
+                                    <Text style={styles.dropdown}>{gender || 'Chọn giới tính'}</Text>
+                                </TouchableOpacity>
+                            </View>
                             <View style={styles.buttonsContainer}>
                                 <TouchableOpacity style={styles.backButton} onPress={handleBack}>
                                     <Text style={styles.backButtonText}>Quay lại</Text>
@@ -332,6 +364,9 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 style={styles.confirmInput}
                                 placeholder="Nhập mã OTP"
                                 placeholderTextColor="#888"
+                                value={otp}
+                                onChangeText={setOTP}
+                                maxLength={6}
                             />
                             <View style={styles.buttonsContainer}>
                                 <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -398,6 +433,8 @@ const styles = StyleSheet.create({
         marginTop: -150
     },
     container: {
+        borderRadius: 15,
+
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -419,6 +456,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container2: {
+        borderRadius: 15,
+
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -454,10 +493,12 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     input: {
+        borderRadius: 15,
+
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
-        borderRadius: 5,
+
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,
@@ -465,11 +506,13 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     confirmInput: {
+        borderRadius: 15,
+
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
         marginTop: 80,
-        borderRadius: 5,
+
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -576,5 +619,36 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    label: {
+        fontSize: 16,
+    },
+    dropdown: {
+        fontSize: 18,
+        borderRadius: 10,
+        padding: 10,
+        borderWidth: 1,
+        width:70,
+        marginLeft:200,
+        left:-180,
+        height:50,
+        textAlign:'center',
+        marginTop:-10
+    },
+    eyeIcon: {
+        position: 'absolute',
+        marginTop: -50,
+        right: -210
+    },
+    eyeIcon2: {
+        position: 'absolute',
+        right: -210,
+        marginTop: -50,
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+
     },
 });
