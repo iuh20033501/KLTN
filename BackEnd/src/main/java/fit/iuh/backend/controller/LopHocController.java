@@ -122,14 +122,18 @@ public class LopHocController {
     @Operation(
             summary = "set trg thái lớp Full",
             description = """ 
-          khi lớp đầy học viên
+          xet dieu kien neu thanh vien dang ky da du => thanh vien trong lớp sẽ set full lớp
     """
     )
     @GetMapping("/fullLop/{id}")
     public LopHoc fullLop(@PathVariable Long id){
+        Long soLuong = (long) hocVienLopHocService.findByidLop(id).size();
+
         LopHoc lop = lopHocService.findById(id).get();
-        lop.setTrangThai(LopEnum.FULL);
-        return lopHocService.createLopHoc(lop);
+        if(lop.getSoHocVien()<=soLuong) {
+            lop.setTrangThai(LopEnum.FULL);
+            return lopHocService.createLopHoc(lop);
+        }
     }
     @Operation(
             summary = "lấy  lớp từ id gv ",
