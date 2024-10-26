@@ -134,6 +134,7 @@ public class LopHocController {
             lop.setTrangThai(LopEnum.FULL);
             return lopHocService.createLopHoc(lop);
         }
+        return lopHocService.createLopHoc(lop);
     }
     @Operation(
             summary = "lấy  lớp từ id gv ",

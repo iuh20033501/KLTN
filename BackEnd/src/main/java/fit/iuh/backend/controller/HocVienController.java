@@ -34,6 +34,8 @@ public class HocVienController {
     @Autowired
     private UserService userService;
     @Autowired
+    private LopHocService lopHocService;
+    @Autowired
     private HocVienLopHocService hocVienLopHocService;
     //
     @PutMapping("/update/{id}")
@@ -67,16 +69,18 @@ public class HocVienController {
     @Operation(
             summary = "Đăng ký lớp của học viên",
             description = """ 
-            truyền HocVienLopHocKey chứa idlop, idhocvien
+            truyền idlop, idhocvien vao parm
             trước khi đăng kí cần chạy hàm get list hoc viên lấy số lượng so sánh đầy chưa
             nếu đầy thành viên đó nữa đầy thì dky xong chạy hàm setfull của lớp
     """
     )
-    @PostMapping("/dangkyLop")
-    public ResponseEntity<HocVienLopHoc> dangKyLop(@RequestBody HocVienLopHocKey key) {
-        if (key.getLopHoc() == null || key.getHocVien() == null) {
-            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu dữ liệu không hợp lệ
-        }
+    @GetMapping("/dangkyLop/{idLop}/{idHV}")
+    public ResponseEntity<HocVienLopHoc> dangKyLop(@PathVariable Long idLop, @PathVariable Long idHV) {
+        HocVienLopHocKey key = new HocVienLopHocKey() ;
+        HocVien hv = hocVienService.findByIdHocVien(idHV).orElseThrow(()->new RuntimeException("hoc vien not found "));
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(()->new RuntimeException("lop hoc not found "));
+        key.setLopHoc(lop);
+        key.setHocVien(hv);
         int siSo = hocVienLopHocService.findByidLop(key.getLopHoc().getIdLopHoc()).size();
         if(key.getLopHoc().getSoHocVien()>=siSo){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
