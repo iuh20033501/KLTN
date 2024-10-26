@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/lopHoc")
 public class LopHocController {
     @Autowired
@@ -148,8 +148,9 @@ public class LopHocController {
     """
     )
     @GetMapping("/getByKhoa/{id}")
-    public List<LopHoc> findByKhoa (@PathVariable Long id){
-        return  lopHocService.findByKhoa(id);
+    public ResponseEntity<List<LopHoc>> getByKhoa(@PathVariable Long id) {
+        List<LopHoc> lopHocs = lopHocService.findByKhoa(id);
+        return ResponseEntity.ok(lopHocs);
     }
 
 

@@ -30,7 +30,7 @@ public class BaiTapImplement implements BaiTapService {
 
     @Override
     public List<BaiTap> findByIdBuoi(Long idBuoi) {
-        return baiTapRepo.FindByIdBH(idBuoi);
+        return baiTapRepo.findByIdBuoiHoc(idBuoi);
     }
 
 //    @Override
