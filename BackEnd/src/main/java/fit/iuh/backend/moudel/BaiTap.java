@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -16,4 +18,19 @@ public class BaiTap {
     private String tenBaiTap;
     @OneToOne
     private BuoiHoc buoiHoc;
+    private Date ngayBD;
+    private Date ngayKT;
+    private Boolean trangThai;
+    public BaiTap(String tenBaiTap, Date ngayBD, Date ngayKT) {
+        this.tenBaiTap = tenBaiTap;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+    }
+
+    public BaiTap(String tenBaiTap, Date ngayBD, Date ngayKT, Boolean trangThai) {
+        this.tenBaiTap = tenBaiTap;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+        this.trangThai = trangThai;
+    }
 }

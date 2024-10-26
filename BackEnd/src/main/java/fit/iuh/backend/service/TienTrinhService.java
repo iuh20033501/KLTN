@@ -10,6 +10,7 @@ public interface TienTrinhService {
     TienTrinh createTT(TienTrinh tt);
     TienTrinh findById(Long id);
     List<TienTrinh> finfAll();
-//    List<TienTrinh> findByIdHv(Long idHV);
+    List<TienTrinh> findByIdHv(Long idHV);
     List<TienTrinh> findByIdBatTap(Long idbt);
+    TienTrinh findByIdHvIdBTap(Long idHV,Long idBt);
 }

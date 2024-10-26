@@ -13,14 +13,14 @@ public class TienTrinh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTienTrinh;
-    private Long phanTram;
+    private Long cauDung;
     @ManyToOne
     private HocVien hocVien;
     @ManyToOne
     private BaiTap baiTap;
 
-    public TienTrinh(Long phanTram, HocVien hocVien, BaiTap baiTap) {
-        this.phanTram = phanTram;
+    public TienTrinh(Long cauDung, HocVien hocVien, BaiTap baiTap) {
+        this.cauDung = cauDung;
         this.hocVien = hocVien;
         this.baiTap = baiTap;
     }

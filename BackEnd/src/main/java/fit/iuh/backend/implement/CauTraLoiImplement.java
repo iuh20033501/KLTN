@@ -26,4 +26,9 @@ public class CauTraLoiImplement implements CauTraLoiService {
     public CauTraLoi createCauTraLoi(CauTraLoi ctl) {
         return cauTraLoirepo.save(ctl);
     }
+
+    @Override
+    public List<CauTraLoi> findAll() {
+        return cauTraLoirepo.findAll();
+    }
 }

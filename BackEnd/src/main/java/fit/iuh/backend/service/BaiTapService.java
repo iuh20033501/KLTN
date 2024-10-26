@@ -14,5 +14,8 @@ public interface BaiTapService {
   BaiTap findById(Long id);
   List<BaiTap> findAll();
   List<BaiTap> findByIdBuoi(Long idBuoi);
+
 //  List<BaiTap> findByIdHV(Long idHV);
+
+
 }

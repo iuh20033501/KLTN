@@ -31,9 +31,11 @@ public class BuoiHocController {
     public List<BuoiHoc> getAll(){
         return buoiHocService.getAll();
     }
-    @PostMapping("/update/{id}")
-    public BuoiHoc updateBuoiHoc(@PathVariable Long id ,@RequestBody BuoiHoc buoiHoc){
-        buoiHoc.setIdBuoiHoc(id);
+    @PutMapping("/update/{idLop}/{idBuoi}")
+    public BuoiHoc updateBuoiHoc(@PathVariable Long idLop,@PathVariable Long idBuoi ,@RequestBody BuoiHoc buoiHoc){
+        LopHoc lop= lopHocService.findById(idLop).get();
+        buoiHoc.setLopHoc(lop);
+        buoiHoc.setIdBuoiHoc(idBuoi);
         return buoiHocService.createBuoiHoc(buoiHoc);
     }
     @GetMapping("/getByHocVien/{id}")

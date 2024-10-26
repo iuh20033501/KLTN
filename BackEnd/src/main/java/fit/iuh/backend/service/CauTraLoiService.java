@@ -11,4 +11,5 @@ public interface CauTraLoiService {
     List<CauTraLoi> findByIdCauHoi (Long id);
     CauTraLoi findById (Long id);
     CauTraLoi createCauTraLoi(CauTraLoi ctl);
+    List<CauTraLoi> findAll();
 }

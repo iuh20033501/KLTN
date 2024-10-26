@@ -23,4 +23,12 @@ public class BaiTest {
     @ManyToOne
     private LopHoc lopHoc;
     private TestEnum loaiTest;
+    private Boolean TrangThai;
+
+    public BaiTest(Date ngayBD, Date ngayKT, Time thoiGianLamBai, TestEnum loaiTest) {
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+        this.thoiGianLamBai = thoiGianLamBai;
+        this.loaiTest = loaiTest;
+    }
 }

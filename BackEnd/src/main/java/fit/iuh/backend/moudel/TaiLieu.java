@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,6 +20,24 @@ public class TaiLieu {
     private String linkLoad;
     @OneToOne
     private BuoiHoc buoiHoc;
+    private Date ngayMo;
+    private Date ngayDong;
+    private Boolean trangThai;
 
+    public TaiLieu(String tenTaiLieu, String noiDung, String linkLoad, Date ngayMo, Date ngayDong, Boolean trangThai) {
+        this.tenTaiLieu = tenTaiLieu;
+        this.noiDung = noiDung;
+        this.linkLoad = linkLoad;
+        this.ngayMo = ngayMo;
+        this.ngayDong = ngayDong;
+        this.trangThai = trangThai;
+    }
 
+    public TaiLieu(String tenTaiLieu, String noiDung, String linkLoad, Date ngayMo, Date ngayDong) {
+        this.tenTaiLieu = tenTaiLieu;
+        this.noiDung = noiDung;
+        this.linkLoad = linkLoad;
+        this.ngayMo = ngayMo;
+        this.ngayDong = ngayDong;
+    }
 }

@@ -29,8 +29,7 @@ public class TaiKhoanImplement implements TaiKhoanService {
 
     @Override
     public TaiKhoanLogin createTaiKhoan(TaiKhoanLogin taiKhoan) {
-        return
-                taiKhoanRepo.save(taiKhoan);
+        return taiKhoanRepo.save(taiKhoan);
     }
 
     @Override

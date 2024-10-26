@@ -12,4 +12,5 @@ import java.util.List;
 public interface BaiTapRepo extends JpaRepository<BaiTap,Long> {
     @Query("select bt from BaiTap  bt join BuoiHoc bh on bt.buoiHoc.idBuoiHoc = bh.idBuoiHoc where bt.buoiHoc.idBuoiHoc= :id")
     List<BaiTap> FindByIdBH (@Param("id") Long id);
+
 }

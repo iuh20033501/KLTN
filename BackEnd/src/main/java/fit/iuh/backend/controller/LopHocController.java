@@ -51,6 +51,31 @@ public class LopHocController {
         LopHoc createdLopHoc = lopHocService.createLopHoc(lopHoc);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // Trả về 201 khi tạo thành công
     }
+    @Operation(
+            summary = "Update lớp",
+            description = """ 
+            truyền số lương học viên, tên lớp
+            idKhoa ,id GiaoVien,idLop phia tren param
+    """
+    )
+    @PostMapping("/create/{idKhoa}/{idGV}/{idLop}")
+    public ResponseEntity<LopHoc> createLop(@RequestBody LopHoc lopHoc, @PathVariable Long idKhoa, @PathVariable Long idGV,@PathVariable Long idLop) {
+        Optional<GiangVien> gvOptional = gvService.findById(idGV);
+        Optional<KhoaHoc> khoaOptional = khoaHocService.findById(idKhoa);
+
+        if (gvOptional.isEmpty() || khoaOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Trả về 404 nếu không tìm thấy giảng viên hoặc khóa học
+        }
+
+        GiangVien gv = gvOptional.get();
+        KhoaHoc khoa = khoaOptional.get();
+        lopHoc.setKhoaHoc(khoa);
+        lopHoc.setGiangVien(gv);
+        lopHoc.setIdLopHoc(idLop);
+
+        LopHoc createdLopHoc = lopHocService.createLopHoc(lopHoc);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // Trả về 201 khi tạo thành công
+    }
 
     @GetMapping("/getLop/{id}")
     public LopHoc findByidLop (@PathVariable Long id){
@@ -60,17 +85,17 @@ public class LopHocController {
     public List<LopHoc> findAll (){
         return  lopHocService.findAll();
     }
-    @Operation(
-            summary = "update lớp",
-            description = """ 
-          dièn đầy đủ thông tin lớp
-    """
-    )
-    @PutMapping("/update/{id}")
-    public LopHoc updateLop(@PathVariable Long id, @RequestBody LopHoc lop){
-        lop.setIdLopHoc(id);
-        return lopHocService.createLopHoc(lop);
-    }
+//    @Operation(
+//            summary = "update lớp",
+//            description = """
+//          dièn đầy đủ thông tin lớp
+//    """
+//    )
+//    @PutMapping("/update/{id}")
+//    public LopHoc updateLop(@PathVariable Long id, @RequestBody LopHoc lop){
+//        lop.setIdLopHoc(id);
+//        return lopHocService.createLopHoc(lop);
+//    }
     @GetMapping("/delete/{id}")
     public LopHoc updateLop(@PathVariable Long id){
         LopHoc lop = lopHocService.findById(id).get();
@@ -89,10 +114,22 @@ public class LopHocController {
         lop.setTrangThai(LopEnum.FULL);
         return lopHocService.createLopHoc(lop);
     }
+    @Operation(
+            summary = "lấy  lớp từ id gv ",
+            description = """ 
+           truyền id gv
+    """
+    )
     @GetMapping("/getByGv/{id}")
     public List<LopHoc> findByGv (@PathVariable Long id){
         return  lopHocService.findByGiangVien(id);
     }
+    @Operation(
+            summary = "lấy  lớp từ id khoa ",
+            description = """ 
+           truyền id khoa
+    """
+    )
     @GetMapping("/getByKhoa/{id}")
     public List<LopHoc> findByKhoa (@PathVariable Long id){
         return  lopHocService.findByKhoa(id);

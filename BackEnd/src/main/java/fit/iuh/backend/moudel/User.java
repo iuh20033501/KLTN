@@ -21,6 +21,7 @@ public class User {
     private String email;
     private LocalDate ngaySinh;
     private boolean gioiTinh;
+    @Column(length = 1000000000)
     private String image;
 
 }

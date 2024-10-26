@@ -26,7 +26,7 @@ public class CauHoi {
         this.noiDung = noiDung;
         this.linkAmThanh = linkAmThanh;
         this.linkAnh = linkAnh;
-        this.baiTap = baiTap;
+        this.baiTap = null;
         this.loiGiai = loiGiai;
     }
 
@@ -35,6 +35,13 @@ public class CauHoi {
         this.linkAmThanh = linkAmThanh;
         this.linkAnh = linkAnh;
         this.baiTest = baiTest;
+        this.loiGiai = loiGiai;
+    }
+
+    public CauHoi(String noiDung, String linkAmThanh, String linkAnh, String loiGiai) {
+        this.noiDung = noiDung;
+        this.linkAmThanh = linkAmThanh;
+        this.linkAnh = linkAnh;
         this.loiGiai = loiGiai;
     }
 }

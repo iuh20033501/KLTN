@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.List;
 
 @Data
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TinhDiemTestDTO {
     private List<CauTraLoi> listCauTraLoi;
+    private Time thoigianLamBai;
     private Long idBaiTest;
     private Long idHocVien;
 }

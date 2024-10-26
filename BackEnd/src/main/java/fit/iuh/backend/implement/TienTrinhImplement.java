@@ -27,13 +27,18 @@ public class TienTrinhImplement implements TienTrinhService {
         return tienTrinhRepo.findAll();
     }
 
-//    @Override
-//    public List<TienTrinh> findByIdHv(Long idHV) {
-//        return tienTrinhRepo.getByIdHV(idHV);
-//    }
+    @Override
+    public List<TienTrinh> findByIdHv(Long idHV) {
+        return tienTrinhRepo.getByIdHV(idHV);
+    }
 
     @Override
     public List<TienTrinh> findByIdBatTap(Long idbt) {
         return tienTrinhRepo.getByIdBT(idbt);
+    }
+
+    @Override
+    public TienTrinh findByIdHvIdBTap(Long idHV, Long idBt) {
+        return tienTrinhRepo.getByIdHVAndIdBT(idHV,idBt);
     }
 }

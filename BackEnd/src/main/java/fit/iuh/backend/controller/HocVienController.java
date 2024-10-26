@@ -90,7 +90,7 @@ public class HocVienController {
         }
     }
     @Operation(
-            summary = "lấy  lớp tù học viên",
+            summary = "lấy lớp tù học viên",
             description = """ 
            truyền id học viên
     """
