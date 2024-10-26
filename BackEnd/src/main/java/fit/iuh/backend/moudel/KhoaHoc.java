@@ -20,7 +20,6 @@ public class  KhoaHoc {
     private Long idKhoaHoc;
     private String tenKhoaHoc;
     private Long giaTien;
-    private  double hocPhi;
     private String thoiGianDienRa;
     private Boolean trangThai;
     @ElementCollection(targetClass = SkillEnum.class)
