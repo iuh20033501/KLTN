@@ -12,6 +12,7 @@ import SignUpScreen from '@/components/screens/signUp/signUpScreen';
 import { Image, StyleSheet, Platform, View, ScrollView } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import EditProfileScreen from '@/components/screens/profileScreen/editProfileScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -20,6 +21,7 @@ type RootStackParamList = {
   DashboardScreen:undefined;
   ChangePassword: undefined;
   ResetPassword:undefined;
+  EditProfileScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -32,6 +34,8 @@ export default function App() {
       <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+
     </Stack.Navigator>
   </NavigationContainer>
   );

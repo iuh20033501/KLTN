@@ -6,20 +6,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
 
 export default function UserProfileScreen({ navigation }: { navigation: any }) {
-    const avatars = [
-        require('../../../image/avatar/1.png'),
-        require('../../../image/avatar/2.png'),
-        require('../../../image/avatar/3.png'),
-        require('../../../image/avatar/4.png'),
-        require('../../../image/avatar/5.png'),
-        require('../../../image/avatar/6.png'),
-        require('../../../image/avatar/7.png'),
-        require('../../../image/avatar/8.png'),
-    ];
+  
 
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedAvatar, setSelectedAvatar] = useState(avatars[0]); // Avatar mặc định
+    const [selectedAvatar, setSelectedAvatar] = useState(''); 
 
     const getUserInfo = async () => {
         try {
@@ -32,7 +23,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
                 });
                 if (response.status === 200) {
                     setUser(response.data);
-                    setSelectedAvatar(getAvatar(response.data?.u?.image));
+                    setSelectedAvatar(response.data?.u?.image);
                 } else {
                     console.error('Lấy thông tin người dùng thất bại.');
                 }
@@ -46,11 +37,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
         }
     };
 
-    // Hàm để lấy avatar dựa trên chỉ số image
-    const getAvatar = (imageIndex: string) => {
-        const index = parseInt(imageIndex, 10) - 1; // Chuyển giá trị string thành số và trừ 1 để lấy đúng chỉ số
-        return avatars[index] || avatars[0]; // Nếu không có avatar phù hợp thì dùng avatar mặc định
-    };
+   
 
     useEffect(() => {
         getUserInfo(); // Lấy thông tin người dùng khi màn hình được tải
@@ -87,7 +74,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
             </View>
 
             {/* Hiển thị avatar */}
-            <Image source={selectedAvatar} style={styles.image} />
+            <Image source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/avatar/1.png')} style={styles.image} />
 
             <View style={styles.userInfoContainer}>
                 <Text style={styles.username}>{user?.u?.hoTen}</Text>

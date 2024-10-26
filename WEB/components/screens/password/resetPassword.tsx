@@ -1,4 +1,5 @@
 import http from '@/utils/http';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import {
@@ -27,7 +28,9 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
     const [showOTPForm, setShowOTPForm] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [otpConfirm, setOTPConfirm] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showVerifyPassword, setShowVerifyPassword] = useState(false);
     const validateUsername = (name: string) => {
         const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{5,31}$/;
         return usernameRegex.test(name);
@@ -78,11 +81,16 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                     const phoneNumber = userAccount.user.sdt;
                     const response = await http.post('auth/noauth/send', { phone: phoneNumber });
                     if (response.status === 200) {
-                        setShowUserForm(false);
-                        setShowOTPForm(true);
-                        setErrorMessage('');
-                        console.log(response.data)
-                        console.log('OTP đã được gửi thành công đến số điện thoại:', phoneNumber);
+                        setErrorMessage('Đã gửi mã OTP đến điện thoại của bạn');
+                        setModalVisible(true);
+                        console.log(response.data);
+                        setOTPConfirm(response.data);
+                        setTimeout(() => {
+                            setModalVisible(false);
+                            setShowUserForm(false);
+                            setShowOTPForm(true);
+                        }, 1000);
+
                     } else {
                         setErrorMessage('Không thể gửi mã OTP. Vui lòng thử lại.');
                         setModalVisible(true);
@@ -94,15 +102,18 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                 }
             } else {
                 setErrorMessage('Không tìm thấy số điện thoại liên kết với tài khoản này.');
+                setModalVisible(true);
                 isValid = false;
             }
         }
         else if (showInfoForm) {
             if (!validatePassword(password)) {
                 setErrorMessage('Mật khẩu có độ dài từ 6 đến 32 ký tự');
+                setModalVisible(true);
                 isValid = false;
             } else if (password !== verifyPassword) {
                 setErrorMessage('Mật khẩu xác nhận không khớp.');
+                setModalVisible(true);
                 isValid = false;
             }
             if (isValid) {
@@ -113,7 +124,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                         return;
                     }
                     console.log("Token từ AsyncStorage:", token);
-                    
+
                     const response = await http.post(
                         "auth/account/reset",
                         { password },
@@ -123,13 +134,17 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                             },
                         }
                     );
-        
+
                     if (response.status === 200) {
                         console.log(response.data);
                         setErrorMessage('Đã cập nhật lại mật khẩu');
-                        navigation.navigate('LoginScreen');
+                        setModalVisible(true)
+                        setTimeout(() => {
+                            setModalVisible(false);
+                            navigation.navigate('LoginScreen');
+                        }, 1000);
                     } else {
-                        console.log('Lỗi cập nhật mật khẩu:', response.data); 
+                        console.log('Lỗi cập nhật mật khẩu:', response.data);
                         throw new Error(response.data.message || "Lỗi đổi mật khẩu");
                     }
                 } catch (error) {
@@ -141,13 +156,19 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
             }
         }
         else if (showOTPForm) {
+            if (String(otp.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
+                setErrorMessage('Mã OTP không đúng');
+                setModalVisible(true);
+                isValid = false;
+                console.log(`otp: ${otp}, otpConfirm: ${otpConfirm}`);
+            }
             if (isValid) {
                 try {
                     const userAccount = data.find(item => item.tenDangNhap === username);
                     const phoneNumber = userAccount.user.sdt;
                     const response = await http.post(
                         "auth/noauth/validate",
-                        { phone: phoneNumber, otp },
+                        { phone: phoneNumber, otp: otp },
                         {
                             headers: {
                                 "Content-Type": "application/json",
@@ -161,7 +182,8 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                         setShowInfoForm(true);
                         setShowOTPForm(false);
                     } else {
-                        throw new Error("Lỗi xác thực OTP");
+                        setErrorMessage('Lỗi xác thực OTP');
+                        setModalVisible(true);
                     }
                 } catch (error) {
                     console.error("Có lỗi xảy ra trong quá trình xác thực OTP:", error);
@@ -232,9 +254,17 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                                 placeholderTextColor="#888"
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry
+                                secureTextEntry={!showPassword}
                                 maxLength={32}
                             />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                <Ionicons
+                                    name={showPassword ? "eye-off" : "eye"}
+                                    size={26}
+                                    color="gray"
+                                    style={styles.eyeIcon}
+                                />
+                            </TouchableOpacity>
 
                             <TextInput
                                 style={styles.resetPassInput2}
@@ -242,10 +272,17 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                                 placeholderTextColor="#888"
                                 value={verifyPassword}
                                 onChangeText={setVerifyPassword}
-                                secureTextEntry
+                                secureTextEntry={!showVerifyPassword}
                                 maxLength={32}
                             />
-
+                            <TouchableOpacity onPress={() => setShowVerifyPassword(!showVerifyPassword)}>
+                                <Ionicons
+                                    name={showVerifyPassword ? "eye-off" : "eye"}
+                                    size={26}
+                                    color="gray"
+                                    style={styles.eyeIcon2}
+                                />
+                            </TouchableOpacity>
                             <View style={styles.buttonsContainer2}>
                                 <TouchableOpacity style={styles.backButton2} onPress={handleBack}>
                                     <Text style={styles.backButtonText2}>Quay lại</Text>
@@ -325,6 +362,8 @@ const styles = StyleSheet.create({
         marginTop: -150
     },
     container: {
+        borderRadius: 15,
+
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -367,11 +406,12 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     input: {
+        borderRadius: 15,
+
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
         marginTop: 80,
-        borderRadius: 5,
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -379,11 +419,12 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     resetPassInput: {
+        borderRadius: 15,
+
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
         marginTop: 100,
-        borderRadius: 5,
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -395,7 +436,7 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         marginTop: 10,
-        borderRadius: 5,
+        borderRadius: 15,
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -407,7 +448,7 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         marginTop: 80,
-        borderRadius: 5,
+        borderRadius: 15,
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -553,5 +594,15 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    eyeIcon: {
+        position: 'absolute',
+        marginTop: -42,
+        right: -210
+    },
+    eyeIcon2: {
+        position: 'absolute',
+        right: -210,
+        marginTop: -115,
     },
 });

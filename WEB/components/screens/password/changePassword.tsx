@@ -1,4 +1,5 @@
 import http from '@/utils/http';
+import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -22,20 +23,28 @@ export default function ChangePassword({navigation}: {navigation: any}) {
     const [verifyPassword, setVerifyPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(''); 
     const [modalVisible, setModalVisible] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
+    const [isPasswordVisible3, setIsPasswordVisible3] = useState(false);
 
     const handleChangePassword = async () => {
         if (oldPassword.length < 6 || oldPassword.length > 32) {
           setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
+          setModalVisible(true)
           return;
         }
       
         if (password.length < 6 || password.length > 32) {
           setErrorMessage('Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
+          setModalVisible(true)
+
           return;
         }
       
         if (password !== verifyPassword) {
           setErrorMessage('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+          setModalVisible(true)
+
           return;
         }
       
@@ -43,6 +52,7 @@ export default function ChangePassword({navigation}: {navigation: any}) {
           const token = await AsyncStorage.getItem('accessToken');
           if (!token) {
             setErrorMessage('Token không tồn tại hoặc đã hết hạn. Vui lòng đăng nhập lại.');
+            setModalVisible(true)
             return;
           }
       
@@ -62,7 +72,11 @@ export default function ChangePassword({navigation}: {navigation: any}) {
           if (response.status === 200) {
             console.log(response.data);
             setErrorMessage('Đổi mật khẩu thành công'); 
-            navigation.navigate('DashboardScreen');
+            setModalVisible(true)
+            setTimeout(() => {
+                setModalVisible(false);
+                navigation.navigate('LoginScreen');
+            }, 1250);
           } else {
             setErrorMessage('Lỗi đổi mật khẩu');
           }
@@ -105,24 +119,34 @@ export default function ChangePassword({navigation}: {navigation: any}) {
                         placeholderTextColor="#888"
                         value={oldPassword}
                         onChangeText={setOldPassword}
-                        secureTextEntry
+                        secureTextEntry={!isPasswordVisible}
+
                     />
+                     <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
+                        <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={26} color="gray" />
+                    </TouchableOpacity>
                      <TextInput
                         style={styles.input}
                         placeholder="Nhập mật khẩu mới"
                         placeholderTextColor="#888"
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
+                        secureTextEntry={!isPasswordVisible2}
                     />
+                     <TouchableOpacity onPress={() => setIsPasswordVisible2(!isPasswordVisible2)} style={styles.eyeIcon2}>
+                        <FontAwesome name={isPasswordVisible2 ? 'eye-slash' : 'eye'} size={26} color="gray" />
+                    </TouchableOpacity>
                      <TextInput
                         style={styles.input}
                         placeholder="Xác thực mật khẩu mới"
                         placeholderTextColor="#888"
                         value={verifyPassword}
                         onChangeText={setVerifyPassword}
-                        secureTextEntry
+                        secureTextEntry={!isPasswordVisible3}
                     />
+                     <TouchableOpacity onPress={() => setIsPasswordVisible3(!isPasswordVisible3)} style={styles.eyeIcon3}>
+                        <FontAwesome name={isPasswordVisible3 ? 'eye-slash' : 'eye'} size={26} color="gray" />
+                    </TouchableOpacity>
                     <View style={styles.buttonsContainer}>
                     <TouchableOpacity style={styles.backButton}
                                     onPress={handleBack}>
@@ -172,6 +196,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
+        borderRadius: 15,
+
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -206,10 +232,10 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     input: {
+        borderRadius: 15,
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
-        borderRadius: 5,
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,
@@ -314,6 +340,21 @@ const styles = StyleSheet.create({
   closeButtonText: {
       color: '#fff',
       fontSize: 16,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 15,
+    marginTop: -160,
+  },
+  eyeIcon2: {
+    position: 'absolute',
+    right: 15,
+    marginTop: -25,
+  },
+  eyeIcon3: {
+    position: 'absolute',
+    right: 15,
+    marginTop: 100,
   },
 });
 

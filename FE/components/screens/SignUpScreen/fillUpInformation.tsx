@@ -69,9 +69,10 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
 
       if (response.status === 200) {
         console.log(response.data);
-        Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
+        const otpConfirm = response.data
+        Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn." +otpConfirm );
         navigation.navigate('Authentication', {
-          userName, passWord, name, phone, gmail, birthday, gender, image
+          userName, passWord, name, phone, gmail,birthday, gender, image, otpConfirm
         });
       } else {
         switch (response.status) {

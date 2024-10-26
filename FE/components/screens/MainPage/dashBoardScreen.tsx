@@ -8,18 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 export default function DashboardScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  const avatars = [
-    require('../../../image/avatar/1.png'),
-    require('../../../image/avatar/2.png'),
-    require('../../../image/avatar/3.png'),
-    require('../../../image/avatar/4.png'),
-    require('../../../image/avatar/5.png'),
-    require('../../../image/avatar/6.png'),
-    require('../../../image/avatar/7.png'),
-    require('../../../image/avatar/8.png'),
-  ];
-
+  const [selectedAvatar, setSelectedAvatar] = useState('');
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -31,6 +20,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
         });
         if (response.status === 200) {
           setUser(response.data);
+          setSelectedAvatar(response.data.u.image)
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
         }
@@ -54,10 +44,6 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     }, [])
 );
 
-  const getAvatar = (imageIndex: string) => {
-    const index = parseInt(imageIndex, 10) - 1; 
-    return avatars[index] || avatars[0]; 
-  }
 
   return (
     <View style={styles.container}>
@@ -76,7 +62,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
                 image : user?.u?.i
               })}
             >
-              <Image source={getAvatar(user?.u?.image)} style={styles.avatar} /> 
+              <Image source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/avatar/1.png')} style={styles.avatar} /> 
             </TouchableOpacity>
             
             <View style={styles.userInfo}>

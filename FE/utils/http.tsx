@@ -6,7 +6,7 @@ class Http {
     
     if (!Http.instance) {
       Http.instance = axios.create({
-        baseURL: `http://${ip}:8080/`, // change ip address to your local ip address ipconfig
+        baseURL: `http://${ip}:8080/`, 
         timeout: 20000,
         headers: {
           "Content-Type": "application/json",
