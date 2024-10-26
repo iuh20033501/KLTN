@@ -48,7 +48,7 @@ public class LopHocController {
         KhoaHoc khoa = khoaOptional.get();
         lopHoc.setKhoaHoc(khoa);
         lopHoc.setGiangVien(gv);
-
+        lopHoc.setTrangThai(LopEnum.READY);
         LopHoc createdLopHoc = lopHocService.createLopHoc(lopHoc);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // Trả về 201 khi tạo thành công
     }
