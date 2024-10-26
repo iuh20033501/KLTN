@@ -16,7 +16,7 @@ public class KetQuaTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idKetQua;
     private Long diemTest;
-    private Time thoiGianHoanThanh;
+    private String thoiGianHoanThanh;
     @ManyToOne
     private BaiTest baiTest;
     @ManyToOne
@@ -24,12 +24,12 @@ public class KetQuaTest {
 
 
 
-    public KetQuaTest(Long diemTest, Time thoiGianHoanThanh) {
+    public KetQuaTest(Long diemTest, String thoiGianHoanThanh) {
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;
     }
 
-    public KetQuaTest(Long diemTest, Time thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
+    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;
         this.baiTest = baiTest;

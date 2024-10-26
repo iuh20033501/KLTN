@@ -54,7 +54,7 @@ public class TaiLieuController {
         taiLieu.setBuoiHoc(bh);
         return taiLieuService.createTaiLieu(taiLieu);
     }
-    @GetMapping("/getKhoa/{id}")
+    @GetMapping("/geTaiLieu/{id}")
     public TaiLieu findByid (@PathVariable Long id){
       Optional<TaiLieu> tl = taiLieuService.findById(id);
         if (tl.isPresent()){
@@ -63,9 +63,9 @@ public class TaiLieuController {
         return null;
     }
     //
-    @GetMapping("/xoaKhoa/{id}")
+    @GetMapping("/xoaTaiLieu/{id}")
     public TaiLieu deleteKhoa (@PathVariable Long id){
-        TaiLieu tl = taiLieuService.findById(id).orElseThrow(() -> new RuntimeException("Hoc vien not found"));
+        TaiLieu tl = taiLieuService.findById(id).orElseThrow(() -> new RuntimeException("Tai Lieu not found"));
         tl.setTrangThai(false);
         return taiLieuService.createTaiLieu(tl);
     }
@@ -81,7 +81,7 @@ public class TaiLieuController {
     )
     @GetMapping("/kiemtraDate/{id}")
     public TaiLieu kiemTra (@PathVariable Long id ){
-        TaiLieu tl = taiLieuService.findById(id).orElseThrow(() -> new RuntimeException("Hoc vien khong tim thay"));
+        TaiLieu tl = taiLieuService.findById(id).orElseThrow(() -> new RuntimeException("tai lieu khong tim thay"));
         Date ngay =new Date();
         if(tl.getNgayMo().after(ngay) && tl.getNgayDong().before(ngay) ) {
             tl.setTrangThai(false);

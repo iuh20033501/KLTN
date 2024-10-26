@@ -8,12 +8,10 @@ import fit.iuh.backend.enumclass.ChucVuEnum;
 import fit.iuh.backend.jwt.JwtRequest;
 import fit.iuh.backend.jwt.JwtResponse;
 import fit.iuh.backend.jwt.RefreshTokenRequest;
+import fit.iuh.backend.moudel.KhoaHoc;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.moudel.User;
-import fit.iuh.backend.service.AuthService;
-import fit.iuh.backend.service.TaiKhoanService;
-import fit.iuh.backend.service.TwilioSMSService;
-import fit.iuh.backend.service.UserService;
+import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,8 @@ public class AuthController {
     private TaiKhoanService tkService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private KhoaHocService khoaHocService;
 
 
     @Operation(
@@ -174,5 +173,15 @@ public class AuthController {
     @GetMapping("/noauth/findBySdt/{sdt}")
     public TaiKhoanLogin getBySDT(@PathVariable String sdt){
         return tkService.findBySDT(sdt).get();
+    }
+    @Operation(
+            summary = "láy all khoa học",
+            description = """ 
+           lấy all khóa học ko cần token
+    """
+    )
+    @GetMapping("noauth/findAllKhoa")
+    public List<KhoaHoc> getAllKhoa(){
+        return khoaHocService.getAll();
     }
 }

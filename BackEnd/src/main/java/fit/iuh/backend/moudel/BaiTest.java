@@ -19,13 +19,13 @@ public class BaiTest {
     private Long idTest;
     private Date ngayBD;
     private Date ngayKT;
-    private Time thoiGianLamBai;
+    private String thoiGianLamBai;
     @ManyToOne
     private LopHoc lopHoc;
     private TestEnum loaiTest;
     private Boolean TrangThai;
 
-    public BaiTest(Date ngayBD, Date ngayKT, Time thoiGianLamBai, TestEnum loaiTest) {
+    public BaiTest(Date ngayBD, Date ngayKT, String thoiGianLamBai, TestEnum loaiTest) {
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.thoiGianLamBai = thoiGianLamBai;
