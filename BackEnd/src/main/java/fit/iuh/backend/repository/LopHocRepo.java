@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LopHocRepo extends JpaRepository<LopHoc,Long> {
-    @Query("select l from LopHoc  l join GiangVien gv on l.giangVien.idUser= gv.idUser where l.giangVien.idUser= :id")
+public interface LopHocRepo extends JpaRepository<LopHoc, Long> {
+    @Query("SELECT l FROM LopHoc l JOIN l.giangVien gv WHERE gv.idUser = :id")
     List<LopHoc> getListLopByGiaoVien(@Param("id") Long idGv);
-    @Query("select l from LopHoc  l join KhoaHoc k on l.khoaHoc.idKhoaHoc= k.idKhoaHoc where l.khoaHoc.idKhoaHoc= :id")
+
+    @Query("SELECT l FROM LopHoc l JOIN l.khoaHoc k WHERE k.idKhoaHoc = :id")
     List<LopHoc> getListLopByKhoaHoc(@Param("id") Long idKhoa);
 }
