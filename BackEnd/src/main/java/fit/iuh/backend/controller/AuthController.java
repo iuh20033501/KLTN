@@ -180,7 +180,7 @@ public class AuthController {
            lấy all khóa học ko cần token
     """
     )
-    @GetMapping("noauth/findAllKhoa")
+    @GetMapping("/noauth/findAllKhoa")
     public List<KhoaHoc> getAllKhoa(){
         return khoaHocService.getAll();
     }
