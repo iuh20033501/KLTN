@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +101,22 @@ public class LopHocController {
     public LopHoc updateLop(@PathVariable Long id){
         LopHoc lop = lopHocService.findById(id).get();
         lop.setTrangThai(LopEnum.DELETE);
+        return lopHocService.createLopHoc(lop);
+    }
+    @Operation(
+            summary = "kiem tra date lop",
+            description = """ 
+           
+            truyen id Lop  nếu quá ngay hay chưa tới sẽ ko hiện 
+    """
+    )
+    @GetMapping("/kiemtraDate/{id}")
+    public LopHoc kiemTra (@PathVariable Long id ){
+        LopHoc lop = lopHocService.findById(id).orElseThrow(()->new RuntimeException("lop hoc not found "));
+        Date ngay =new Date();
+        if(lop.getNgayBD().after(ngay) && bt.getNgayKT().before(ngay) ) {
+            lop.setTrangThai(LopEnum.DELETE);
+        }
         return lopHocService.createLopHoc(lop);
     }
     @Operation(
