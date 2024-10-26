@@ -114,7 +114,7 @@ public class LopHocController {
     public LopHoc kiemTra (@PathVariable Long id ){
         LopHoc lop = lopHocService.findById(id).orElseThrow(()->new RuntimeException("lop hoc not found "));
         Date ngay =new Date();
-        if(lop.getNgayBD().after(ngay) && bt.getNgayKT().before(ngay) ) {
+        if(lop.getNgayBD().after(ngay) && lop.getNgayKT().before(ngay) ) {
             lop.setTrangThai(LopEnum.DELETE);
         }
         return lopHocService.createLopHoc(lop);
