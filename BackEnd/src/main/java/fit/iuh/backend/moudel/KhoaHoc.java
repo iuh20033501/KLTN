@@ -22,6 +22,9 @@ public class  KhoaHoc {
     private Long giaTien;
     private String thoiGianDienRa;
     private Boolean trangThai;
+    private Long soBuoi;
+    private String moTa;
+    private String image;
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
     private List<SkillEnum> skillEnum;
