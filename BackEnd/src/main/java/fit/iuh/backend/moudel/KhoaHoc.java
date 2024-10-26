@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class  KhoaHoc {
     private String tenKhoaHoc;
     private Long giaTien;
     private  double hocPhi;
-    private Date thoiGianDienRa;
+    private String thoiGianDienRa;
     private Boolean trangThai;
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
