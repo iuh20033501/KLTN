@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,8 @@ public class LopHoc {
     private Long soHocVien;
     private  String tenLopHoc;
     private LopEnum trangThai;
+    private Date ngayBD;
+    private Date ngayKT;
     @ManyToOne
     private GiangVien giangVien;
     @ManyToOne
@@ -26,19 +29,13 @@ public class LopHoc {
 //    @OneToMany(mappedBy = "HocVienLopHocKey.lopHoc")
 //    private List<HocVienLopHoc> hocVienLopHocs;
 
-//    public LopHoc(String tenLopHoc, GiangVien giangVien, KhoaHoc khoaHoc) {
-//        this.tenLopHoc = tenLopHoc;
-//        this.giangVien = giangVien;
-//        this.khoaHoc = khoaHoc;
-//
-//    }
-//
-//    public LopHoc(Long soHocVien, String tenLopHoc, GiangVien giangVien, KhoaHoc khoaHoc) {
-//        this.soHocVien = soHocVien;
-//        this.tenLopHoc = tenLopHoc;
-//        this.giangVien = giangVien;
-//        this.khoaHoc = khoaHoc;
-//    }
+
+    public LopHoc(Long soHocVien, String tenLopHoc, Date ngayBD, Date ngayKT) {
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+    }
 
     public LopHoc(Long soHocVien, String tenLopHoc) {
         this.soHocVien = soHocVien;
