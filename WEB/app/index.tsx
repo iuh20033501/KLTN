@@ -13,6 +13,7 @@ import { Image, StyleSheet, Platform, View, ScrollView } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import EditProfileScreen from '@/components/screens/profileScreen/editProfileScreen';
+import CourseRegistrationScreen from '@/components/screens/course/courseRegistrationScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -22,6 +23,7 @@ type RootStackParamList = {
   ChangePassword: undefined;
   ResetPassword:undefined;
   EditProfileScreen:undefined;
+  CourseRegistrationScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -35,7 +37,7 @@ export default function App() {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
-
+      <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
     </Stack.Navigator>
   </NavigationContainer>
   );
