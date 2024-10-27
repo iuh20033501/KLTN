@@ -129,10 +129,12 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
           <View style={styles.scheduleContainer}>
             <View style={styles.scheduleCard}>
-              <Text style={styles.scheduleTitle}>Nhắc nhở mới, chưa xem</Text>
-              <Text style={styles.scheduleNumber}>0</Text>
-              <TouchableOpacity>
-                <Text style={styles.linkText}>Xem chi tiết</Text>
+            <Text style={styles.scheduleNumber}>Đăng ký khóa học</Text>
+              <Text style={styles.scheduleTitle}>bạn chưa tham gia khóa học nào</Text>
+              <TouchableOpacity onPress={() => {
+            navigation.navigate('CourseRegistrationScreen');
+          }}>
+                <Text style={styles.linkText}>Đăng ký</Text>
               </TouchableOpacity>
               <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                 <View style={styles.scheduleCard2}>
@@ -354,17 +356,16 @@ const styles = StyleSheet.create({
   },
   scheduleCard: {
     borderRadius: 15,
-
     backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
+    padding: 10,
+    marginBottom: 30,
     alignItems: 'center',
     elevation: 2,
-    height: 150
+    height: 150,
+    
   },
   scheduleCard2: {
     borderRadius: 15,
-
     backgroundColor: '#fff',
     padding: 15,
     height: 140,
@@ -372,7 +373,8 @@ const styles = StyleSheet.create({
     elevation: 2,
     width: 212,
     marginStart: 10,
-    left: -5
+    left: -5,
+
   },
   scheduleTitle: {
     fontSize: 16,

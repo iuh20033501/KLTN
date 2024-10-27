@@ -1,69 +1,44 @@
-import React from 'react';
+import http from '@/utils/http';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
-const courses = [
-  {
-    id: '1',
-    title: 'Khóa học COMBO',
-    description: 'Tiếng Anh từ đầu tới giỏi toàn diện 4 kỹ năng nâng cao',
-    duration: '12 tháng',
-    schedule: '3 buổi/tuần, 1.5h',
-    image: require('../../../image/combo.jpeg'),
-  },
-  {
-    id: '2',
-    title: 'Khóa học TOEIC',
-    description: 'Khóa học từ đầu tới giỏi TOEIC 4 kỹ năng',
-    duration: '9 tháng',
-    schedule: '3 buổi/tuần, 1.5h',
-    image: require('../../../image/toeic1.jpg'),
-  },
-  {
-    id: '3',
-    title: 'Khóa học IELTS',
-    description: 'Khóa học IELTS nâng cao',
-    duration: '6 tháng',
-    schedule: '2 buổi/tuần, 1.5h',
-    image: require('../../../image/ielts.jpg'),
-  },
-  {
-    id: '4',
-    title: 'Khóa học COMBO 2',
-    description: 'Tiếng Anh từ đầu tới giỏi toàn diện 4 kỹ năng nâng cao',
-    duration: '9 tháng',
-    schedule: '3 buổi/tuần, 1.5h',
-    image: require('../../../image/combo2.jpg'),
-  },
-  {
-    id: '5',
-    title: 'Khóa học COMBO 3',
-    description: 'Tiếng Anh từ cơ bản tới giỏi toàn diện 4 kỹ năng',
-    duration: '6 tháng',
-    schedule: '3 buổi/tuần, 1.5h',
-    image: require('../../../image/combo3.jpg'),
-  },
-  {
-    id: '6',
-    title: 'Khóa học TOEIC 2',
-    description: 'Khóa học TOEIC nâng cao',
-    duration: '6 tháng',
-    schedule: '3 buổi/tuần, 1.5h',
-    image:  require('../../../image/toeic2.jpg'),
-  },
-];
 
+type Course = {
+  idKhoaHoc: number;
+  tenKhoaHoc: string;
+  moTa: string;
+  thoiGianDienRa: string;
+  soBuoi: string;
+  image: string;
+};
 const CoursesComponent = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await http.get('auth/noauth/findAllKhoa');
+      setCourses(response.data);
+      console.log(response.data)
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    }
+  };
+
   return (
     <View style={styles.screenContainer}>
-       <View style={styles.bannerContainer}>
-          <Image
-            source={require('../../../image/course.png')} 
-            style={styles.bannerImage}
-          />
-          <View style={styles.overlay}>
-            <Text style={styles.bannerText}>Chọn ngay cho mình một khóa học phù hợp tại EFY</Text>
-          </View>
+      <View style={styles.bannerContainer}>
+        <Image
+          source={require('../../../image/course.png')} 
+          style={styles.bannerImage}
+        />
+        <View style={styles.overlay}>
+          <Text style={styles.bannerText}>Chọn ngay cho mình một khóa học phù hợp tại EFY</Text>
         </View>
+      </View>
       <ScrollView 
         contentContainerStyle={styles.scrollContainer} 
         showsVerticalScrollIndicator={false}  
@@ -71,15 +46,15 @@ const CoursesComponent = () => {
       >
         <View style={styles.coursesContainer}>
           {courses.map((item) => (
-            <View key={item.id} style={styles.courseCard}>
-              <Image source={item.image} style={styles.courseImage} />
+            <View key={item.idKhoaHoc} style={styles.courseCard}>
+              <Image source={{ uri: `data:image/png;base64,${item.image}` }} style={styles.courseImage} />
               <View style={styles.infoContainer}>
-                <Text style={styles.courseTitle}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
-                <Text style={styles.details}>Thời lượng: {item.duration}</Text>
-                <Text style={styles.details}>Lịch học: {item.schedule}</Text>
+                <Text style={styles.courseTitle}>{item.tenKhoaHoc}</Text>
+                <Text style={styles.description}>{item.moTa}</Text>
+                <Text style={styles.details}>Thời lượng: {item.thoiGianDienRa} tháng</Text>
+                <Text style={styles.details}>Số buổi: {item.soBuoi} buổi/tuần</Text>
                 <TouchableOpacity style={styles.enrollButton}>
-                  <Text style={styles.enrollButtonText}>Đăng ký khóa học này</Text>
+                  <Text style={styles.enrollButtonText}>Tìm hiểu khóa học này</Text>
                 </TouchableOpacity>
               </View>
             </View>
