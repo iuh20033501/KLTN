@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Modal, ImageBackground, Alert } from 'react-native';
-import http from '@/utils/http'; 
+import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
 
@@ -20,7 +20,8 @@ type Class = {
   tenLopHoc: string;
 };
 
-const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
+const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
+  const { idUser } = route.params;
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -30,7 +31,9 @@ const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
   const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [isPaymentOptionModalVisible, setPaymentOptionModalVisible] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'center' | 'online' | null>(null);
-
+  const [isConfirmationModalVisible2, setConfirmationModalVisible2] = useState(false);
+  const [resultModalVisible, setResultModalVisible] = useState(false);
+  const [resultMessage, setResultMessage] = useState('');
   useEffect(() => {
     fetchCourses();
   }, []);
@@ -55,19 +58,22 @@ const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
         console.error('Token không tồn tại');
         return;
       }
-      
+
       const response = await http.get(`/lopHoc/getByKhoa/${courseId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (response.status === 200) {
         setClasses(response.data);
         setModalVisible(true);
+        console.log(response.data)
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
     }
   };
+
+
 
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
@@ -77,9 +83,8 @@ const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
   const handleClassSelect = (classItem: Class) => {
     setSelectedClass(classItem);
     setModalVisible(false);
-    setConfirmationModalVisible(true); 
+    setConfirmationModalVisible(true);
   };
-
   const handleProceedToPayment = () => {
     setConfirmationModalVisible(false);
     setPaymentOptionModalVisible(true);
@@ -90,10 +95,49 @@ const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
       setPaymentOptionModalVisible(false);
     } else if (paymentOption === 'online') {
       setPaymentOptionModalVisible(false);
-      setConfirmationModalVisible(true); 
+      setConfirmationModalVisible2(true);
     }
   };
-  
+
+  const handleConfirmPaymentVerification = async () => {
+    if (selectedClass && idUser) {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+          setResultMessage("Không có token, vui lòng đăng nhập lại.");
+          setResultModalVisible(true);
+          return;
+        }
+
+        const response = await http.get(`/hocvien/dangkyLop/${selectedClass.idLopHoc}/${idUser}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 200) {
+          setResultMessage("Đăng ký lớp học thành công!");
+          setResultModalVisible(true);
+          setTimeout(() => {
+            setResultModalVisible(false);
+            navigation.navigate('DashboardScreen');
+          }, 1250);
+        } else {
+          setResultMessage("Đăng ký không thành công, vui lòng thử lại.");
+          setResultModalVisible(true);
+        }
+      } catch (error) {
+        setResultMessage("Đăng ký không thành công, vui lòng thử lại.");
+        console.error("Lỗi trong quá trình xác thực thanh toán:", error);
+      } finally {
+        setConfirmationModalVisible2(false);
+        setResultModalVisible(true);
+      }
+    } else {
+      setResultMessage("Không tìm thấy lớp học hoặc người dùng.");
+      setResultModalVisible(true);
+    }
+  };
 
   if (loading) {
     return <Text>Đang tải khóa học...</Text>;
@@ -166,44 +210,62 @@ const CourseRegistrationScreen = ({ navigation }: { navigation: any }) => {
       </Modal>
 
       <Modal visible={isPaymentOptionModalVisible} transparent={true} animationType="slide" onRequestClose={() => setPaymentOptionModalVisible(false)}>
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
 
-      <TouchableOpacity onPress={() => setPaymentOption('center')} style={styles.classOption}>
-        <View style={[styles.radioButtonOuter, paymentOption === 'center' && styles.radioButtonSelected]}>
-          {paymentOption === 'center' && <View style={styles.radioButtonInner} />}
+            <TouchableOpacity onPress={() => setPaymentOption('center')} style={styles.classOption}>
+              <View style={[styles.radioButtonOuter, paymentOption === 'center' && styles.radioButtonSelected]}>
+                {paymentOption === 'center' && <View style={styles.radioButtonInner} />}
+              </View>
+              <Text style={styles.classText}>Thanh toán tại trung tâm</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setPaymentOption('online')} style={styles.classOption}>
+              <View style={[styles.radioButtonOuter, paymentOption === 'online' && styles.radioButtonSelected]}>
+                {paymentOption === 'online' && <View style={styles.radioButtonInner} />}
+              </View>
+              <Text style={styles.classText}>Thanh toán online</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleConfirmPayment} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Xác nhận</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.classText}>Thanh toán tại trung tâm</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => setPaymentOption('online')} style={styles.classOption}>
-        <View style={[styles.radioButtonOuter, paymentOption === 'online' && styles.radioButtonSelected]}>
-          {paymentOption === 'online' && <View style={styles.radioButtonInner} />}
+      </Modal>
+      <Modal visible={isConfirmationModalVisible2} transparent={true} animationType="slide" onRequestClose={() => setConfirmationModalVisible2(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
+            <Image source={require('../../../image/qrCode.png')} style={styles.qrImage} />
+            <Text style={styles.bankInfo}>Ngân hàng: ABC Bank</Text>
+            <Text style={styles.bankInfo}>Số tài khoản: 123456789</Text>
+            <Text style={styles.bankInfo}>Tên tài khoản: Trung Tâm EFY</Text>
+            <TouchableOpacity onPress={handleConfirmPaymentVerification} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Xác thực thanh toán</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setConfirmationModalVisible2(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.classText}>Thanh toán online</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() =>handleConfirmPayment} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>Xác nhận</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
-<Modal visible={isConfirmationModalVisible} transparent={true} animationType="slide" onRequestClose={() => setConfirmationModalVisible(false)}>
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
-      <Image source={require('../../../image/qrCode.png')} style={styles.qrImage} /> 
-      <Text style={styles.bankInfo}>Ngân hàng: ABC Bank</Text>
-      <Text style={styles.bankInfo}>Số tài khoản: 123456789</Text>
-      <Text style={styles.bankInfo}>Tên tài khoản: Trung Tâm EFY</Text>
-      <TouchableOpacity onPress={() => setConfirmationModalVisible(false)} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>Đóng</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+      </Modal>
+      <Modal
+        visible={resultModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setResultModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.resultModalContainer}>
+            <Text style={styles.resultMessageText}>{resultMessage}</Text>
+            <TouchableOpacity onPress={() => setResultModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 };
@@ -228,18 +290,18 @@ const styles = StyleSheet.create({
     color: '#00405d',
   },
   scrollContainer: {
-    flexGrow: 1, 
+    flexGrow: 1,
     justifyContent: 'space-between',
   },
   coursesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   courseCard: {
-    width: '22%',  
+    width: '22%',
     margin: 30,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -251,7 +313,7 @@ const styles = StyleSheet.create({
   },
   courseImage: {
     width: '100%',
-    height: 300, 
+    height: 300,
   },
   infoContainer: {
     padding: 10,
@@ -368,6 +430,20 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     marginVertical: 20,
+  },
+  resultModalContainer: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resultMessageText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 
