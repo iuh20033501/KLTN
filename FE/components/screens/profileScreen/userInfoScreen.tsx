@@ -9,6 +9,7 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true); 
   const [selectedAvatar, setSelectedAvatar] = useState(''); 
+  const [classInfo, setClassInfo] = useState<any>(null);
 
   const getUserInfo = async () => {
     try {
@@ -34,11 +35,36 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
       setLoading(false);
     }
   };
-
+  const getStudentClass = async (idUser: number) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (token) {
+        const response = await http.get(`/hocvien/getByHV/${idUser}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          setClassInfo(response.data[0]);
+          console.log(response.data)
+        } else {
+          console.error("Không thể lấy thông tin lớp học.");
+        }
+      } else {
+        console.error("Không có token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API lấy thông tin lớp học:", error);
+    }
+  };
   useEffect(() => {
     getUserInfo();
   }, []);
-
+  useEffect(() => {
+    if (user && user.u && user.u.idUser) {
+      getStudentClass(user.u.idUser);
+    }
+  }, [user]);
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     const dateParts = dateString.split('-');
@@ -96,12 +122,12 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
 
         <View style={styles.row}>
           <MaterialIcons name="class" size={24} color="#00bf63" />
-          <Text style={styles.label}>Khóa học: <Text style={styles.value}>TAGT</Text></Text>
+          <Text style={styles.label}>Khóa học: <Text style={styles.value}>{classInfo?.khoaHoc?.tenKhoaHoc || 'Chưa đăng ký'}</Text></Text>
         </View>
 
         <View style={styles.row}>
           <MaterialIcons name="school" size={24} color="#00bf63" />
-          <Text style={styles.label}>Lớp học: <Text style={styles.value}>TAGT-101</Text></Text>
+          <Text style={styles.label}>Lớp học: <Text style={styles.value}>{classInfo?.tenLopHoc || 'Chưa đăng ký'}</Text></Text>
         </View>
       </View>
     </ScrollView>

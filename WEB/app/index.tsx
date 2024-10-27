@@ -38,8 +38,10 @@ export default function App() {
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
+
     </Stack.Navigator>
   </NavigationContainer>
+  
   );
 }
 

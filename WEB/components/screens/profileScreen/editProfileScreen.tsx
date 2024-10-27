@@ -64,7 +64,7 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
 
         return true;
     };
-
+console.log(selectedAvatar)
     const handleUpdate = async () => {
         if (!validateForm()) {
             return;
