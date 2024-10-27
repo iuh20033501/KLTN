@@ -9,6 +9,8 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState('');
+  const [classInfo, setClassInfo] = useState<any>(null);
+
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -34,10 +36,37 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     }
   };
 
+  const getStudentClass = async (idUser: number) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (token) {
+        const response = await http.get(`/hocvien/getByHV/${idUser}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          setClassInfo(response.data[0]);
+          console.log(response.data)
+        } else {
+          console.error("Không thể lấy thông tin lớp học.");
+        }
+      } else {
+        console.error("Không có token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API lấy thông tin lớp học:", error);
+    }
+  };
   useEffect(() => {
     getUserInfo();
   }, []);
 
+  useEffect(() => {
+    if (user && user.u && user.u.idUser) {
+      getStudentClass(user.u.idUser);
+    }
+  }, [user]);
   useFocusEffect(
     React.useCallback(() => {
       getUserInfo();
@@ -67,7 +96,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
             
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{user.u.hoTen}</Text>
-              <Text style={styles.courseName}>Tiếng Anh giao tiếp - L153304</Text>
+              <Text style={styles.courseName}>{classInfo?.tenLopHoc || 'Chưa đăng ký'}</Text>
             </View>
           </>
         )}

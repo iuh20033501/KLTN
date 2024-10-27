@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     image: {
         width: 120,
         height: 120,
-        borderRadius: 50,
+        borderRadius: 100,
         marginTop: 20,
         marginBottom: 10,
         alignSelf: 'center',

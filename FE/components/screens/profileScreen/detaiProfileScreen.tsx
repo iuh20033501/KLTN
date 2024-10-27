@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 150,
     height: 150,
-    borderRadius: 50,
+    borderRadius: 100,
     marginBottom: 10,
   },
   editAvatarText: {
