@@ -28,4 +28,7 @@ public class ThanhToan {
         this.hoaDon = hoaDon;
         this.lopHoc = lopHoc;
     }
+
+
+
 }
