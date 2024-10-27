@@ -33,7 +33,7 @@ public class KhoaHocController {
     //
     @GetMapping("/xoaKhoa/{id}")
     public KhoaHoc deleteKhoa (@PathVariable Long idKhoa){
-        KhoaHoc khoaHoc = khoaHocService.findById(idKhoa).orElseThrow(() -> new RuntimeException("Hoc vien not found"));
+        KhoaHoc khoaHoc = khoaHocService.findById(idKhoa).orElseThrow(() -> new RuntimeException("Khoa hoc not found"));
         khoaHoc.setTrangThai(false);
         return khoaHocService.createKhoaHoc(khoaHoc);
     }

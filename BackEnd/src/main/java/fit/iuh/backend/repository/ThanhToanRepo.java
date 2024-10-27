@@ -1,5 +1,6 @@
 package fit.iuh.backend.repository;
 
+import fit.iuh.backend.enumclass.ThanhToanEnum;
 import fit.iuh.backend.moudel.ThanhToan;
 import fit.iuh.backend.moudel.TienTrinh;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,11 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Repository
-public interface ThanhToanRepo extends JpaRepository<ThanhToan,Long> {
-    @Query("select tt from ThanhToan  tt join hocvien hv on tt.nguoiThanhToan.idUser= hv.idUser where tt.nguoiThanhToan.idUser= :id")
-    List<ThanhToan> getByIdHV (@Param("id") Long idHV);
-    @Query("select tt from ThanhToan  tt join LopHoc lop on tt.lopHoc.idLopHoc= lop.idLopHoc where tt.lopHoc.idLopHoc= :id")
-    List<ThanhToan> getByIdLop (@Param("id") Long idLop);
-    @Query("select tt from ThanhToan  tt join HoaDon hd on tt.hoaDon.idHoaDon= hd.idHoaDon where tt.hoaDon.idHoaDon= :id")
-    List<ThanhToan> getByIdHD (@Param("id") Long idHD);
+public interface ThanhToanRepo extends JpaRepository<ThanhToan, Long> {
+
+    @Query("SELECT tt FROM ThanhToan tt JOIN tt.nguoiThanhToan hv ON tt.nguoiThanhToan.idUser = hv.idUser WHERE tt.nguoiThanhToan.idUser = :id")
+    List<ThanhToan> findByIdHV(@Param("id") Long idHV);
+
+    @Query("SELECT tt FROM ThanhToan tt JOIN tt.lopHoc lop ON tt.lopHoc.idLopHoc = lop.idLopHoc WHERE tt.lopHoc.idLopHoc = :id")
+    List<ThanhToan> findByIdLop(@Param("id") Long idLop);
+
+    @Query("SELECT tt FROM ThanhToan tt JOIN tt.hoaDon hd ON tt.hoaDon.idHoaDon = hd.idHoaDon WHERE tt.hoaDon.idHoaDon = :id")
+    List<ThanhToan> findByIdHD(@Param("id") Long idHD);
+    @Query("SELECT tt FROM ThanhToan tt JOIN tt.nguoiThanhToan hv ON tt.nguoiThanhToan.idUser = hv.idUser WHERE tt.nguoiThanhToan.idUser = :id AND tt.trangThai = :trangThai")
+    List<ThanhToan> findByIdHVAndTrangThaiWait(@Param("id") Long idHV, @Param("trangThai") ThanhToanEnum trangThai);
+
 }
+
