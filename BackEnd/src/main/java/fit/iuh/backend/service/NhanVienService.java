@@ -11,4 +11,5 @@ public interface NhanVienService {
     Optional<NhanVien> findById(Long id);
     NhanVien createNhanVien(NhanVien nhanVien);
     List<NhanVien> findAlL();
+    NhanVien findByName(String name);
 }

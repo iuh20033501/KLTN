@@ -27,4 +27,10 @@ public class NhanVienImplement implements NhanVienService {
     public List<NhanVien> findAlL() {
         return nhanVienRepo.findAll();
     }
+
+    @Override
+    public NhanVien findByName(String name) {
+        return  nhanVienRepo.findByHoTen(name);
+    }
+
 }
