@@ -82,11 +82,10 @@ public class HocVienController {
         key.setLopHoc(lop);
         key.setHocVien(hv);
         int siSo = hocVienLopHocService.findByidLop(key.getLopHoc().getIdLopHoc()).size();
-        if(key.getLopHoc().getSoHocVien()>=siSo){
+        if(lop.getSoHocVien()<=siSo){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
         HocVienLopHoc result = hocVienLopHocService.dangKyLopHoc(key);
-
         if (result != null) {
             return ResponseEntity.ok(result); // Trả về kết quả thành công
         } else {
