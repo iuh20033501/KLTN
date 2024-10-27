@@ -14,8 +14,8 @@ public interface BuoiHocRepo extends JpaRepository<BuoiHoc,Long> {
     List<BuoiHoc> getBuoiTheoLop (@Param("id") Long id);
     @Query("SELECT bh FROM BuoiHoc bh " +
             "JOIN bh.lopHoc lop " +
-            "JOIN HocVienLopHoc bhhv ON lop.idLopHoc = bhhv.key.LopHoc.idLopHoc " +
-            "WHERE bhhv.key.HocVien.idUser = :id " +
+            "JOIN HocVienLopHoc bhhv ON lop.idLopHoc = bhhv.key.lopHoc.idLopHoc " +
+            "WHERE bhhv.key.hocVien.idUser = :id " +
             "ORDER BY bh.ngayHoc ASC")
     List<BuoiHoc> getBuoiHocTheoIdHocVien(@Param("id") Long id);
 
