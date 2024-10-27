@@ -4,6 +4,7 @@ import fit.iuh.backend.moudel.*;
 import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -21,6 +22,7 @@ public class BaiTapController {
     private TienTrinhService tienTrinhService;
     @Autowired
     private HocVienService hocVienService;
+    @Qualifier("buoiHocImplement")
     @Autowired
     private BuoiHocService buoiHoccService;
 
