@@ -36,19 +36,19 @@ public class HocVienLopHocImplement implements HocVienLopHocService {
 
     @Override
     public HocVienLopHoc dangKyLopHoc(HocVienLopHocKey key) {
-
-        HocVien hocVien = hocVienRepository.findById(key.getHocVien().getIdUser())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy học viên với ID: " + key.getHocVien().getIdUser()));
-
-        LopHoc lopHoc = lopHocRepository.findById(key.getLopHoc().getIdLopHoc())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp học với ID: " + key.getLopHoc().getIdLopHoc()));
+//
+//        HocVien hocVien = hocVienRepository.findById(key.getHocVien().getIdUser())
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy học viên với ID: " + key.getHocVien().getIdUser()));
+//
+//        LopHoc lopHoc = lopHocRepository.findById(key.getLopHoc().getIdLopHoc())
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp học với ID: " + key.getLopHoc().getIdLopHoc()));
 
 //        HocVienLopHocKey key = new HocVienLopHocKey(hocVien, lopHoc);
 
         if (hocVienLopHocRepository.existsById(key)) {
             throw new RuntimeException("Học viên đã đăng ký lớp học này.");
         }
-        if(lopHoc.getTrangThai().equals(1)||lopHoc.getTrangThai().equals(2)){
+        if(key.getLopHoc().getTrangThai().equals(1)||key.getLopHoc().getTrangThai().equals(2)){
             throw new RuntimeException("Lớp học đã đầy hoặc bị xóa.");
         }
         HocVienLopHoc hocVienLopHoc = new HocVienLopHoc(key, true);

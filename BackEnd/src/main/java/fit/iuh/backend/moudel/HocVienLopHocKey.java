@@ -14,8 +14,8 @@ import java.io.Serializable;
 @Embeddable
 public class HocVienLopHocKey implements Serializable {
     @ManyToOne
-    private HocVien HocVien;
+    private HocVien hocVien;
     @ManyToOne
-    private LopHoc  LopHoc;
+    private LopHoc  lopHoc;
 
 }
