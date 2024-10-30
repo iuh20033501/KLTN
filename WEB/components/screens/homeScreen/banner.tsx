@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     height: height * 0.8, 
+    backgroundColor: '#fff'
   },
   backgroundImage: {
     width: '100%',

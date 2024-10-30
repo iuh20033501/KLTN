@@ -16,8 +16,12 @@ type Course = {
 };
 
 type Class = {
+  lichHoc: string;
+  giangVien: any;
   idLopHoc: number;
   tenLopHoc: string;
+  soHocVien: string;
+  gmail: string
 };
 
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
@@ -28,12 +32,16 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [classDetails, setClassDetails] = useState<any>(null);
   const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [isPaymentOptionModalVisible, setPaymentOptionModalVisible] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'center' | 'online' | null>(null);
   const [isConfirmationModalVisible2, setConfirmationModalVisible2] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
+  const [imageCourse, setImageCourse] = useState('');
+  const [classDetailModalVisible, setClassDetailModalVisible] = useState(false);
+  const [nextStepModalVisible, setNextStepModalVisible] = useState(false);
   useEffect(() => {
     fetchCourses();
   }, []);
@@ -66,7 +74,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       if (response.status === 200) {
         setClasses(response.data);
         setModalVisible(true);
-        console.log(response.data)
+
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -83,58 +91,48 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const handleClassSelect = (classItem: Class) => {
     setSelectedClass(classItem);
     setModalVisible(false);
+    setClassDetailModalVisible(true)
+  };
+  const handleClassRegister = () => {
+    setClassDetailModalVisible(false)
     setConfirmationModalVisible(true);
-  };
-  const handleProceedToPayment = () => {
-    setConfirmationModalVisible(false);
-    setPaymentOptionModalVisible(true);
-  };
-  const handleConfirmPayment = async () => {
-    if (paymentOption === 'center') {
-      alert("Vui lòng đến trung tâm để thực hiện thanh toán.");
-      setPaymentOptionModalVisible(false);
-    } else if (paymentOption === 'online') {
-      setPaymentOptionModalVisible(false);
-      setConfirmationModalVisible2(true);
-    }
-  };
 
-  const handleConfirmPaymentVerification = async () => {
-    if (selectedClass && idUser) {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if (!token) {
-          setResultMessage("Không có token, vui lòng đăng nhập lại.");
-          setResultModalVisible(true);
-          return;
+  };
+  const handleConfirm = () => {
+    setResultModalVisible(false);
+    setNextStepModalVisible(true);
+  };
+  const handlePayment = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token || !selectedClass) {
+        setResultMessage('Token không tồn tại hoặc lớp học không được chọn');
+        setResultModalVisible(true);
+        return;
+      }
+
+      const response = await http.post(
+        `thanhToan/create/${selectedClass.idLopHoc}/${idUser}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
 
-        const response = await http.get(`/hocvien/dangkyLop/${selectedClass.idLopHoc}/${idUser}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.status === 200) {
-          setResultMessage("Đăng ký lớp học thành công!");
-          setResultModalVisible(true);
-          setTimeout(() => {
-            setResultModalVisible(false);
-            navigation.navigate('DashboardScreen');
-          }, 1250);
-        } else {
-          setResultMessage("Đăng ký không thành công, vui lòng thử lại.");
-          setResultModalVisible(true);
-        }
-      } catch (error) {
-        setResultMessage("Đăng ký không thành công, vui lòng thử lại.");
-        console.error("Lỗi trong quá trình xác thực thanh toán:", error);
-      } finally {
-        setConfirmationModalVisible2(false);
+      if (response.status === 200) {
+        setResultMessage('Đăng ký thành công');
+        setConfirmationModalVisible(false);
+        setResultModalVisible(true);
+        setTimeout(() => {
+          handleConfirm();
+      }, 1000);
+      } else {
+        setResultMessage('Đăng ký thất bại. Vui lòng thử lại.');
         setResultModalVisible(true);
       }
-    } else {
-      setResultMessage("Không tìm thấy lớp học hoặc người dùng.");
+    } catch (error) {
+      console.error(error);
+      setResultMessage('CBạn đã đăng ký lớp học này');
       setResultModalVisible(true);
     }
   };
@@ -143,24 +141,49 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
     return <Text>Đang tải khóa học...</Text>;
   }
 
+  const getImageCourseUri = (imageData: string) => {
+    if (!imageData) return null;
+    if (imageData.startsWith("data:image")) {
+      return imageData;
+    }
+    const defaultMimeType = "image/png";
+    let mimeType = defaultMimeType;
+
+    if (/^\/9j/.test(imageData)) {
+      mimeType = "image/jpeg";
+    } else if (/^iVBOR/.test(imageData)) {
+      mimeType = "image/png";
+    } else if (/^R0lGOD/.test(imageData)) {
+      mimeType = "image/gif";
+    } else if (/^Qk/.test(imageData)) {
+      mimeType = "image/bmp";
+    } else if (/^UklGR/.test(imageData)) {
+      mimeType = "image/webp";
+    }
+
+    return `data:${mimeType};base64,${imageData}`;
+  };
   return (
     <ImageBackground source={require('../../../image/bglogin.png')} style={styles.background}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('DashboardScreen')}>
+        <Text style={styles.backButtonText}>Quay về</Text>
+      </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ fontSize: 16, color: '#00405d', textAlign: 'center', left: -530 }}>Quay lại</Text>
-        </TouchableOpacity>
         <Text style={styles.title}>Đăng ký khóa học</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.coursesContainer}>
           {courses.map((course) => (
             <View key={course.idKhoaHoc} style={styles.courseCard}>
-              <Image source={{ uri: `data:image/png;base64,${course.image}` }} style={styles.courseImage} />
+              <Image
+                source={course.image ? { uri: getImageCourseUri(course.image) } : require('../../../image/efy.png')}
+                style={styles.courseImage}
+              />
               <View style={styles.infoContainer}>
                 <Text style={styles.courseTitle}>{course.tenKhoaHoc}</Text>
                 <Text style={styles.description}>{course.moTa}</Text>
                 <Text style={styles.details}>Thời lượng: {course.thoiGianDienRa} tháng</Text>
-                <Text style={styles.details}>Số buổi: {course.soBuoi} buổi/tuần</Text>
+                <Text style={styles.details}>Số buổi: {course.soBuoi} buổi</Text>
                 <Text style={styles.details}>Học phí: <Text style={{ color: 'red' }}>{course.giaTien}đ</Text></Text>
 
                 <TouchableOpacity
@@ -174,17 +197,22 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
           ))}
         </View>
       </ScrollView>
-
       <Modal visible={isModalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Chọn lớp học</Text>
             {classes.length > 0 ? (
-              classes.map((classItem) => (
-                <TouchableOpacity key={classItem.idLopHoc} onPress={() => handleClassSelect(classItem)} style={styles.classOption}>
-                  <Text style={styles.classText}>{classItem.tenLopHoc}</Text>
-                </TouchableOpacity>
-              ))
+              <View style={styles.classOptionsContainer}>
+                {classes.map((classItem) => (
+                  <TouchableOpacity
+                    key={classItem.idLopHoc}
+                    onPress={() => handleClassSelect(classItem)}
+                    style={styles.classOption}
+                  >
+                    <Text style={styles.classText}>{classItem.tenLopHoc}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             ) : (
               <Text>Không có lớp nào cho khóa học này.</Text>
             )}
@@ -195,59 +223,50 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         </View>
       </Modal>
 
+      <Modal
+        visible={classDetailModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setClassDetailModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Chi tiết lớp học</Text>
+            {selectedClass ? (
+              <>
+                <Text style={styles.detailText}>Tên lớp: {selectedClass.tenLopHoc || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>Lịch học: {selectedClass.lichHoc || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>Số lượng: {selectedClass.soHocVien || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>Giảng viên: {selectedClass.giangVien?.hoTen || 'Không có thông tin'}</Text>
+              </>
+            ) : (
+              <Text>Đang tải thông tin lớp học...</Text>
+            )}
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <TouchableOpacity onPress={handleClassRegister} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Đăng ký</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setClassDetailModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={isConfirmationModalVisible} transparent={true} animationType="slide" onRequestClose={() => setConfirmationModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Thanh toán để hoàn tất đăng ký</Text>
-            <TouchableOpacity onPress={handleProceedToPayment} style={styles.confirmButton}>
-              <Text style={styles.confirmButtonText}>Thanh toán</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setConfirmationModalVisible(false)} style={styles.confirmButton}>
-              <Text style={styles.confirmButtonText}>Để sau</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={isPaymentOptionModalVisible} transparent={true} animationType="slide" onRequestClose={() => setPaymentOptionModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
-
-            <TouchableOpacity onPress={() => setPaymentOption('center')} style={styles.classOption}>
-              <View style={[styles.radioButtonOuter, paymentOption === 'center' && styles.radioButtonSelected]}>
-                {paymentOption === 'center' && <View style={styles.radioButtonInner} />}
-              </View>
-              <Text style={styles.classText}>Thanh toán tại trung tâm</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setPaymentOption('online')} style={styles.classOption}>
-              <View style={[styles.radioButtonOuter, paymentOption === 'online' && styles.radioButtonSelected]}>
-                {paymentOption === 'online' && <View style={styles.radioButtonInner} />}
-              </View>
-              <Text style={styles.classText}>Thanh toán online</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleConfirmPayment} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Xác nhận</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal visible={isConfirmationModalVisible2} transparent={true} animationType="slide" onRequestClose={() => setConfirmationModalVisible2(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
-            <Image source={require('../../../image/qrCode.png')} style={styles.qrImage} />
-            <Text style={styles.bankInfo}>Ngân hàng: ABC Bank</Text>
-            <Text style={styles.bankInfo}>Số tài khoản: 123456789</Text>
-            <Text style={styles.bankInfo}>Tên tài khoản: Trung Tâm EFY</Text>
-            <TouchableOpacity onPress={handleConfirmPaymentVerification} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Xác thực thanh toán</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setConfirmationModalVisible2(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Hủy</Text>
-            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Hoàn tất đăng ký</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <TouchableOpacity onPress={handlePayment} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Đăng ký</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setConfirmationModalVisible(false)} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Để sau</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -260,9 +279,25 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         <View style={styles.modalOverlay}>
           <View style={styles.resultModalContainer}>
             <Text style={styles.resultMessageText}>{resultMessage}</Text>
-            <TouchableOpacity onPress={() => setResultModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Đóng</Text>
+            <TouchableOpacity onPress={() => setResultModalVisible(false)} style={styles.confirmButton}>
+              <Text style={styles.confirmButtonText}>Đóng</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={nextStepModalVisible} transparent={true} animationType="slide"  onRequestClose={() => setNextStepModalVisible(false)}> 
+        <View style={styles.modalOverlay}>
+          <View style={styles.resultModalContainer}>
+            <Text style={styles.resultMessageText}>Bạn muốn đi tới trang thanh toán hay quay về trang chủ</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser })}}  style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Đi tới thanh toán</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {setNextStepModalVisible(false),navigation.navigate('DashboardScreen')}} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Quay về trang chủ</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -282,14 +317,17 @@ const styles = StyleSheet.create({
   titleContainer: {
     padding: 20,
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    height: 30
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#00405d',
+    top: -20
   },
   scrollContainer: {
+
     flexGrow: 1,
     justifyContent: 'space-between',
   },
@@ -351,7 +389,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: '30%',
+    width: 450,
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
@@ -363,14 +401,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  classOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
   classOption: {
+    backgroundColor: '#FF0000',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+    margin: 5,
+    borderRadius: 15
+
   },
   classText: {
     fontSize: 16,
-    color: '#333',
+    color: 'white',
+    fontWeight: 'bold',
   },
   closeButton: {
     marginTop: 10,
@@ -379,7 +428,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 200,
+    width: 150,
+
   },
   closeButtonText: {
     color: 'white',
@@ -392,7 +442,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 200,
+    width: 150,
+    marginRight: 10
   },
   confirmButtonText: {
     color: 'white',
@@ -412,7 +463,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#00405d',
+    borderColor: 'white',
     marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -424,7 +475,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00405d',
   },
   radioButtonSelected: {
-    borderColor: '#00405d',
+    borderColor: 'white',
   },
   qrImage: {
     width: 150,
@@ -444,6 +495,23 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  detailText: {
+    fontSize: 16,
+    marginVertical: 5,
+    color: '#333',
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: 10,
+    backgroundColor: '#00405d',
+    borderRadius: 5,
+    top: 25,
+    left: 277
+  },
+  backButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

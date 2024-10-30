@@ -71,7 +71,6 @@
       alignItems: 'center', 
       padding: 20,
       backgroundColor: 'white',
-      marginTop:50
     },
     header: {
       width:'80%',
