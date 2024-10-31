@@ -27,7 +27,7 @@ public class BuoiHoc {
     public BuoiHoc(String chuDe, Date ngayHoc, Boolean hocOnl, String noiHoc, String gioHoc, String gioKetThuc) {
         this.chuDe = chuDe;
         this.ngayHoc = ngayHoc;
-        HocOnl = hocOnl;
+        this.HocOnl = hocOnl;
         this.noiHoc = noiHoc;
         this.gioHoc = gioHoc;
         this.gioKetThuc = gioKetThuc;

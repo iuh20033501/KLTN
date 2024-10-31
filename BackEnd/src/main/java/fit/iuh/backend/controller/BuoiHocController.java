@@ -29,7 +29,7 @@ public class BuoiHocController {
     )
     @PostMapping("/createBuoiHoc/{idLop}")
     public ResponseEntity<BuoiHoc> createBuoiHoc(@PathVariable Long idLop, @RequestBody BuoiHoc buoiHoc){
-      LopHoc lop= lopHocService.findById(idLop).get();
+      LopHoc lop= lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Buoi hoc not found"));
       buoiHoc.setLopHoc(lop);
         return ResponseEntity.status(HttpStatus.CREATED).body(buoiHocService.createBuoiHoc(buoiHoc));
     }
@@ -49,11 +49,11 @@ public class BuoiHocController {
     """
     )
     @PutMapping("/update/{idLop}/{idBuoi}")
-    public BuoiHoc updateBuoiHoc(@PathVariable Long idLop,@PathVariable Long idBuoi ,@RequestBody BuoiHoc buoiHoc){
-        LopHoc lop= lopHocService.findById(idLop).get();
+    public ResponseEntity<BuoiHoc> updateBuoiHoc(@PathVariable Long idLop,@PathVariable Long idBuoi ,@RequestBody BuoiHoc buoiHoc){
+        LopHoc lop= lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Buoi hoc not found"));
         buoiHoc.setLopHoc(lop);
         buoiHoc.setIdBuoiHoc(idBuoi);
-        return buoiHocService.createBuoiHoc(buoiHoc);
+        return ResponseEntity.status(HttpStatus.CREATED).body(buoiHocService.createBuoiHoc(buoiHoc));
     }
     @GetMapping("/getByHocVien/{id}")
     public List<BuoiHoc> getByHocVien(@PathVariable Long id ){
