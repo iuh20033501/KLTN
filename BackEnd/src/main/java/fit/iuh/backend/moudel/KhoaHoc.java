@@ -24,6 +24,7 @@ public class  KhoaHoc {
     private Boolean trangThai;
     private Long soBuoi;
     private String moTa;
+    @Column(length = 1000000000)
     private String image;
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
