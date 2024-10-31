@@ -1,4 +1,4 @@
-package com.mycompany.destop.Reponse;
+package com.mycompany.destop.Request;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

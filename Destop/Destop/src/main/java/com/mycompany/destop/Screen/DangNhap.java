@@ -5,10 +5,13 @@
 package com.mycompany.destop.Screen;
 
 import com.google.gson.Gson;
-import com.mycompany.destop.ApiClient;
+
+import com.mycompany.destop.DTO.SigninDTO;
+import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Reponse.ApiResponse;
 import com.mycompany.destop.Reponse.JwtResponse;
-import com.mycompany.destop.Reponse.LoginRequest;
+
+import com.mycompany.destop.Service.ApiClient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -208,7 +211,10 @@ if (builder.length() > 0) {
         ApiClient apiClient = new ApiClient();
        JwtResponse reponse= apiClient.callLoginApi(username, password);
         System.out.println(reponse.getAccessToken());
+        SigninDTO signinDTO = apiClient.callProfileApi(reponse.getAccessToken());
+        if(signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN)||signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)){
         JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+        }
     } catch (Exception e) {
         e.printStackTrace();
         

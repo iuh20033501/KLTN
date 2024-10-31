@@ -24,7 +24,7 @@ public class LopHoc {
     private Date ngayKT;
     @ManyToOne
     private GiangVien giangVien;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private KhoaHoc khoaHoc;
 //    @OneToMany(mappedBy = "HocVienLopHocKey.lopHoc")
 //    private List<HocVienLopHoc> hocVienLopHocs;

@@ -5,25 +5,40 @@
 package com.mycompany.destop.Modul;
 
 import com.mycompany.destop.Enum.SkillEnum;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.awt.List;
+import java.util.ArrayList;
 
 /**
  *
  * @author Windows 10
  */
 
-public class HocVien extends User {
-    @ElementCollectio(targetClass = SkillEnum.class)
-    @Enumerated(EnumTyp.ORDINAL)
-    private List<SkillEnum> kiNangCan;
+public class HocVien {
+    @ElementCollection(targetClass = SkillEnum.class)
+    @Enumerated(EnumType.ORDINAL)
+    private ArrayList<SkillEnum> kiNangCan;
 
-    // Getter và setter cho kiNangCan
-    public List<SkillEnum> getKiNangCan() {
+    // Constructor
+    public HocVien() {
+        kiNangCan = new ArrayList<>(); // Khởi tạo danh sách
+    }
+
+    // Getter cho kiNangCan
+    public ArrayList<SkillEnum> getKiNangCan() {
         return kiNangCan;
     }
 
-    public void setKiNangCa(List<SkillEnum> kiNangCan) {
+    // Setter cho kiNangCan
+    public void setKiNangCan(ArrayList<SkillEnum> kiNangCan) {
         this.kiNangCan = kiNangCan;
+    }
+
+    // Phương thức thêm kỹ năng
+    public void addSkill(SkillEnum skill) {
+        kiNangCan.add(skill);
     }
 }
 

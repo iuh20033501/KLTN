@@ -17,11 +17,19 @@ public class BuoiHoc {
     private Long idBuoiHoc;
     private String chuDe;
     private Date ngayHoc;
+    private Boolean HocOnl;
+    private String noiHoc;
+    private String gioHoc;
+    private String gioKetThuc;
     @ManyToOne
     private LopHoc lopHoc;
 
-    public BuoiHoc(String chuDe, Date ngayHoc) {
+    public BuoiHoc(String chuDe, Date ngayHoc, Boolean hocOnl, String noiHoc, String gioHoc, String gioKetThuc) {
         this.chuDe = chuDe;
         this.ngayHoc = ngayHoc;
+        HocOnl = hocOnl;
+        this.noiHoc = noiHoc;
+        this.gioHoc = gioHoc;
+        this.gioKetThuc = gioKetThuc;
     }
 }
