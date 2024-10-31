@@ -6,6 +6,8 @@ import fit.iuh.backend.service.BuoiHocService;
 import fit.iuh.backend.service.LopHocService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +28,10 @@ public class BuoiHocController {
     """
     )
     @PostMapping("/createBuoiHoc/{idLop}")
-    public BuoiHoc createBuoiHoc(@PathVariable Long idLop, @RequestBody BuoiHoc buoiHoc){
+    public ResponseEntity<BuoiHoc> createBuoiHoc(@PathVariable Long idLop, @RequestBody BuoiHoc buoiHoc){
       LopHoc lop= lopHocService.findById(idLop).get();
       buoiHoc.setLopHoc(lop);
-        return buoiHocService.createBuoiHoc(buoiHoc);
+        return ResponseEntity.status(HttpStatus.CREATED).body(buoiHocService.createBuoiHoc(buoiHoc));
     }
     @GetMapping("/getbuoiHocByLop/{idLop}")
     public List<BuoiHoc> getBuoiByLop(@PathVariable  Long idLop){
