@@ -20,5 +20,6 @@ public interface ThanhToanService {
     List<ThanhToan> findAll();
     ThanhToan updateThanhToan (ThanhToan thanhToan);
     List<ThanhToan> findByIDHVvaEnum(Long idHV, ThanhToanEnum thanhToanEnum);
-
+    List<ThanhToan> findByIdLopvaEnum(Long idLop, ThanhToanEnum thanhToanEnum);
+    void reLoadThanhToanByIdLop(Long idLop);
 }

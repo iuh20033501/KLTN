@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -72,11 +73,35 @@ public class ThanhToanController {
     """
     )
     @GetMapping("/delete/{id}")
-    public ThanhToan deleteKhoa (@PathVariable Long id){
+    public ThanhToan deleteThanhToan (@PathVariable Long id){
         ThanhToan tt = thanhToanService.findById(id).orElseThrow(() -> new RuntimeException("Thanh toan not found"));
         tt.setTrangThai(ThanhToanEnum.CANCEL);
         return thanhToanService.createThanhToan(tt);
     }
+    @Operation(
+            summary = "upload thanh toan ",
+            description = """
+          xet đièu kiện xem lớp học chưa bắt đàu, nếu đã bắt đầu xóa thành trạng thái 
+          trả vè danh sách lớp đẫ thanh toán và chờ thanh toán hợp lệ
+    """
+    )
+    @GetMapping("/upload/{idHV}")
+    public List<ThanhToan> uploadThanhToan(@PathVariable Long idHV) {
+        List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.WAIT);
+        Date currentDate = new Date();
+        list.removeIf(tt -> {
+            if (tt.getLopHoc().getNgayBD().before(currentDate)) {
+                tt.setTrangThai(ThanhToanEnum.CANCEL);
+                return true; // Xóa tt khỏi danh sách
+            }
+            return false;
+        });
+        List<ThanhToan> listDone = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.DONE);
+        list.addAll(listDone);
+
+        return list;
+    }
+
     @GetMapping("/getAll")
     public List<ThanhToan> findAll (){
         return  thanhToanService.findAll();
@@ -96,11 +121,47 @@ public class ThanhToanController {
         List<ThanhToan> list = thanhToanService.findByIdHoaDon(idHD);
         return list;
     }
+    @Operation(
+            summary = "getAll thanh toan dù có cancel hay không ",
+            description = """
+             id Lop
+    """
+    )
     @GetMapping("/findByIdLop/{idLop}")
     public List<ThanhToan> findByIdLop (@PathVariable Long idLop){
         List<ThanhToan> list = thanhToanService.finfByIdLop(idLop);
         return list;
     }
+    @Operation(
+            summary = "getAll thanh toan dù có trang thái là Done và wait",
+            description = """
+             truyền IdLop
+             dung de get những thanh toán của lớp ẩn đi thanh toan cancel
+             xét duyên cái thanh toán wait ngày bắt đàu mở lớp qua ngày hiện tại thì xóa
+             id Lop
+    """
+    )
+    @GetMapping("/findByIdLopNotCancel/{idLop}")
+    public List<ThanhToan> findByIdLopNotCancel(@PathVariable Long idLop) {
+        List<ThanhToan> listWait = thanhToanService.findByIdLopvaEnum(idLop, ThanhToanEnum.WAIT);
+        List<ThanhToan> listDone = thanhToanService.findByIdLopvaEnum(idLop, ThanhToanEnum.DONE);
+        thanhToanService.reLoadThanhToanByIdLop(idLop);
+        listDone.addAll(listWait);
+        return listDone;
+    }
+    @Operation(
+            summary = "reLoad lại thanh toán wait",
+            description = """
+             truyền IdLop
+             xét duyên cái thanh toán wait ngày bắt đàu mở lớp qua ngày hiện tại thì xóa
+             
+    """
+    )
+    @GetMapping("/reLoadTTByIdLop/{idLop}")
+    public void reLoadByIdLop(@PathVariable Long idLop) {
+        thanhToanService.reLoadThanhToanByIdLop(idLop);
+    }
+
     @Operation(
             summary = "get list thanh toan có idHV và enum wait",
             description = """
@@ -109,7 +170,7 @@ public class ThanhToanController {
             Update ThanHtOAN cancel
     """
     )
-    @GetMapping("/findByIdLop/{idHV}")
+    @GetMapping("/findByIdHocVienWait/{idHV}")
     public List<ThanhToan> findByIdLopVaEnum (@PathVariable Long idHV){
         List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.WAIT);
         return list;
