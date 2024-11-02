@@ -15,6 +15,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import EditProfileScreen from '@/components/screens/profileScreen/editProfileScreen';
 import CourseRegistrationScreen from '@/components/screens/course/courseRegistrationScreen';
 import PaymentScreen from '@/components/screens/payment/paymentScreen';
+import ScheduleScreen from '@/components/screens/schedule/scheduleScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -26,6 +27,7 @@ type RootStackParamList = {
   EditProfileScreen:undefined;
   CourseRegistrationScreen:undefined;
   PaymentScreen:undefined;
+  ScheduleScreen: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -41,7 +43,9 @@ export default function App() {
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
       <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+      <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
 
+      
     </Stack.Navigator>
   </NavigationContainer>
   

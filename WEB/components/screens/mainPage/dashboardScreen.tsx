@@ -216,7 +216,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('CourseRegistrationScreen', { idUser: user.u.idUser });
+                    navigation.navigate('CourseRegistrationScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
                   }}
                 >
                   <Text style={styles.linkText}>Đăng ký</Text>
@@ -268,7 +268,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+               onPress={() => {
+                navigation.navigate('ScheduleScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
+              }}>
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch học</Text>
               </TouchableOpacity>
@@ -286,7 +289,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
-                  navigation.navigate('PaymentScreen', { idUser: user.u.idUser });
+                  navigation.navigate('PaymentScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
                 }}>
                 <AntDesign name="creditcard" size={24} color="black" />
                 <Text style={styles.featureText}>Thanh toán trực tuyến</Text>

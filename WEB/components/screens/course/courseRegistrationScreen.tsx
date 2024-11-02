@@ -23,9 +23,12 @@ type Class = {
   soHocVien: string;
   gmail: string
 };
+type Payment = {
+  [x: string]: any; idLopHoc: number; trangThai: string 
+};
 
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
-  const { idUser } = route.params;
+  const { idUser,nameUser } = route.params;
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -36,6 +39,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [isPaymentOptionModalVisible, setPaymentOptionModalVisible] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'center' | 'online' | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]); 
   const [isConfirmationModalVisible2, setConfirmationModalVisible2] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
@@ -44,6 +48,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [nextStepModalVisible, setNextStepModalVisible] = useState(false);
   useEffect(() => {
     fetchCourses();
+    fetchPayments()
   }, []);
 
   const fetchCourses = async () => {
@@ -51,6 +56,8 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       const response = await http.get('auth/noauth/findAllKhoa');
       if (response.status === 200) {
         setCourses(response.data);
+        console.log(response.data)
+
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -58,6 +65,26 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       setLoading(false);
     }
   };
+
+  const fetchPayments = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('Token không tồn tại');
+        return;
+      }
+      const response = await http.get(`thanhToan/findByIdHV/${idUser}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        setPayments(response.data);
+        console.log(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+    }
+  };
+
 
   const fetchClasses = async (courseId: number) => {
     try {
@@ -89,10 +116,23 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   };
 
   const handleClassSelect = (classItem: Class) => {
+    const isAlreadyPaid = payments.some(
+      (payment) =>
+        payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
+        (payment.trangThai === 'WAIT' || payment.trangThai === 'DONE')
+    );
+  
+    if (isAlreadyPaid) {
+      setResultMessage("Bạn đã đăng ký khóa học này rồi")
+      setResultModalVisible(true);
+      return;
+    }
+  
     setSelectedClass(classItem);
     setModalVisible(false);
     setClassDetailModalVisible(true)
   };
+
   const handleClassRegister = () => {
     setClassDetailModalVisible(false)
     setConfirmationModalVisible(true);
@@ -132,7 +172,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       }
     } catch (error) {
       console.error(error);
-      setResultMessage('CBạn đã đăng ký lớp học này');
+      setResultMessage('Bạn đã đăng ký lớp học này');
       setResultModalVisible(true);
     }
   };
@@ -291,7 +331,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
           <View style={styles.resultModalContainer}>
             <Text style={styles.resultMessageText}>Bạn muốn đi tới trang thanh toán hay quay về trang chủ</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser })}}  style={styles.confirmButton}>
+              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser,nameUser })}}  style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>Đi tới thanh toán</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => {setNextStepModalVisible(false),navigation.navigate('DashboardScreen')}} style={styles.confirmButton}>
@@ -483,7 +523,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   resultModalContainer: {
-    width: '80%',
+    width: '20%',
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
