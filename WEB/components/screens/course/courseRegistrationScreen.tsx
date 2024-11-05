@@ -13,9 +13,11 @@ type Course = {
   thoiGianDienRa: string;
   soBuoi: string;
   image: string;
+  ngayBD: string;
 };
 
 type Class = {
+  [x: string]: any;
   lichHoc: string;
   giangVien: any;
   idLopHoc: number;
@@ -23,9 +25,18 @@ type Class = {
   soHocVien: string;
   gmail: string
 };
+type Payment = {
+  [x: string]: any; idLopHoc: number; trangThai: string 
+};
 
+interface DaySchedule {
+  idBuoiHoc: number;
+  ngayHoc: string;
+  gioHoc: string;
+  gioKetThuc: string;
+}
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
-  const { idUser } = route.params;
+  const { idUser,nameUser } = route.params;
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -36,14 +47,19 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [isPaymentOptionModalVisible, setPaymentOptionModalVisible] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'center' | 'online' | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]); 
   const [isConfirmationModalVisible2, setConfirmationModalVisible2] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
   const [imageCourse, setImageCourse] = useState('');
   const [classDetailModalVisible, setClassDetailModalVisible] = useState(false);
   const [nextStepModalVisible, setNextStepModalVisible] = useState(false);
+  const [studentInClass, setStudentInClass] = useState(Number);
+  const [classSchedule, setClassSchedule] = useState<DaySchedule[]>([]);
+
   useEffect(() => {
     fetchCourses();
+    fetchPayments();
   }, []);
 
   const fetchCourses = async () => {
@@ -51,6 +67,8 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       const response = await http.get('auth/noauth/findAllKhoa');
       if (response.status === 200) {
         setCourses(response.data);
+        console.log(response.data)
+
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -58,6 +76,26 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       setLoading(false);
     }
   };
+
+  const fetchPayments = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('Token không tồn tại');
+        return;
+      }
+      const response = await http.get(`thanhToan/findByIdHV/${idUser}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        setPayments(response.data);
+        console.log(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+    }
+  };
+
 
   const fetchClasses = async (courseId: number) => {
     try {
@@ -74,30 +112,97 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       if (response.status === 200) {
         setClasses(response.data);
         setModalVisible(true);
-
+        console.log(response.data)  
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
     }
   };
 
+  const fetchCurrentStudentCount = async (classId: number) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('Token không tồn tại');
+        return;
+      }
+      
+      const response = await http.get(`/thanhToan/findByIdLopNotCancel/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (response.status === 200) {
+        return response.data.length; 
+      }
+    } catch (error) {
+      console.error('Error fetching student count:', error);
+    }
+    return 0;
+  };
 
+  const fetchClassSchedule = async (classId: number) => {
+    try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            console.error('Token không tồn tại');
+            return;
+        }
 
+        const response = await http.get(`/buoihoc/getbuoiHocByLop/${classId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+            setClassSchedule(response.data);
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy lịch học của lớp:', error);
+    }
+};
+  
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
     fetchClasses(course.idKhoaHoc);
   };
 
-  const handleClassSelect = (classItem: Class) => {
+
+
+
+  const handleClassSelect = async  (classItem: Class) => {
+    const isAlreadyPaid = payments.some(
+      (payment) =>
+        payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
+        (payment.trangThai === 'WAIT' || payment.trangThai === 'DONE')
+    );
+  
+    if (isAlreadyPaid) {
+      setResultMessage("Bạn đã đăng ký khóa học này rồi");
+      setResultModalVisible(true);
+      return;
+    }
+    const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc); 
+    setStudentInClass(currentStudentCount); 
+    await fetchClassSchedule(classItem.idLopHoc); 
     setSelectedClass(classItem);
     setModalVisible(false);
-    setClassDetailModalVisible(true)
+    setClassDetailModalVisible(true);
   };
-  const handleClassRegister = () => {
-    setClassDetailModalVisible(false)
+  
+  const handleClassRegister = async () => {
+    if (!selectedClass) return; 
+    const studentInClass = await fetchCurrentStudentCount(selectedClass.idLopHoc) ?? 0;
+    setStudentInClass(studentInClass)
+    const maxStudents = parseInt(selectedClass.soHocVien, 10);
+    console.log(studentInClass); 
+    if (studentInClass >= maxStudents) {
+      setResultMessage("Lớp học này đã đủ học viên và không thể đăng ký thêm.");
+      setResultModalVisible(true);
+      return;
+    }
+    setClassDetailModalVisible(false);
     setConfirmationModalVisible(true);
-
   };
+
   const handleConfirm = () => {
     setResultModalVisible(false);
     setNextStepModalVisible(true);
@@ -132,7 +237,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       }
     } catch (error) {
       console.error(error);
-      setResultMessage('CBạn đã đăng ký lớp học này');
+      setResultMessage('Bạn đã đăng ký lớp học này');
       setResultModalVisible(true);
     }
   };
@@ -235,8 +340,9 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
             {selectedClass ? (
               <>
                 <Text style={styles.detailText}>Tên lớp: {selectedClass.tenLopHoc || 'Không có thông tin'}</Text>
-                <Text style={styles.detailText}>Lịch học: {selectedClass.lichHoc || 'Không có thông tin'}</Text>
-                <Text style={styles.detailText}>Số lượng: {selectedClass.soHocVien || 'Không có thông tin'}</Text>
+                {/* <Text style={styles.detailText}>Lịch học:   {`${schedule.gioHoc} - ${schedule.gioKetThuc}`}</Text> */}
+                <Text style={styles.detailText}>Số lượng: {studentInClass}/{selectedClass.soHocVien || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>Ngày mở lớp: {new Date(selectedClass.ngayBD).toLocaleDateString('vi-VN')}</Text>
                 <Text style={styles.detailText}>Giảng viên: {selectedClass.giangVien?.hoTen || 'Không có thông tin'}</Text>
               </>
             ) : (
@@ -291,7 +397,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
           <View style={styles.resultModalContainer}>
             <Text style={styles.resultMessageText}>Bạn muốn đi tới trang thanh toán hay quay về trang chủ</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser })}}  style={styles.confirmButton}>
+              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser,nameUser })}}  style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>Đi tới thanh toán</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => {setNextStepModalVisible(false),navigation.navigate('DashboardScreen')}} style={styles.confirmButton}>
@@ -483,7 +589,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   resultModalContainer: {
-    width: '80%',
+    width: '20%',
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,

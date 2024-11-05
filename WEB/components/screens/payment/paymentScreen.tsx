@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Modal, ImageBackground, ScrollView, CheckBox } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Modal, ImageBackground, ScrollView, Alert, CheckBox, Image } from 'react-native';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,7 +12,7 @@ type Payment = {
 };
 
 const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) => {
-  const { idUser } = route.params;
+  const { idUser, nameUser } = route.params;
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
@@ -20,7 +20,8 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
   const [selectedPayments, setSelectedPayments] = useState<Set<number>>(new Set());
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
-
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [isQrPaymentModalVisible, setIsQrPaymentModalVisible] = useState(false);
   const fetchPayments = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -36,6 +37,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
 
       if (response.status === 200) {
         setPayments(response.data);
+        console.log(response.data)
       } else {
         setMessageText('Lỗi: Không thể lấy dữ liệu thanh toán');
         setMessageModalVisible(true);
@@ -46,6 +48,44 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
       setMessageModalVisible(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancelSelectedPayments = async () => {
+    if (selectedPayments.size === 0) {
+      setMessageText('Bạn chưa chọn thanh toán nào để hủy');
+      setMessageModalVisible(true);
+      return;
+    }
+  
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        setMessageText('Token không tồn tại');
+        setMessageModalVisible(true);
+        return;
+      }
+  
+      for (const idTT of selectedPayments) {
+        const response = await http.get(`/thanhToan/delete/${idTT}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (response.status !== 200) {
+          setMessageText(`Không thể hủy thanh toán có ID: ${idTT}`);
+          setMessageModalVisible(true);
+          return;
+        }
+      }
+  
+      setMessageText('Các thanh toán đã được hủy thành công');
+      setMessageModalVisible(true);
+      setSelectedPayments(new Set()); 
+      fetchPayments(); 
+    } catch (error) {
+      console.error('Error canceling payments:', error);
+      setMessageText('Đã xảy ra lỗi khi hủy thanh toán');
+      setMessageModalVisible(true);
     }
   };
 
@@ -61,7 +101,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
     } else {
       const allPaymentIds = waitPayments.map(payment => payment.idTT);
       setSelectedPayments(new Set(allPaymentIds));
-      setTotalAmount(waitPayments.reduce((sum, payment) => sum + payment.giaTien, 0));
+      setTotalAmount(waitPayments.reduce((sum, payment) => sum + payment.lopHoc.khoaHoc.giaTien, 0));
     }
     setIsSelectAll(!isSelectAll);
   };
@@ -78,6 +118,26 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
       }
       return updatedSelected;
     });
+  };
+
+  const handlePayment = () => {
+    console.log("Selected payments size:", selectedPayments.size);
+
+    if (selectedPayments.size === 0) {
+      setMessageText('Bạn chưa chọn thanh toán nào');
+      setMessageModalVisible(true);
+    } else {
+      setIsPaymentModalVisible(true);
+    }
+  };
+
+  const handleQrPayment = () => {
+    if (selectedPayments.size === 0) {
+      setMessageText('Bạn chưa chọn thanh toán nào');
+      setMessageModalVisible(true);
+    } else {
+      setIsQrPaymentModalVisible(true);
+    }
   };
 
   const getPaymentStatus = (status: string): string => {
@@ -106,6 +166,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
       <Text style={styles.paymentText}>{item.lopHoc?.tenLopHoc || ''}</Text>
       <Text style={styles.paymentText}>{(item.lopHoc.khoaHoc.giaTien || 0).toLocaleString()} VND</Text>
       <Text style={styles.paymentText}>{getPaymentStatus(item.trangThai)}</Text>
+      
     </View>
   );
 
@@ -175,10 +236,45 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
         </ScrollView>
 
         <Text style={styles.totalText}>Tổng thanh toán: {totalAmount.toLocaleString()} VND</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={handlePayment} style={styles.payButton}>
+            <Text style={styles.buttonText}>THANH TOÁN</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleQrPayment} style={styles.payButtonQr}>
+            <Text style={styles.buttonText}>THANH TOÁN QR</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleCancelSelectedPayments} style={styles.cancelButton}>
+        <Text style={styles.buttonText}>HỦY THANH TOÁN</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.payButton}>
-          <Text style={styles.buttonText}>THANH TOÁN</Text>
-        </TouchableOpacity>
+        </View>
+
+        <Modal
+          visible={isPaymentModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsPaymentModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Image source={require('../../../image/efy.png') as any} style={styles.logo} />
+              <Text style={styles.modalBankInfo}>Ngân hàng:<Text style={{ color: 'red', fontWeight: 'bold' }}> BIDV</Text></Text>
+              <Text style={styles.modalBankInfo}>Số tài khoản: <Text style={{ color: 'red', fontWeight: 'bold' }}>92991133</Text> </Text>
+              <Text style={styles.modalBankInfo}>Chủ tài khoản: <Text style={{ color: 'red', fontWeight: 'bold' }}>Trung tâm anh ngữ English For You</Text></Text>
+              <Text style={styles.modalMessage}>Nội dung thanh toán:</Text>
+              <Text style={styles.modalMessage}> <Text style={{ fontWeight: 'bold' }}>
+                {Array.from(selectedPayments).map(id => {
+                  const payment = payments.find(p => p.idTT === id);
+                  return `${payment?.idTT}-${payment?.lopHoc?.khoaHoc?.tenKhoaHoc}-${payment?.lopHoc?.tenLopHoc}`;
+                }).join(', ')}-{nameUser}
+              </Text></Text>
+              <Text style={styles.modalMessage}>Số tiền: <Text style={{ color: 'red', fontWeight: 'bold' }}>{totalAmount.toLocaleString()} VND</Text></Text>
+              <TouchableOpacity onPress={() => setIsPaymentModalVisible(false)} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         <Modal
           visible={messageModalVisible}
@@ -188,8 +284,33 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalMessage}>{messageText}</Text>
+              <Text style={styles.modalMessage2}>{messageText}</Text>
               <TouchableOpacity onPress={() => setMessageModalVisible(false)} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          visible={isQrPaymentModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsQrPaymentModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Image source={require('../../../image/efy.png') as any} style={styles.logo} />
+              <Text style={styles.modalMessage}>Nội dung thanh toán:</Text>
+              <Text style={styles.modalMessage}><Text style={{ fontWeight: 'bold' }}>
+                {Array.from(selectedPayments).map(id => {
+                  const payment = payments.find(p => p.idTT === id);
+                  return `${payment?.idTT}-${payment?.lopHoc?.khoaHoc?.tenKhoaHoc}-${payment?.lopHoc?.tenLopHoc}`;
+                }).join(', ')}-{nameUser}
+              </Text>
+              </Text>
+              <Text style={styles.modalMessage}>Số tiền: <Text style={{ color: 'red', fontWeight: 'bold' }}>{totalAmount.toLocaleString()} VND</Text></Text>
+              <Image source={require('../../../image/qrCode.png') as any} style={styles.qrCodeImage} />
+              <TouchableOpacity onPress={() => setIsQrPaymentModalVisible(false)} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>Đóng</Text>
               </TouchableOpacity>
             </View>
@@ -210,6 +331,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 15,
+
   },
   backButton: {
     alignSelf: 'flex-start',
@@ -237,7 +360,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   scrollContainer: {
-    maxHeight: 300,  // Adjust as needed for table scroll area height
+    maxHeight: 300,
   },
   tableHeader: {
     flexDirection: 'row',
@@ -281,11 +404,31 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   payButton: {
+    backgroundColor: '#00405d',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+    marginLeft: 20,
+    width: 200
+  },
+  payButtonQr: {
+    backgroundColor: 'green',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+    marginLeft: 20,
+    width: 200
+  },
+  cancelButton: {
     backgroundColor: '#f44336',
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
     alignItems: 'center',
+    marginLeft: 20,
+    width: 200
   },
   buttonText: {
     color: '#fff',
@@ -298,17 +441,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 300,
+    width: 450,
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
   },
   modalMessage: {
     fontSize: 16,
-    color: '#333',
+    color: '#00405d',
     marginBottom: 20,
-    textAlign: 'center',
+  },
+  modalMessage2: {
+    fontSize: 16,
+    color: '#00405d',
+    marginBottom: 20,
+    textAlign: 'center'
   },
   modalButton: {
     backgroundColor: '#00405d',
@@ -320,6 +467,24 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  modalBankInfo: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+  },
+  logo: {
+    width: 150,
+    height: 65,
+    marginBottom: 10,
+    alignSelf: 'center'
+  },
+  qrCodeImage: {
+    width: 150,
+    height: 150,
+    marginVertical: 20,
+    alignSelf: 'center'
+
   },
 });
 
