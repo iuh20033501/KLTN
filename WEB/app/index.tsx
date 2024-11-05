@@ -16,6 +16,7 @@ import EditProfileScreen from '@/components/screens/profileScreen/editProfileScr
 import CourseRegistrationScreen from '@/components/screens/course/courseRegistrationScreen';
 import PaymentScreen from '@/components/screens/payment/paymentScreen';
 import ScheduleScreen from '@/components/screens/schedule/scheduleScreen';
+import RegisteredCoursesScreen from '@/components/screens/course/registeredCoursesScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -28,6 +29,7 @@ type RootStackParamList = {
   CourseRegistrationScreen:undefined;
   PaymentScreen:undefined;
   ScheduleScreen: undefined;
+  RegisteredCoursesScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -44,7 +46,9 @@ export default function App() {
       <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
       <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+      <Stack.Screen name="RegisteredCoursesScreen" component={RegisteredCoursesScreen} />
 
+      
       
     </Stack.Navigator>
   </NavigationContainer>

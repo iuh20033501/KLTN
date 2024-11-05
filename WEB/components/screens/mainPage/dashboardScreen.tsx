@@ -283,7 +283,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="linechart" size={24} color="black" />
                 <Text style={styles.featureText}>Xem điểm bài test</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+              onPress={() => {
+                navigation.navigate('RegisteredCoursesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+              }}>
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Khóa học đã đăng ký</Text>
               </TouchableOpacity>

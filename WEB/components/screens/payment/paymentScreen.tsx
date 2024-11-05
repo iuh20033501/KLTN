@@ -22,6 +22,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
   const [totalAmount, setTotalAmount] = useState(0);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isQrPaymentModalVisible, setIsQrPaymentModalVisible] = useState(false);
+
   const fetchPayments = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -180,6 +181,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
       <Text style={styles.paymentText}>{getPaymentStatus(item.trangThai)}</Text>
     </View>
   );
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#00405d" />;

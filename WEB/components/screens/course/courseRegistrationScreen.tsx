@@ -26,17 +26,15 @@ type Class = {
   gmail: string
 };
 type Payment = {
-  [x: string]: any; idLopHoc: number; trangThai: string 
+  [x: string]: any; idLopHoc: number; trangThai: string
 };
 
-interface DaySchedule {
-  idBuoiHoc: number;
-  ngayHoc: string;
+type DaySchedule = {
   gioHoc: string;
   gioKetThuc: string;
 }
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
-  const { idUser,nameUser } = route.params;
+  const { idUser, nameUser } = route.params;
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -47,7 +45,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [isPaymentOptionModalVisible, setPaymentOptionModalVisible] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'center' | 'online' | null>(null);
-  const [payments, setPayments] = useState<Payment[]>([]); 
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [isConfirmationModalVisible2, setConfirmationModalVisible2] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
@@ -112,7 +110,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       if (response.status === 200) {
         setClasses(response.data);
         setModalVisible(true);
-        console.log(response.data)  
+        console.log(response.data)
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -126,13 +124,13 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         console.error('Token không tồn tại');
         return;
       }
-      
+
       const response = await http.get(`/thanhToan/findByIdLopNotCancel/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (response.status === 200) {
-        return response.data.length; 
+        return response.data.length;
       }
     } catch (error) {
       console.error('Error fetching student count:', error);
@@ -142,24 +140,24 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
 
   const fetchClassSchedule = async (classId: number) => {
     try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if (!token) {
-            console.error('Token không tồn tại');
-            return;
-        }
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('Token không tồn tại');
+        return;
+      }
 
-        const response = await http.get(`/buoihoc/getbuoiHocByLop/${classId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+      const response = await http.get(`/buoihoc/getbuoiHocByLop/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        if (response.status === 200) {
-            setClassSchedule(response.data);
-        }
+      if (response.status === 200) {
+        setClassSchedule(response.data);
+      }
     } catch (error) {
-        console.error('Lỗi khi lấy lịch học của lớp:', error);
+      console.error('Lỗi khi lấy lịch học của lớp:', error);
     }
-};
-  
+  };
+
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
     fetchClasses(course.idKhoaHoc);
@@ -168,7 +166,9 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
 
 
 
-  const handleClassSelect = async  (classItem: Class) => {
+  
+  const handleClassSelect = async (classItem: Class) => {
+  
     const isAlreadyPaid = payments.some(
       (payment) =>
         payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
@@ -180,20 +180,28 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       setResultModalVisible(true);
       return;
     }
-    const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc); 
-    setStudentInClass(currentStudentCount); 
-    await fetchClassSchedule(classItem.idLopHoc); 
+  
+    const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc);
+    setStudentInClass(currentStudentCount);
+    await fetchClassSchedule(classItem.idLopHoc);
     setSelectedClass(classItem);
     setModalVisible(false);
     setClassDetailModalVisible(true);
   };
-  
+
   const handleClassRegister = async () => {
-    if (!selectedClass) return; 
+    if (!selectedClass) return;
+    const classStartDate = new Date(selectedClass.ngayBD);
+    const currentDate = new Date();
+    if (classStartDate < currentDate) {
+      setResultMessage("Quá hạn đăng ký cho lớp học này");
+      setResultModalVisible(true);
+      return;
+    }
     const studentInClass = await fetchCurrentStudentCount(selectedClass.idLopHoc) ?? 0;
     setStudentInClass(studentInClass)
     const maxStudents = parseInt(selectedClass.soHocVien, 10);
-    console.log(studentInClass); 
+    console.log(studentInClass);
     if (studentInClass >= maxStudents) {
       setResultMessage("Lớp học này đã đủ học viên và không thể đăng ký thêm.");
       setResultModalVisible(true);
@@ -230,7 +238,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         setResultModalVisible(true);
         setTimeout(() => {
           handleConfirm();
-      }, 1000);
+        }, 1000);
       } else {
         setResultMessage('Đăng ký thất bại. Vui lòng thử lại.');
         setResultModalVisible(true);
@@ -340,7 +348,13 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
             {selectedClass ? (
               <>
                 <Text style={styles.detailText}>Tên lớp: {selectedClass.tenLopHoc || 'Không có thông tin'}</Text>
-                {/* <Text style={styles.detailText}>Lịch học:   {`${schedule.gioHoc} - ${schedule.gioKetThuc}`}</Text> */}
+                <Text style={styles.detailText}>Lịch học: {selectedClass.moTa || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>
+                  Thời gian:{' '}
+                  {classSchedule.length > 0
+                    ? `${classSchedule[0].gioHoc} - ${classSchedule[0].gioKetThuc}`
+                    : 'Không có thông tin'}
+                </Text>
                 <Text style={styles.detailText}>Số lượng: {studentInClass}/{selectedClass.soHocVien || 'Không có thông tin'}</Text>
                 <Text style={styles.detailText}>Ngày mở lớp: {new Date(selectedClass.ngayBD).toLocaleDateString('vi-VN')}</Text>
                 <Text style={styles.detailText}>Giảng viên: {selectedClass.giangVien?.hoTen || 'Không có thông tin'}</Text>
@@ -392,15 +406,15 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         </View>
       </Modal>
 
-      <Modal visible={nextStepModalVisible} transparent={true} animationType="slide"  onRequestClose={() => setNextStepModalVisible(false)}> 
+      <Modal visible={nextStepModalVisible} transparent={true} animationType="slide" onRequestClose={() => setNextStepModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.resultModalContainer}>
             <Text style={styles.resultMessageText}>Bạn muốn đi tới trang thanh toán hay quay về trang chủ</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity  onPress={() => {setNextStepModalVisible(false),navigation.navigate('PaymentScreen', { idUser,nameUser })}}  style={styles.confirmButton}>
+              <TouchableOpacity onPress={() => { setNextStepModalVisible(false), navigation.navigate('PaymentScreen', { idUser, nameUser }) }} style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>Đi tới thanh toán</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {setNextStepModalVisible(false),navigation.navigate('DashboardScreen')}} style={styles.confirmButton}>
+              <TouchableOpacity onPress={() => { setNextStepModalVisible(false), navigation.navigate('DashboardScreen') }} style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>Quay về trang chủ</Text>
               </TouchableOpacity>
             </View>
