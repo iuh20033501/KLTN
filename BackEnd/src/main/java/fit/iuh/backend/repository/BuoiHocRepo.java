@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface BuoiHocRepo extends JpaRepository<BuoiHoc,Long> {
-    @Query("select bh from BuoiHoc bh join LopHoc  lop on bh.lopHoc.idLopHoc= lop.idLopHoc where bh.lopHoc.idLopHoc =: id")
+    @Query("select bh from BuoiHoc bh join LopHoc  lop on bh.lopHoc.idLopHoc= lop.idLopHoc where bh.lopHoc.idLopHoc =:id")
     List<BuoiHoc> getBuoiTheoLop (@Param("id") Long id);
     @Query("SELECT bh FROM BuoiHoc bh " +
             "JOIN bh.lopHoc lop " +

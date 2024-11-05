@@ -93,6 +93,31 @@ public class HocVienController {
         }
     }
     @Operation(
+            summary = "Đăng ký lớp của học viên",
+            description = """ 
+            truyền idlop, idhocvien vao parm
+           mà không xet điều kiển sỉ số lớp học
+    """
+    )
+    @GetMapping("/dangkyLop2/{idLop}/{idHV}")
+    public ResponseEntity<HocVienLopHoc> dangKyLop2(@PathVariable Long idLop, @PathVariable Long idHV) {
+        HocVienLopHocKey key = new HocVienLopHocKey() ;
+        HocVien hv = hocVienService.findByIdHocVien(idHV).orElseThrow(()->new RuntimeException("hoc vien not found "));
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(()->new RuntimeException("lop hoc not found "));
+        key.setLopHoc(lop);
+        key.setHocVien(hv);
+//        int siSo = hocVienLopHocService.findByidLop(key.getLopHoc().getIdLopHoc()).size();
+//        if(lop.getSoHocVien()<=siSo){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
+        HocVienLopHoc result = hocVienLopHocService.dangKyLopHoc(key);
+        if (result != null) {
+            return ResponseEntity.ok(result); // Trả về kết quả thành công
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Trả về lỗi nếu không thể đăng ký
+        }
+    }
+    @Operation(
             summary = "lấy lớp tù học viên",
             description = """ 
            truyền id học viên
