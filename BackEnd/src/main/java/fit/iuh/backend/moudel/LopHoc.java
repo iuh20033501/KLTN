@@ -28,13 +28,21 @@ public class LopHoc {
     private KhoaHoc khoaHoc;
 //    @OneToMany(mappedBy = "HocVienLopHocKey.lopHoc")
 //    private List<HocVienLopHoc> hocVienLopHocs;
-
+    private  String moTa;
 
     public LopHoc(Long soHocVien, String tenLopHoc, Date ngayBD, Date ngayKT) {
         this.soHocVien = soHocVien;
         this.tenLopHoc = tenLopHoc;
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
+    }
+
+    public LopHoc(Long soHocVien, String tenLopHoc, Date ngayBD, Date ngayKT, String moTa) {
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+        this.moTa = moTa;
     }
 
     public LopHoc(Long soHocVien, String tenLopHoc) {
