@@ -13,9 +13,11 @@ type Course = {
   thoiGianDienRa: string;
   soBuoi: string;
   image: string;
+  ngayBD: string;
 };
 
 type Class = {
+  [x: string]: any;
   lichHoc: string;
   giangVien: any;
   idLopHoc: number;
@@ -27,6 +29,12 @@ type Payment = {
   [x: string]: any; idLopHoc: number; trangThai: string 
 };
 
+interface DaySchedule {
+  idBuoiHoc: number;
+  ngayHoc: string;
+  gioHoc: string;
+  gioKetThuc: string;
+}
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const { idUser,nameUser } = route.params;
   const [loading, setLoading] = useState(true);
@@ -46,9 +54,12 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [imageCourse, setImageCourse] = useState('');
   const [classDetailModalVisible, setClassDetailModalVisible] = useState(false);
   const [nextStepModalVisible, setNextStepModalVisible] = useState(false);
+  const [studentInClass, setStudentInClass] = useState(Number);
+  const [classSchedule, setClassSchedule] = useState<DaySchedule[]>([]);
+
   useEffect(() => {
     fetchCourses();
-    fetchPayments()
+    fetchPayments();
   }, []);
 
   const fetchCourses = async () => {
@@ -101,21 +112,63 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       if (response.status === 200) {
         setClasses(response.data);
         setModalVisible(true);
-
+        console.log(response.data)  
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
     }
   };
 
+  const fetchCurrentStudentCount = async (classId: number) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('Token không tồn tại');
+        return;
+      }
+      
+      const response = await http.get(`/thanhToan/findByIdLopNotCancel/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (response.status === 200) {
+        return response.data.length; 
+      }
+    } catch (error) {
+      console.error('Error fetching student count:', error);
+    }
+    return 0;
+  };
 
+  const fetchClassSchedule = async (classId: number) => {
+    try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            console.error('Token không tồn tại');
+            return;
+        }
 
+        const response = await http.get(`/buoihoc/getbuoiHocByLop/${classId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+            setClassSchedule(response.data);
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy lịch học của lớp:', error);
+    }
+};
+  
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
     fetchClasses(course.idKhoaHoc);
   };
 
-  const handleClassSelect = (classItem: Class) => {
+
+
+
+  const handleClassSelect = async  (classItem: Class) => {
     const isAlreadyPaid = payments.some(
       (payment) =>
         payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
@@ -123,21 +176,33 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
     );
   
     if (isAlreadyPaid) {
-      setResultMessage("Bạn đã đăng ký khóa học này rồi")
+      setResultMessage("Bạn đã đăng ký khóa học này rồi");
       setResultModalVisible(true);
       return;
     }
-  
+    const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc); 
+    setStudentInClass(currentStudentCount); 
+    await fetchClassSchedule(classItem.idLopHoc); 
     setSelectedClass(classItem);
     setModalVisible(false);
-    setClassDetailModalVisible(true)
+    setClassDetailModalVisible(true);
   };
-
-  const handleClassRegister = () => {
-    setClassDetailModalVisible(false)
+  
+  const handleClassRegister = async () => {
+    if (!selectedClass) return; 
+    const studentInClass = await fetchCurrentStudentCount(selectedClass.idLopHoc) ?? 0;
+    setStudentInClass(studentInClass)
+    const maxStudents = parseInt(selectedClass.soHocVien, 10);
+    console.log(studentInClass); 
+    if (studentInClass >= maxStudents) {
+      setResultMessage("Lớp học này đã đủ học viên và không thể đăng ký thêm.");
+      setResultModalVisible(true);
+      return;
+    }
+    setClassDetailModalVisible(false);
     setConfirmationModalVisible(true);
-
   };
+
   const handleConfirm = () => {
     setResultModalVisible(false);
     setNextStepModalVisible(true);
@@ -275,8 +340,9 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
             {selectedClass ? (
               <>
                 <Text style={styles.detailText}>Tên lớp: {selectedClass.tenLopHoc || 'Không có thông tin'}</Text>
-                <Text style={styles.detailText}>Lịch học: {selectedClass.lichHoc || 'Không có thông tin'}</Text>
-                <Text style={styles.detailText}>Số lượng: {selectedClass.soHocVien || 'Không có thông tin'}</Text>
+                {/* <Text style={styles.detailText}>Lịch học:   {`${schedule.gioHoc} - ${schedule.gioKetThuc}`}</Text> */}
+                <Text style={styles.detailText}>Số lượng: {studentInClass}/{selectedClass.soHocVien || 'Không có thông tin'}</Text>
+                <Text style={styles.detailText}>Ngày mở lớp: {new Date(selectedClass.ngayBD).toLocaleDateString('vi-VN')}</Text>
                 <Text style={styles.detailText}>Giảng viên: {selectedClass.giangVien?.hoTen || 'Không có thông tin'}</Text>
               </>
             ) : (

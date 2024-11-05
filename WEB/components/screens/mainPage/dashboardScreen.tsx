@@ -12,6 +12,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('');
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [classInfo, setClassInfo] = useState<any>(null);
+  const [classLength, setClassLength] = useState<any>(null);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -63,6 +64,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         });
         if (response.status === 200) {
           setClassInfo(response.data[0]);
+          setClassLength(response.data.length)
           console.log(response.data)
         } else {
           console.error("Không thể lấy thông tin lớp học.");
@@ -212,11 +214,13 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               <View style={styles.scheduleCard}>
                 <Text style={styles.scheduleNumber}>Đăng ký khóa học</Text>
                 <Text style={styles.scheduleTitle}>
-                  {classInfo ? "Bạn đã tham gia 1 khóa học" : "Bạn chưa tham gia khóa học nào"}
+                  {classLength 
+                    ? `Bạn đã tham gia ${classLength} khóa học`
+                    : "Bạn chưa tham gia khóa học nào"}
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('CourseRegistrationScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
+                    navigation.navigate('CourseRegistrationScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                   }}
                 >
                   <Text style={styles.linkText}>Đăng ký</Text>
@@ -269,9 +273,9 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           ) : (
             <>
               <TouchableOpacity style={styles.featureCard}
-               onPress={() => {
-                navigation.navigate('ScheduleScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
-              }}>
+                onPress={() => {
+                  navigation.navigate('ScheduleScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                }}>
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch học</Text>
               </TouchableOpacity>
@@ -289,7 +293,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
-                  navigation.navigate('PaymentScreen', { idUser: user.u.idUser, nameUser : user.u.hoTen });
+                  navigation.navigate('PaymentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                 }}>
                 <AntDesign name="creditcard" size={24} color="black" />
                 <Text style={styles.featureText}>Thanh toán trực tuyến</Text>

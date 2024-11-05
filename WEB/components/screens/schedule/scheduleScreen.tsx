@@ -9,6 +9,7 @@ import { vi } from 'date-fns/locale';
 interface ClassInfo {
     idLopHoc: number;
     tenLopHoc: string;
+    trangThai: string
 }
 
 interface DaySchedule {
@@ -50,8 +51,8 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                     Authorization: `Bearer ${token}`,
                 },
             });
-
-            setWeekSchedule(response.data);
+            const fullClasses = response.data.filter((schedule: DaySchedule) => schedule.lopHoc.trangThai === "FULL");
+            setWeekSchedule(fullClasses);
             console.log(response.data);
         } catch (error) {
             console.error('Failed to fetch weekly schedule:', error);
