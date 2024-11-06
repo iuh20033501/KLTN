@@ -186,12 +186,11 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           <View style={styles.scheduleContainer}>
             {user.cvEnum === 'TEACHER' ? (
               <View style={styles.scheduleCard}>
-                <Text style={styles.scheduleTitle}>Thông báo nhắc nhở</Text>
-                <Text style={styles.scheduleNumber}>
-                  0
+                <Text style={styles.scheduleTitle}>Mục bài tập</Text>
+                <Text style={styles.scheduleNumber}>Bài tập về nhà
                 </Text>
                 <TouchableOpacity>
-                  <Text style={styles.linkText}>Xem chi tiết</Text>
+                  <Text style={styles.linkText}>Tạo</Text>
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
@@ -249,7 +248,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.featureRow}>
           {user.cvEnum === 'TEACHER' ? (
             <>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard} 
+               onPress={() => {
+                navigation.navigate('TeacherScheduleScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+              }}>
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch giảng dạy</Text>
               </TouchableOpacity>
@@ -257,7 +259,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="linechart" size={24} color="black" />
                 <Text style={styles.featureText}>Quản lý điểm số</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+                onPress={() => {
+                  navigation.navigate('TeacherClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                }}>
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Lớp học của tôi</Text>
               </TouchableOpacity>
@@ -536,7 +541,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   featureRow: {
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 10,

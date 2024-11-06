@@ -9,24 +9,25 @@ import { vi } from 'date-fns/locale';
 interface ClassInfo {
     idLopHoc: number;
     tenLopHoc: string;
-    trangThai: string
+    trangThai: string;
 }
 
-interface DaySchedule {
+interface TeachingSession {
+    [x: string]: any;
     chuDe: string;
     idBuoiHoc: number;
     ngayHoc: string;
     gioHoc: string;
     gioKetThuc: string;
-    lopHoc: ClassInfo;
     noiHoc: string;
     hocOnl: boolean;
 }
 
-export default function ScheduleScreen({ navigation, route }: { navigation: any, route: any }) {
+export default function TeacherScheduleScreen({ navigation, route }: { navigation: any, route: any }) {
+    const { idUser, nameUser } = route.params; 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>([]);
-    const { idUser, nameUser } = route.params;
+    const [classList, setClassList] = useState<ClassInfo[]>([]);
+    const [weekSchedule, setWeekSchedule] = useState<TeachingSession[]>([]);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const calculateStartOfWeek = (date: string | number | Date) => {
@@ -36,6 +37,24 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
         return new Date(selectedDay.setDate(diff));
     };
 
+    const fetchClassList = async () => {
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await http.get(`lopHoc/getByGv/${idUser}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setClassList(response.data);
+        } catch (error) {
+            console.error('Failed to fetch class list:', error);
+        }
+    };
+
     const fetchWeeklySchedule = async (startDate: Date) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -43,34 +62,44 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`buoihoc/getByHocVien/${idUser}`, {
-                params: {
-                    startDate: startDate.toISOString().split('T')[0],
-                },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            
+            const sessionPromises = classList.map(async (classInfo) => {
+                const response = await http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                return response.data;
             });
-            const fullClasses = response.data.filter((schedule: DaySchedule) => schedule.lopHoc.trangThai === "FULL");
-            setWeekSchedule(fullClasses);
-            console.log(response.data);
+
+            const sessions = await Promise.all(sessionPromises);
+            const allSessions = sessions.flat().filter((session: TeachingSession) => 
+                session.ngayHoc >= startDate.toISOString().split('T')[0]
+            );
+            setWeekSchedule(allSessions);
         } catch (error) {
             console.error('Failed to fetch weekly schedule:', error);
         }
     };
 
     useEffect(() => {
-        const startOfWeek = calculateStartOfWeek(new Date());
-        setSelectedDate(startOfWeek);
-        fetchWeeklySchedule(startOfWeek);
+        fetchClassList();
     }, []);
+
+    useEffect(() => {
+        if (classList.length > 0) {
+            const startOfWeek = calculateStartOfWeek(new Date());
+            setSelectedDate(startOfWeek);
+            fetchWeeklySchedule(startOfWeek);
+        }
+    }, [classList]);
 
     const handleDateChange = (date: Date | null) => {
         if (date) {
             const startOfWeek = calculateStartOfWeek(date);
-            setSelectedDate(startOfWeek); 
-            fetchWeeklySchedule(startOfWeek); 
-            setIsDatePickerOpen(false); 
+            setSelectedDate(startOfWeek);
+            fetchWeeklySchedule(startOfWeek);
+            setIsDatePickerOpen(false);
         }
     };
 
@@ -113,10 +142,6 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
         fetchWeeklySchedule(newDate);
     };
 
-    const toggleDatePicker = () => {
-        setIsDatePickerOpen(!isDatePickerOpen);
-    };
-
     return (
         <ImageBackground
             source={require('../../../image/bglogin.png')}
@@ -129,7 +154,7 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                         <Text style={styles.backButtonText}>Quay về</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.title}>Lịch học trong tuần</Text>
+                <Text style={styles.title}>Lịch dạy trong tuần</Text>
 
                 <View style={styles.datePickerContainer}>
                     <View style={styles.leftControls}>
@@ -137,7 +162,6 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                             <TouchableOpacity style={styles.dateButton} onPress={() => setIsDatePickerOpen(true)}>
                                 <Text style={styles.buttonText}>{selectedDate.toLocaleDateString('vi-VN')}</Text>
                             </TouchableOpacity>
-
                         </View>
                         <TouchableOpacity style={styles.backButton2} onPress={handleCurrentWeek}>
                             <Text style={styles.backButtonText2}>Hiện tại</Text>
@@ -167,7 +191,7 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                                             key={classInfo.idBuoiHoc}
                                             style={[
                                                 styles.classBox,
-                                                { backgroundColor: classInfo.hocOnl === true ? '#d0ebff' : '#f0f0f0' }
+                                                { backgroundColor: classInfo.hocOnl ? '#d0ebff' : '#f0f0f0' },
                                             ]}
                                         >
                                             <Text style={styles.textColumn}>Chủ đề: {classInfo.chuDe}</Text>
@@ -177,17 +201,11 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                                         </View>
                                     ))
                                 ) : (
-                                    <Text style={styles.noClass}>Không có lớp</Text>
+                                    <Text style={styles.noClass}>Không có buổi dạy</Text>
                                 )}
                             </View>
                         ))}
                     </View>
-                </View>
-                <View style={styles.legendContainer}>
-                    <View style={[styles.legendBox, { backgroundColor: '#f0f0f0' }]} />
-                    <Text style={styles.legendText}>Học trực tiếp</Text>
-                    <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
-                    <Text style={styles.legendText}>Học trực tuyến</Text>
                 </View>
                 <Modal
                     visible={isDatePickerOpen}
@@ -201,22 +219,19 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                                 selected={selectedDate}
                                 onChange={handleDateChange}
                                 inline
-                                locale={vi} 
+                                locale={vi}
                                 dateFormat="dd/MM/yyyy"
-
                             />
-                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsDatePickerOpen(false)}>
-                            <Text style={styles.closeButtonText}>Đóng</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={() => setIsDatePickerOpen(false)}>
+                                <Text style={styles.closeButtonText}>Đóng</Text>
+                            </TouchableOpacity>
                         </View>
-                       
                     </View>
                 </Modal>
             </View>
         </ImageBackground>
     );
 }
-
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -383,3 +398,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
+
+

@@ -22,7 +22,12 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
   const [totalAmount, setTotalAmount] = useState(0);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isQrPaymentModalVisible, setIsQrPaymentModalVisible] = useState(false);
+  const [totalPaid, setTotalPaid] = useState(0); 
 
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+  
   const fetchPayments = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -39,6 +44,8 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
       if (response.status === 200) {
         setPayments(response.data);
         console.log(response.data)
+        calculateTotalPaid(response.data); 
+
       } else {
         setMessageText('Lỗi: Không thể lấy dữ liệu thanh toán');
         setMessageModalVisible(true);
@@ -50,6 +57,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
     } finally {
       setLoading(false);
     }
+   
   };
 
   const handleCancelSelectedPayments = async () => {
@@ -90,9 +98,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
     }
   };
 
-  useEffect(() => {
-    fetchPayments();
-  }, []);
+ 
 
   const handleSelectAllPayments = () => {
     const waitPayments = payments.filter(payment => payment.trangThai === 'WAIT');
@@ -154,6 +160,12 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
     }
   };
 
+   const calculateTotalPaid = (payments: Payment[]) => {
+      const total = payments
+        .filter((payment) => payment.trangThai === 'DONE')
+        .reduce((sum, payment) => sum + (payment?.lopHoc?.khoaHoc?.giaTien || 0), 0);
+      setTotalPaid(total);
+    };
   const renderPendingPaymentItem = ({ item, index }: { item: Payment; index: number }) => (
     <View style={styles.paymentItem}>
       <CheckBox
@@ -197,6 +209,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
         <Text style={styles.title}>Thanh toán trực tuyến</Text>
 
         <Text style={styles.sectionTitle}>Đã thanh toán hoặc đã hủy</Text>
+        <Text style={styles.sectionTitle}>Tổng số tiền đã đóng: <Text style={{color:'red'}}>{totalPaid.toLocaleString()} VND</Text></Text>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>STT</Text>
@@ -358,7 +371,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#00405d',
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
   },
   scrollContainer: {
