@@ -261,10 +261,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
-                  navigation.navigate('TeacherClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                  navigation.navigate('TeacherClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
                 }}>
                 <AntDesign name="book" size={24} color="black" />
-                <Text style={styles.featureText}>Lớp học của tôi</Text>
+                <Text style={styles.featureText}>Lớp học phụ trách</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}>
                 <MaterialIcons name="feedback" size={24} color="black" />
@@ -290,7 +290,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
               onPress={() => {
-                navigation.navigate('RegisteredCoursesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                navigation.navigate('StudentClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen,role: user.cvEnum });
               }}>
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Khóa học đã đăng ký</Text>

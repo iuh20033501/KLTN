@@ -6,16 +6,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface ClassInfo {
     idLopHoc: number;
     tenLopHoc: string;
+    trangThai: string;
     ngayBD: string;
     ngayKT: string;
     moTa: string;
+    giangVien: {
+        hoTen: string;
+    };
     khoaHoc: {
+        image: string | undefined;
         tenKhoaHoc: string;
-        image?: string; 
     };
 }
 
-export default function TeacherClassesScreen({ navigation, route }: { navigation: any; route: any }) {
+export default function StudentClassesScreen({ navigation, route }: { navigation: any; route: any }) {
     const [classes, setClasses] = useState<ClassInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { idUser, role } = route.params;
@@ -27,7 +31,7 @@ export default function TeacherClassesScreen({ navigation, route }: { navigation
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getByGv/${idUser}`, {
+            const response = await http.get(`/hocvien/getByHV/${idUser}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -59,7 +63,7 @@ export default function TeacherClassesScreen({ navigation, route }: { navigation
 
     const renderClassCard = ({ item }: { item: ClassInfo }) => (
         <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('ClassDetailScreen', {
-            idUser,role,
+            idUser, role,
             idLopHoc: item.idLopHoc,
             tenLopHoc: item.tenLopHoc,
             tenKhoaHoc: item.khoaHoc.tenKhoaHoc,
@@ -171,4 +175,3 @@ const styles = StyleSheet.create({
         color: '#777',
     },
 });
-

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -9,17 +10,64 @@ interface MemberInfo {
     email: string;
 }
 
+interface ClassDetail {
+    [x: string]: any;
+    tenKhoaHoc: string;
+    tenLopHoc: string;
+    ngayBD: string;
+    ngayKT: string;
+    trangThai: string;
+    giangVien: {
+        hoTen: string;
+        email: string;
+        sdt: string;
+    };
+}
+
+interface Session {
+    idBuoiHoc: any;
+    id: number;
+    chuDe: string;
+}
+
+interface Assignment {
+    idBaiTap: number;
+    tenBaiTap: string;
+    trangThai: boolean;
+    ngayBD: string;
+    ngayKT: string;
+}
+
 const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any }) => {
-    const { idLopHoc, className } = route.params;
+    const { idLopHoc, tenLopHoc, role } = route.params;
     const [activeTab, setActiveTab] = useState('Assignments');
     const [members, setMembers] = useState<MemberInfo[]>([]);
+    const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
+    const [sessions, setSessions] = useState<Session[]>([]);
+    const [assignments, setAssignments] = useState<{ [key: number]: Assignment[] }>({});
     const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+    const [isLoadingClassInfo, setIsLoadingClassInfo] = useState(false);
+    const [isLoadingSessions, setIsLoadingSessions] = useState(false);
 
     useEffect(() => {
         if (activeTab === 'Members') {
             fetchMembers();
+        } else if (activeTab === 'ClassInfo') {
+            fetchClassInfo();
+        } else if (activeTab === 'Assignments') {
+            fetchSessions();
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        if (activeTab === 'Assignments' && sessions.length > 0) {
+            sessions.forEach((session) => {
+                if (session.idBuoiHoc) {
+                    fetchAssignments(session.idBuoiHoc);
+                }
+            });
+        }
+    }, [sessions]);
 
     const fetchMembers = async () => {
         setIsLoadingMembers(true);
@@ -32,14 +80,76 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
             const response = await http.get(`/lopHoc/getByLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            
             const data = Array.isArray(response.data) ? response.data : [];
             setMembers(data);
-            console.log(response.data)
         } catch (error) {
             console.error('Failed to fetch members:', error);
         } finally {
             setIsLoadingMembers(false);
+        }
+    };
+
+    const fetchClassInfo = async () => {
+        setIsLoadingClassInfo(true);
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await http.get(`/lopHoc/getLop/${idLopHoc}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setClassDetail(response.data);
+        } catch (error) {
+            console.error('Failed to fetch class details:', error);
+        } finally {
+            setIsLoadingClassInfo(false);
+        }
+    };
+
+    const fetchSessions = async () => {
+        setIsLoadingSessions(true);
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await http.get(`/buoihoc/getbuoiHocByLop/${idLopHoc}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setSessions(response.data);
+            response.data.forEach((session: Session) => {
+                if (session && typeof session.idBuoiHoc === 'number') {
+                    fetchAssignments(session.idBuoiHoc);
+                } else {
+                    console.warn(`Invalid session ID for session:`, session);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to fetch sessions:', error);
+        } finally {
+            setIsLoadingSessions(false);
+        }
+    };
+    
+    const fetchAssignments = async (sessionId: number) => {
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await http.get(`/baitap/getBaiTapofBuoi/${sessionId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setAssignments((prev) => ({
+                ...prev,
+                [sessionId]: response.data,
+            }));
+        } catch (error) {
+            console.error(`Failed to fetch assignments for session ${sessionId}:`, error);
         }
     };
 
@@ -49,41 +159,93 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
                 return (
                     <ScrollView style={styles.contentContainer}>
                         <Text style={styles.sectionTitle}>Bài Tập</Text>
-                        {/* Nội dung bài tập */}
+                        {isLoadingSessions ? (
+                            <ActivityIndicator size="large" color="#00405d" />
+                        ) : (
+                            sessions.length > 0 ? (
+                                sessions.map((session) => (
+                                    <View key={session.idBuoiHoc} style={styles.sessionContainer}>
+                                        <Text style={styles.sessionText}>{session.chuDe}</Text>
+                                        {role === 'TEACHER' && (
+                                            <TouchableOpacity
+                                                style={styles.createButton}
+                                                onPress={() => navigation.navigate('CreateAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc })}
+                                            >
+                                                <Text style={styles.createButtonText}>Tạo Bài Tập</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        {assignments[session.idBuoiHoc] && assignments[session.idBuoiHoc].length > 0 ? (
+                                            <View style={styles.assignmentList}>
+                                                {assignments[session.idBuoiHoc].map((assignment) => (
+                                                    <TouchableOpacity 
+                                                        key={assignment.idBaiTap} 
+                                                        style={styles.assignmentItem}
+                                                        onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap })}
+                                                    >
+                                                        <Icon name="file-document" size={20} color="#ff6600" />
+                                                        <Text style={styles.assignmentText}>
+                                                            {assignment.tenBaiTap}
+                                                        </Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </View>
+                                        ) : (
+                                            <Text>Không có bài tập nào.</Text>
+                                        )}
+                                    </View>
+                                ))
+                            ) : (
+                                <Text>Không có buổi học nào.</Text>
+                            )
+                        )}
                     </ScrollView>
                 );
-                case 'Members':
-    return (
-        <ScrollView style={styles.contentContainer}>
-            <Text style={styles.sectionTitle}>Danh Sách Thành Viên</Text>
-            {isLoadingMembers ? (
-                <ActivityIndicator size="large" color="#00405d" />
-            ) : (
-                members.length > 0 ? (
-                    members.map((member, index) => (
-                        <View key={member.idHocVien} style={styles.memberCard}>
-                            <Text style={styles.memberName}>{index + 1}. {member.hoTen}</Text>
-                            <Text style={styles.memberEmail}>{member.email}</Text>
-                        </View>
-                    ))
-                ) : (
-                    <Text>Không có thành viên nào trong lớp.</Text>
-                )
-            )}
-        </ScrollView>
-    );
+            case 'Members':
+                return (
+                    <ScrollView style={styles.contentContainer}>
+                        <Text style={styles.sectionTitle}>Danh Sách Thành Viên</Text>
+                        {isLoadingMembers ? (
+                            <ActivityIndicator size="large" color="#00405d" />
+                        ) : (
+                            members.length > 0 ? (
+                                members.map((member) => (
+                                    <View key={member.idHocVien} style={styles.memberCard}>
+                                        <Text style={styles.memberName}>{member.hoTen}</Text>
+                                        <Text style={styles.memberEmail}>{member.email}</Text>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text>Không có thành viên nào trong lớp.</Text>
+                            )
+                        )}
+                    </ScrollView>
+                );
             case 'Grades':
                 return (
                     <ScrollView style={styles.contentContainer}>
                         <Text style={styles.sectionTitle}>Điểm Số</Text>
-                        {/* Nội dung điểm số */}
                     </ScrollView>
                 );
             case 'ClassInfo':
                 return (
                     <ScrollView style={styles.contentContainer}>
                         <Text style={styles.sectionTitle}>Thông Tin Lớp Học</Text>
-                        {/* Nội dung thông tin lớp học */}
+                        {isLoadingClassInfo ? (
+                            <ActivityIndicator size="large" color="#00405d" />
+                        ) : (
+                            classDetail ? (
+                                <View>
+                                    <Text style={styles.infoLabel}>Khóa học: <Text style={styles.infoText}>{classDetail.khoaHoc.tenKhoaHoc}</Text></Text>
+                                    <Text style={styles.infoLabel}>Tên lớp: <Text style={styles.infoText}>{classDetail.tenLopHoc}</Text></Text>
+                                    <Text style={styles.infoLabel}>Trạng thái: <Text style={styles.infoText}>{classDetail.trangThai}</Text></Text>
+                                    <Text style={styles.infoLabel}>Giáo viên phụ trách: <Text style={styles.infoText}>{classDetail.giangVien.hoTen}</Text></Text>
+                                    <Text style={styles.infoLabel}>Email: <Text style={styles.infoText}>{classDetail.giangVien.email}</Text></Text>
+                                    <Text style={styles.infoLabel}>Số điện thoại: <Text style={styles.infoText}>{classDetail.giangVien.sdt}</Text></Text>
+                                </View>
+                            ) : (
+                                <Text>Không có thông tin lớp học.</Text>
+                            )
+                        )}
                     </ScrollView>
                 );
             default:
@@ -98,8 +260,10 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
                     <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                         <Text style={styles.backButtonText}>Quay về</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>{className}</Text>
                 </View>
+                
+                <Text style={styles.title}>{tenLopHoc}</Text>
+                
                 <View style={styles.tabContainer}>
                     <TouchableOpacity style={[styles.tabButton, activeTab === 'Assignments' && styles.activeTab]} onPress={() => setActiveTab('Assignments')}>
                         <Text style={[styles.tabText, activeTab === 'Assignments' && styles.activeTabText]}>Bài tập</Text>
@@ -120,6 +284,7 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
     );
 };
 
+
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -136,7 +301,7 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         marginBottom: 10,
     },
     title: {
@@ -144,6 +309,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#ff6600',
         textAlign: 'center',
+        marginBottom: 20,
     },
     backButton: {
         padding: 10,
@@ -200,6 +366,50 @@ const styles = StyleSheet.create({
     memberEmail: {
         fontSize: 14,
         color: '#555',
+    },
+    infoLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 5,
+    },
+    infoText: {
+        fontWeight: 'normal',
+    },
+    sessionContainer: {
+        padding: 10,
+        marginVertical: 5,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 5,
+    },
+    sessionText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    createButton: {
+        padding: 8,
+        backgroundColor: '#ff6600',
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 5,
+        width:100,
+        height:35
+    },
+    createButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    assignmentList: {
+        marginTop: 5,
+    },
+    assignmentItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 5,
+    },
+    assignmentText: {
+        fontSize: 16,
+        color: '#333',
+        paddingLeft: 10,
     },
 });
 

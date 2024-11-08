@@ -207,9 +207,9 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
         </TouchableOpacity>
 
         <Text style={styles.title}>Thanh toán trực tuyến</Text>
+        <Text style={styles.sectionTitle}>Tổng số tiền đã đóng: <Text style={{color:'red'}}>{totalPaid.toLocaleString()} VND</Text></Text>
 
         <Text style={styles.sectionTitle}>Đã thanh toán hoặc đã hủy</Text>
-        <Text style={styles.sectionTitle}>Tổng số tiền đã đóng: <Text style={{color:'red'}}>{totalPaid.toLocaleString()} VND</Text></Text>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>STT</Text>
