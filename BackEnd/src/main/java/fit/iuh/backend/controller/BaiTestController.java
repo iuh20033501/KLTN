@@ -108,6 +108,20 @@ public class BaiTestController {
         return  list;
     }
     @Operation(
+            summary = "get cau tra lời",
+            description = """ 
+            truyền id cau hỏi vao param
+            nhap cauhoi dầy đủ thông tin dẻ cap nhật trừ id.
+            
+    """
+    )
+    @PutMapping("/updateCauHoi/{idCauHoi}")
+    public CauHoi updateCauHoi(@PathVariable Long idCauHoi,@RequestBody CauHoi cauHoi){
+       cauHoi.setIdCauHoi(idCauHoi);
+       cauHoiService.createCauHoi(cauHoi);
+        return  cauHoi;
+    }
+    @Operation(
             summary = "làm  bài test",
             description = """ 
             **lưu ý cần chạy getList cau hỏi đẻ biết có bao nhiêu câu hỏi trong bài dẻ tính điểm

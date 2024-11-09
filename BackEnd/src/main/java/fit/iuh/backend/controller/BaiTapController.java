@@ -105,7 +105,20 @@ public class BaiTapController {
         List<CauHoi> list = cauHoiService.findAll();
         return list;
     }
-
+    @Operation(
+            summary = "get cau tra lời",
+            description = """ 
+            truyền id cau hỏi vao param
+            nhap cauhoi dầy đủ thông tin dẻ cap nhật trừ id.
+            
+    """
+    )
+    @PutMapping("/updateCauHoi/{idCauHoi}")
+    public CauHoi updateCauHoi(@PathVariable Long idCauHoi,@RequestBody CauHoi cauHoi){
+        cauHoi.setIdCauHoi(idCauHoi);
+        cauHoiService.createCauHoi(cauHoi);
+        return  cauHoi;
+    }
     @Operation(
             summary = "get câu tra lời",
             description = """ 

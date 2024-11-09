@@ -31,9 +31,19 @@ public class HoaDonImpement implements HoaDonService {
     }
 
     @Override
-    public HoaDon deleteThanhToan(Long idTT) {
-        HoaDon hoaDon = hoaDonRepo.findById(idTT).orElseThrow(() -> new RuntimeException("Hoa Don not found"));
-        hoaDon.setTrangThai(true);
+    public List<HoaDon> finfByIdHocVien(Long idHV) {
+        return hoaDonRepo.getByIdNV(idHV);
+    }
+
+    @Override
+    public List<HoaDon> finfByIdLop(Long idLop) {
+        return hoaDonRepo.getByIdLop(idLop);
+    }
+
+    @Override
+    public HoaDon deleteHoaDon(Long idHD) {
+        HoaDon hoaDon = hoaDonRepo.findById(idHD).orElseThrow(() -> new RuntimeException("Hoa Don not found"));
+        hoaDon.setTrangThai(false);
         return hoaDonRepo.save(hoaDon);
     }
 

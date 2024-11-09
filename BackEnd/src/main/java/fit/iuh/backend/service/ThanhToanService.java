@@ -18,8 +18,10 @@ public interface ThanhToanService {
     List<ThanhToan> findByIdHoaDon(Long idHD);
     void deleteThanhToan(Long idTT);
     List<ThanhToan> findAll();
-    ThanhToan updateThanhToan (ThanhToan thanhToan);
+    ThanhToan updateDoneThanhToanAndIdHoaDon (ThanhToan thanhToan, Long idHoaDon);
+    ThanhToan updateCancelThanhToan(ThanhToan thanhToan);
     List<ThanhToan> findByIDHVvaEnum(Long idHV, ThanhToanEnum thanhToanEnum);
     List<ThanhToan> findByIdLopvaEnum(Long idLop, ThanhToanEnum thanhToanEnum);
     void reLoadThanhToanByIdLop(Long idLop);
+    List<ThanhToan> findByIdHVAndHoaDonNUll(Long idHV);
 }

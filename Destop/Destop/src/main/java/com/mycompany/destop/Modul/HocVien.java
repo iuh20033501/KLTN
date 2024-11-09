@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * @author Windows 10
  */
 
-public class HocVien {
+public class HocVien extends User{
     @ElementCollection(targetClass = SkillEnum.class)
     @Enumerated(EnumType.ORDINAL)
     private ArrayList<SkillEnum> kiNangCan;

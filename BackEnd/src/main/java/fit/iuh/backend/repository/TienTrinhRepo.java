@@ -10,10 +10,10 @@ import java.util.List;
 
 @Repository
 public interface TienTrinhRepo extends JpaRepository<TienTrinh,Long> {
-    @Query("select tt from TienTrinh  tt join hocvien hv on tt.hocVien.idUser= hv.idUser where tt.hocVien.idUser= :id")
+    @Query("select tt from TienTrinh  tt join hocvien hv on tt.hocVien.idUser= hv.idUser where tt.hocVien.idUser=:id")
     List<TienTrinh> getByIdHV (@Param("id") Long idHV);
-    @Query("select tt from TienTrinh  tt join BaiTap bt on tt.baiTap.idBaiTap= bt.idBaiTap where tt.baiTap.idBaiTap= :id")
+    @Query("select tt from TienTrinh  tt join BaiTap bt on tt.baiTap.idBaiTap= bt.idBaiTap where tt.baiTap.idBaiTap=:id")
     List<TienTrinh> getByIdBT (@Param("id") Long idBT);
-    @Query("select tt from TienTrinh tt where tt.hocVien.idUser = :idHV and tt.baiTap.idBaiTap = :idBT")
+    @Query("select tt from TienTrinh tt where tt.hocVien.idUser = :idHV and tt.baiTap.idBaiTap =:idBT")
     TienTrinh getByIdHVAndIdBT(@Param("idHV") Long idHV, @Param("idBT") Long idBT);
 }

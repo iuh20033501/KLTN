@@ -32,8 +32,8 @@ public class ThanhToanController {
             tự động tạo mọi thanh toán ở trạng thái wait
     """
     )
-    @PostMapping("/create/{idLop}/{idHocVien}")
-    public ThanhToan createTaiLieu (@PathVariable Long idLop,@PathVariable Long idHocVien){
+    @GetMapping("/create/{idLop}/{idHocVien}")
+    public ThanhToan createThanhToan (@PathVariable Long idLop,@PathVariable Long idHocVien){
         LopHoc lop =lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
         HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("Hoc vien not found"));
 //        HoaDon hoaDon = hoaDonService.findById(idHoaDon).orElseThrow(() -> new RuntimeException("Hoa don not found"));
