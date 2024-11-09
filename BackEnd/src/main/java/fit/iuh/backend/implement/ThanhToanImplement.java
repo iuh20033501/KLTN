@@ -54,10 +54,15 @@ public class ThanhToanImplement implements ThanhToanService {
     }
 
     @Override
-    public ThanhToan updateThanhToan(ThanhToan thanhToan) {
+    public ThanhToan updateDoneThanhToanAndIdHoaDon(ThanhToan thanhToan, Long idHoaDon) {
+        thanhToan.setTrangThai(ThanhToanEnum.DONE);
         return thanhToanRepo.save(thanhToan);
     }
-
+    @Override
+    public ThanhToan updateCancelThanhToan(ThanhToan thanhToan) {
+        thanhToan.setTrangThai(ThanhToanEnum.CANCEL);
+        return thanhToanRepo.save(thanhToan);
+    }
     @Override
     public List<ThanhToan> findByIDHVvaEnum(Long idHV, ThanhToanEnum thanhToanEnum) {
         return thanhToanRepo.findByIdHVAndTrangThai(idHV,thanhToanEnum);
@@ -82,5 +87,10 @@ public class ThanhToanImplement implements ThanhToanService {
             return false;
         });
 
+    }
+
+    @Override
+    public List<ThanhToan> findByIdHVAndHoaDonNUll(Long idHV) {
+        return thanhToanRepo.findByIdHVAndHoaDonNUll(idHV);
     }
 }

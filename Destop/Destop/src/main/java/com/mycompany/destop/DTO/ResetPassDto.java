@@ -1,30 +1,21 @@
-package com.mycompany.destop.Request;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+package com.mycompany.destop.DTO;
 
 /**
  *
  * @author Windows 10
  */
-public class LoginRequest {
-    private String username;
-    private String password;
+public class ResetPassDto {
+     private String password;
 
-    public LoginRequest(String username, String password) {
-        this.username = username;
+    public ResetPassDto(String password) {
         this.password = password;
     }
 
-    // Getter và Setter
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public ResetPassDto() {
     }
 
     public String getPassword() {
@@ -34,7 +25,5 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+    
 }
-
-
-
