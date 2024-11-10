@@ -11,6 +11,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class TaiLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +19,7 @@ public class TaiLieu {
     private String tenTaiLieu;
     private String noiDung;
     private String linkLoad;
-    @OneToOne
+    @ManyToOne
     private BuoiHoc buoiHoc;
     private Date ngayMo;
     private Date ngayDong;
