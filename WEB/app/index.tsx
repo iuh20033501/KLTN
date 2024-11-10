@@ -18,10 +18,10 @@ import PaymentScreen from '@/components/screens/payment/paymentScreen';
 import ScheduleScreen from '@/components/screens/schedule/scheduleScreen';
 import TeacherScheduleScreen from '@/components/screens/schedule/teacherScheduleScreen';
 import TeacherClassesScreen from '@/components/screens/class/teacherClassesScreen';
-import ClassDetailScreen from '@/components/screens/class/classDetailScreen';
 import StudentClassesScreen from '@/components/screens/class/studentClassesScreen';
 import SelectSessionScreen from '@/components/screens/session/selectSessionScreen';
 import AssignmentDetailScreen from '@/components/screens/assignment/assignmentDetailScreen';
+import TeacherClassDetailScreen from '@/components/screens/class/teacherClassDetailScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -37,7 +37,7 @@ type RootStackParamList = {
   StudentClassesScreen:undefined;
   TeacherScheduleScreen:undefined;
   TeacherClassesScreen:undefined;
-  ClassDetailScreen:undefined;
+  TeacherClassDetailScreen:undefined;
   SelectSessionScreen:undefined;
   AssignmentDetailScreen:undefined;
 };
@@ -59,7 +59,7 @@ export default function App() {
       <Stack.Screen name="StudentClassesScreen" component={StudentClassesScreen} />
       <Stack.Screen name="TeacherScheduleScreen" component={TeacherScheduleScreen} />
       <Stack.Screen name="TeacherClassesScreen" component={TeacherClassesScreen} />
-      <Stack.Screen name="ClassDetailScreen" component={ClassDetailScreen} />
+      <Stack.Screen name="TeacherClassDetailScreen" component={TeacherClassDetailScreen} />
       <Stack.Screen name="SelectSessionScreen" component={SelectSessionScreen} />
       <Stack.Screen name="AssignmentDetailScreen" component={AssignmentDetailScreen} />
 

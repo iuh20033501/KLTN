@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as DocumentPicker from 'expo-document-picker';
+// import AWS from 'aws-sdk';
+// import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME } from '@env';
 
 interface MemberInfo {
     idHocVien: number;
@@ -37,8 +40,18 @@ interface Assignment {
     ngayBD: string;
     ngayKT: string;
 }
+interface DocumentPickerSuccessResult {
+    type: 'success';
+    uri: string;
+    mimeType: string | null;
+    name: string;
+}
+interface DocumentPickerCancelResult {
+    type: 'cancel';
+}
+type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCancelResult;
 
-const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any }) => {
+const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, route: any }) => {
     const { idLopHoc, tenLopHoc, role } = route.params;
     const [activeTab, setActiveTab] = useState('Assignments');
     const [members, setMembers] = useState<MemberInfo[]>([]);
@@ -133,7 +146,7 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
             setIsLoadingSessions(false);
         }
     };
-    
+
     const fetchAssignments = async (sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -153,6 +166,81 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
         }
     };
 
+    // const s3 = new AWS.S3({
+    //     accessKeyId: AWS_ACCESS_KEY_ID,
+    //     secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    //     region: AWS_REGION,
+    // });
+
+    // const uploadDocument = async (sessionId: any) => {
+    //     try {
+    //       const result = await DocumentPicker.getDocumentAsync({});
+      
+    //       if (result.type === 'cancel') {
+    //         console.log("User cancelled the document picker.");
+    //         Alert.alert('Thông báo', 'Bạn đã hủy việc chọn tài liệu.');
+    //         return;
+    //       }
+      
+    //       const asset = result.assets ? result.assets[0] : null;
+      
+    //       if (asset && asset.uri) {
+    //         const response = await fetch(asset.uri);
+    //         const blob = await response.blob();
+      
+    //         const params = {
+    //           Bucket: AWS_BUCKET_NAME,
+    //           Key: `uploads/${asset.name}`, // Tên file sẽ được lưu trên S3
+    //           Body: blob,
+    //           ContentType: asset.mimeType || 'application/octet-stream',
+    //         };
+      
+    //         // Upload file lên S3
+    //         s3.upload(params, async (err: any, data: { Location: any; }) => {
+    //           if (err) {
+    //             console.error('Error uploading file:', err);
+    //             Alert.alert('Lỗi', 'Tải tài liệu lên thất bại.');
+    //             return;
+    //           }
+              
+    //           // Lấy đường dẫn file từ S3
+    //           const fileUrl = data.Location;
+      
+    //           // Chuẩn bị dữ liệu để gửi đến server
+    //           const formData = {
+    //             tenTaiLieu: asset.name || 'unknown_file.pdf',
+    //             noiDung: '',
+    //             linkLoad: fileUrl, // Sử dụng URL từ S3
+    //             ngayMo: new Date().toISOString(),
+    //             ngayDong: new Date().toISOString(),
+    //           };
+      
+    //           // Gửi thông tin tài liệu lên server
+    //           const token = await AsyncStorage.getItem('accessToken');
+    //           if (!token) {
+    //             console.error('No token found');
+    //             Alert.alert('Lỗi', 'Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+    //             return;
+    //           }
+      
+    //           const responseUpload = await http.post(`/taiLieu/create/${sessionId}`, formData, {
+    //             headers: {
+    //               Authorization: `Bearer ${token}`,
+    //             },
+    //           });
+      
+    //           console.log('Document uploaded successfully:', responseUpload.data);
+    //           Alert.alert('Thông báo', 'Tải tài liệu lên thành công!');
+    //         });
+    //       } else {
+    //         console.error('No valid asset found');
+    //         Alert.alert('Lỗi', 'Không tìm thấy tài liệu hợp lệ.');
+    //       }
+    //     } catch (error) {
+    //       console.error('Failed to upload document:', error);
+    //       Alert.alert('Lỗi', 'Tải tài liệu lên thất bại. Vui lòng thử lại.');
+    //     }
+    //   };
     const renderContent = () => {
         switch (activeTab) {
             case 'Assignments':
@@ -167,18 +255,26 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
                                     <View key={session.idBuoiHoc} style={styles.sessionContainer}>
                                         <Text style={styles.sessionText}>{session.chuDe}</Text>
                                         {role === 'TEACHER' && (
-                                            <TouchableOpacity
-                                                style={styles.createButton}
-                                                onPress={() => navigation.navigate('CreateAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc })}
-                                            >
-                                                <Text style={styles.createButtonText}>Tạo Bài Tập</Text>
-                                            </TouchableOpacity>
+                                            <View style={styles.buttonRow}>
+                                                <TouchableOpacity
+                                                    style={styles.createButton}
+                                                    onPress={() => navigation.navigate('CreateAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc })}
+                                                >
+                                                    <Text style={styles.createButtonText}>Thêm bài tập</Text>
+                                                </TouchableOpacity>
+                                                {/* <TouchableOpacity
+                                                    style={styles.createButton}
+                                                    onPress={() => uploadDocument(session.idBuoiHoc)}
+                                                >
+                                                    <Text style={styles.createButtonText}>Thêm tài liệu</Text>
+                                                </TouchableOpacity> */}
+                                            </View>
                                         )}
                                         {assignments[session.idBuoiHoc] && assignments[session.idBuoiHoc].length > 0 ? (
                                             <View style={styles.assignmentList}>
                                                 {assignments[session.idBuoiHoc].map((assignment) => (
-                                                    <TouchableOpacity 
-                                                        key={assignment.idBaiTap} 
+                                                    <TouchableOpacity
+                                                        key={assignment.idBaiTap}
                                                         style={styles.assignmentItem}
                                                         onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap })}
                                                     >
@@ -261,9 +357,9 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
                         <Text style={styles.backButtonText}>Quay về</Text>
                     </TouchableOpacity>
                 </View>
-                
+
                 <Text style={styles.title}>{tenLopHoc}</Text>
-                
+
                 <View style={styles.tabContainer}>
                     <TouchableOpacity style={[styles.tabButton, activeTab === 'Assignments' && styles.activeTab]} onPress={() => setActiveTab('Assignments')}>
                         <Text style={[styles.tabText, activeTab === 'Assignments' && styles.activeTabText]}>Bài tập</Text>
@@ -283,7 +379,6 @@ const ClassDetailScreen = ({ navigation, route }: { navigation: any, route: any 
         </ImageBackground>
     );
 };
-
 
 const styles = StyleSheet.create({
     background: {
@@ -385,14 +480,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
     createButton: {
         padding: 8,
         backgroundColor: '#ff6600',
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 5,
-        width:100,
-        height:35
+        width: 120,
+        height: 35,
     },
     createButtonText: {
         color: '#fff',
@@ -413,4 +512,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ClassDetailScreen;
+export default TeacherClassDetailScreen;

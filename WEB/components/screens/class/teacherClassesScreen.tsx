@@ -58,7 +58,7 @@ export default function TeacherClassesScreen({ navigation, route }: { navigation
     };
 
     const renderClassCard = ({ item }: { item: ClassInfo }) => (
-        <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('ClassDetailScreen', {
+        <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('TeacherClassDetailScreen', {
             idUser,role,
             idLopHoc: item.idLopHoc,
             tenLopHoc: item.tenLopHoc,
