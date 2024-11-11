@@ -1,6 +1,7 @@
 package com.mycompany.destop.Service;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mycompany.destop.DTO.SigninDTO;
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 import javax.swing.JOptionPane;
 
 public class ApiClient {
@@ -104,13 +106,16 @@ public SigninDTO callProfileApi(String token) throws Exception {
                 response.append(responseLine.trim());
             }
 
+            // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+            Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new TypeAdapter())
+                        .create();
+
             // Chuyển đổi chuỗi JSON thành đối tượng SigninDTO
-            Gson gson = new Gson();
             return gson.fromJson(response.toString(), SigninDTO.class);
         }
     } else {
         throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
-        
     }
 }
 

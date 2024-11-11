@@ -4,6 +4,7 @@
  */
 package com.mycompany.destop.DTO;
 
+import com.google.gson.annotations.SerializedName;
 import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Modul.User;
 
@@ -12,6 +13,7 @@ import com.mycompany.destop.Modul.User;
  * @author Windows 10
  */
 public class SigninDTO {
+//    @SerializedName("u")
     private User u;
     private ChucVuEnum cvEnum;
 

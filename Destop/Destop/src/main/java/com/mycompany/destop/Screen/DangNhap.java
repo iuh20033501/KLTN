@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -192,7 +193,7 @@ public class DangNhap extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        String username = txtUserNawme.getText();   
+    String username = txtUserNawme.getText();   
     String password = new String(txtPassword.getPassword());
     StringBuilder builder = new StringBuilder();
 
@@ -211,25 +212,30 @@ public class DangNhap extends javax.swing.JFrame {
         try {
             ApiClient apiClient = new ApiClient();
             JwtResponse response = apiClient.callLoginApi(username, password);  // Sửa lại tên biến từ 'reponse' thành 'response'
-            System.out.println(response.getAccessToken());
+//            System.out.println(response.getAccessToken());
             if (response != null) {
                 
                 SigninDTO signinDTO = apiClient.callProfileApi(response.getAccessToken());
                 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                String formattedDate = signinDTO.getU().getNgaySinh().format(formatter);
+//                System.out.println("Ngày sinh định dạng: " + formattedDate);
                 // Kiểm tra quyền của người dùng
                 if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
+                    
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
                 } else {
                     JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
-                // Xóa mật khẩu khi đăng nhập thất bại
+                txtUserNawme.setText(""); // Làm trống trường tên người dùng 
                 txtPassword.setText("");
+                System.out.println( txtUserNawme.getText());
+                JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//            JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
     }//GEN-LAST:event_jButtonLoginActionPerformed

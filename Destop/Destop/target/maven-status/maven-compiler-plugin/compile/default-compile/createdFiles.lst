@@ -7,6 +7,7 @@ com\mycompany\destop\Modul\BaiTest.class
 com\mycompany\destop\Enum\ThanhToanEnum.class
 com\mycompany\destop\Modul\HoaDon.class
 com\mycompany\destop\Reponse\ApiResponse.class
+com\mycompany\destop\Service\TypeAdapter.class
 com\mycompany\destop\Modul\TienTrinh.class
 com\mycompany\destop\Destop.class
 com\mycompany\destop\DTO\LoginRequest.class
