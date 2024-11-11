@@ -37,8 +37,19 @@ public class BaiTestController {
     @GetMapping("/getCauHoi/{idTest}")
     public List<CauHoi> getListCauHoi (@PathVariable Long idTest){
         List<CauHoi> list = cauHoiService.findByIdBaiTest(idTest);
+//        soLuongCauHoi = (long) list.size();
+        return list;
+    }
+    @Operation(
+            summary = "tim cau hoi theo id Bai test và có trạng thái True",
+            description = """ 
+            truyen id Bai Test     
+    """
+    )
+    @GetMapping("/getCauHoiTrue/{idTest}")
+    public List<CauHoi> getListCauHoiandTrangThaiTrue (@PathVariable Long idTest){
+        List<CauHoi> list = cauHoiService.findByIdBaiTestandTrangThaiTrue(idTest);
         soLuongCauHoi = (long) list.size();
-
         return list;
     }
     @Operation(
@@ -109,6 +120,18 @@ public class BaiTestController {
         return  list;
     }
     @Operation(
+            summary = "delete hoi theo idCauHoi",
+            description = """ 
+            truyen idCauHoi 
+    """
+    )
+    @GetMapping("/getCauHoi/{idCauHoi}")
+    public CauHoi deleteCauHoi (@PathVariable Long idCauHoi){
+        CauHoi cauHoi = cauHoiService.findById(idCauHoi);
+        cauHoi.setTrangThai(false);
+        return cauHoiService.createCauHoi(cauHoi);
+    }
+    @Operation(
             summary = "update cau tra lời",
             description = """ 
             truyền id cau hỏi, idBaiTest vao param
@@ -134,7 +157,7 @@ public class BaiTestController {
     @Operation(
             summary = "làm  bài test",
             description = """ 
-            **lưu ý cần chạy getList cau hỏi đẻ biết có bao nhiêu câu hỏi trong bài dẻ tính điểm
+            **lưu ý cần chạy getListTrue cau hỏi theo id bài test đẻ biết có bao nhiêu câu hỏi trong bài dẻ tính điểm
             truyền id bai test, học viên,tgian lam bai và danh sách cau trả lời học viên làm bài dã chọn  ra danh sách câu trả lời
             
     """
@@ -143,7 +166,6 @@ public class BaiTestController {
     @PostMapping("/lamBai")
     public KetQuaTest lamBaiTest(@RequestBody TinhDiemTestDTO tinhDiemDTO){
         long soCauDung = 0L;
-
         long diemSo;
         List<CauTraLoi> list = tinhDiemDTO.getListCauTraLoi();
         for(CauTraLoi l:list){

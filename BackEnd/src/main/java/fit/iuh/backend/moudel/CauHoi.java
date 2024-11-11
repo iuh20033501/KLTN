@@ -21,13 +21,15 @@ public class CauHoi {
     @ManyToOne
     private BaiTest baiTest;
     private String loiGiai;
+    private Boolean trangThai;
 
-    public CauHoi(String noiDung, String linkAmThanh, String linkAnh, BaiTap baiTap, String loiGiai) {
+    public CauHoi(String noiDung, String linkAmThanh, String linkAnh, BaiTap baiTap, String loiGiai,Boolean trangThai) {
         this.noiDung = noiDung;
         this.linkAmThanh = linkAmThanh;
         this.linkAnh = linkAnh;
-        this.baiTap = null;
+        this.baiTap = baiTap;
         this.loiGiai = loiGiai;
+        this.trangThai = trangThai;
     }
 
     public CauHoi(String noiDung, String linkAmThanh, String linkAnh, BaiTest baiTest, String loiGiai) {

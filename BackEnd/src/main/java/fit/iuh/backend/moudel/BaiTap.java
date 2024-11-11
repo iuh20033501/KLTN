@@ -16,7 +16,7 @@ public class BaiTap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idBaiTap;
     private String tenBaiTap;
-    @OneToOne
+    @ManyToOne
     private BuoiHoc buoiHoc;
     private Date ngayBD;
     private Date ngayKT;

@@ -11,4 +11,6 @@ public interface CauHoiService {
     List<CauHoi> findAll();
     List<CauHoi> findByIdBaiTap(Long id);
     List<CauHoi> findByIdBaiTest(Long id);
+    List<CauHoi> findByIdBaiTestandTrangThaiTrue(Long id);
+    List<CauHoi> findByIdBaiTapandTrangThaiTrue(Long id);
 }

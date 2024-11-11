@@ -14,4 +14,8 @@ public interface CauHoiRepo extends JpaRepository<CauHoi,Long> {
     List<CauHoi>  findByIdBaiTap(@Param("id") Long ID);
     @Query("select ch from CauHoi ch join BaiTest b on ch.baiTest.idTest= b.idTest where ch.baiTest.idTest=:id")
     List<CauHoi>  findByIdBaiTest(@Param("id") Long ID);
+    @Query("select ch from CauHoi ch join BaiTest b on ch.baiTest.idTest = b.idTest where ch.baiTest.idTest = :id and ch.trangThai = true")
+    List<CauHoi> findByIdBaiTestandTrangThaiTrue(@Param("id") Long id);
+    @Query("select ch from CauHoi ch join BaiTap b on ch.baiTap.idBaiTap= b.idBaiTap where ch.baiTap.idBaiTap=:id and ch.trangThai = true")
+    List<CauHoi>  findByIdBaiTapandTrangThaiTrue(@Param("id") Long ID);
 }

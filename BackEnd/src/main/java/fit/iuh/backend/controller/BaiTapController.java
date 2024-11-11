@@ -87,6 +87,7 @@ public class BaiTapController {
         BaiTap bt = baiTapService.findById(idBTap);
         cauHoi.setBaiTest(null);
         cauHoi.setBaiTap(bt);
+        cauHoi.setTrangThai(true);
         CauHoi ch= cauHoiService.createCauHoi(cauHoi);
         return  ch;
     }
@@ -100,6 +101,29 @@ public class BaiTapController {
     public List<CauHoi> getListCauHoi (@PathVariable Long idTap){
         List<CauHoi> list = cauHoiService.findByIdBaiTap(idTap);
         return list;
+    }
+    @Operation(
+            summary = "tim cau hoi theo id Bai tap và có trang Thái true",
+            description = """ 
+            truyen id Bai tap     
+    """
+    )
+    @GetMapping("/getCauHoiTrue/{idTap}")
+    public List<CauHoi> getListCauHoiandTrangThaiTrue (@PathVariable Long idTap){
+        List<CauHoi> list = cauHoiService.findByIdBaiTapandTrangThaiTrue(idTap);
+        return list;
+    }
+    @Operation(
+            summary = "delete hoi theo idCauHoi",
+            description = """ 
+            truyen idCauHoi 
+    """
+    )
+    @GetMapping("/getCauHoi/{idCauHoi}")
+    public CauHoi deleteCauHoi (@PathVariable Long idCauHoi){
+        CauHoi cauHoi = cauHoiService.findById(idCauHoi);
+         cauHoi.setTrangThai(false);
+        return cauHoiService.createCauHoi(cauHoi);
     }
     @GetMapping("/getAllCauHoi")
     public List<CauHoi> getListAll (){

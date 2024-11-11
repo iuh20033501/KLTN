@@ -36,4 +36,14 @@ public class CauHoiImplement implements CauHoiService {
     public List<CauHoi> findByIdBaiTest(Long id) {
         return repo.findByIdBaiTest(id);
     }
+
+    @Override
+    public List<CauHoi> findByIdBaiTestandTrangThaiTrue(Long id) {
+        return repo.findByIdBaiTestandTrangThaiTrue(id);
+    }
+
+    @Override
+    public List<CauHoi> findByIdBaiTapandTrangThaiTrue(Long id) {
+        return repo.findByIdBaiTapandTrangThaiTrue(id);
+    }
 }
