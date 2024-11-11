@@ -206,7 +206,6 @@ if (password.isEmpty()) {
 if (builder.length() > 0) {
     JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
 } else {
-//    String apiUrl = "http://localhost:8081/auth/noauth/signin"; 
     try {
         ApiClient apiClient = new ApiClient();
        JwtResponse reponse= apiClient.callLoginApi(username, password);
@@ -215,6 +214,7 @@ if (builder.length() > 0) {
         if(signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN)||signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)){
         JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
         }
+        else JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
     } catch (Exception e) {
         e.printStackTrace();
         
@@ -237,6 +237,7 @@ if (builder.length() > 0) {
 
         if (phoneNumber.matches(regex)) {
          String otp=  JOptionPane.showInputDialog(null, "Nhập mã otp vừa được gửi tới " + phoneNumber+":");
+         
             if (otp != null && !otp.isEmpty()) {
                 
             }

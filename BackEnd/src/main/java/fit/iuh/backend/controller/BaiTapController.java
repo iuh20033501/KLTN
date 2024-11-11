@@ -5,6 +5,7 @@ import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -106,19 +107,29 @@ public class BaiTapController {
         return list;
     }
     @Operation(
-            summary = "get cau tra lời",
+            summary = "update cau tra lời",
             description = """ 
-            truyền id cau hỏi vao param
+            truyền id cau hỏi, idBaiTap vao param
             nhap cauhoi dầy đủ thông tin dẻ cap nhật trừ id.
             
     """
     )
-    @PutMapping("/updateCauHoi/{idCauHoi}")
-    public CauHoi updateCauHoi(@PathVariable Long idCauHoi,@RequestBody CauHoi cauHoi){
-        cauHoi.setIdCauHoi(idCauHoi);
-        cauHoiService.createCauHoi(cauHoi);
-        return  cauHoi;
+    @PutMapping("/updateCauHoi/{idCauHoi}/{idBaiTap}")
+    public CauHoi updateCauHoi(@PathVariable Long idCauHoi, @PathVariable Long idBaiTap, @RequestBody CauHoi cauHoi) {
+        BaiTap bt = baiTapService.findById(idBaiTap);
+        CauHoi ch = cauHoiService.findById(idCauHoi);
+
+        if (ch != null && bt != null) {
+            cauHoi.setIdCauHoi(idCauHoi);
+            cauHoi.setBaiTap(bt);
+            cauHoi.setBaiTest(null);
+            return cauHoiService.createCauHoi(cauHoi); // Gọi phương thức update thay vì create
+        }
+
+        // Trả về null hoặc có thể ném một ngoại lệ nếu không tìm thấy ch hoặc bt
+        throw new ConfigDataResourceNotFoundException(null);
     }
+
     @Operation(
             summary = "get câu tra lời",
             description = """ 
