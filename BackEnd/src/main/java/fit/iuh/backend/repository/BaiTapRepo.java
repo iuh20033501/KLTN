@@ -13,5 +13,7 @@ import java.util.List;
 public interface BaiTapRepo extends JpaRepository<BaiTap, Long> {
     @Query("SELECT bt FROM BaiTap bt JOIN bt.buoiHoc bh WHERE bh.idBuoiHoc =:id")
     List<BaiTap> findByIdBuoiHoc(@Param("id") Long id);
+    @Query("SELECT bt FROM BaiTap bt JOIN bt.buoiHoc bh WHERE bh.idBuoiHoc =:id AND bt.trangThai= true")
+    List<BaiTap> findByIdBuoiHocTrue(@Param("id") Long id);
 }
 

@@ -29,6 +29,12 @@ public class BaiTestImplement implements BaiTestService {
     }
 
     @Override
+    public List<BaiTest> finByIdLopTrue(Long idLop) {
+        return baiTestRepo.getListTestByIdLopandTrangThaitrue(idLop);
+    }
+
+
+    @Override
     public List<BaiTest> findAll(BaiTest bt) {
         return baiTestRepo.findAll();
     }

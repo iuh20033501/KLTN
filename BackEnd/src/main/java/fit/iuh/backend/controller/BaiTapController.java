@@ -49,6 +49,15 @@ public class BaiTapController {
     public List<BaiTap> findBTByBuoi(@PathVariable Long idBuoi){
         return baiTapService.findByIdBuoi(idBuoi);
     }
+    @Operation(
+            summary = "get bai tap thoe idBuoi có trang thái true",
+            description = """     
+    """
+    )
+    @GetMapping("/getBaiTapofBuoiTrue/{idBuoi}")
+    public List<BaiTap> findBTByBuoiTrue(@PathVariable Long idBuoi){
+        return baiTapService.findByIdBuoiTrue(idBuoi);
+    }
     @GetMapping("/getBaiTapById/{id}")
     public BaiTap findBTByID(@PathVariable Long id){
         return baiTapService.findById(id);

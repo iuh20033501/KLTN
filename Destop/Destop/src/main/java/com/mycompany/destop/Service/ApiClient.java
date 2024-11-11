@@ -87,7 +87,7 @@ public class ApiClient {
 
 
 public SigninDTO callProfileApi(String token) throws Exception {
-    String profileUrl = "http://localhost:8081/profile";
+    String profileUrl = "http://localhost:8081/auth/profile"; // Đảm bảo URL này đúng
     URL url = new URL(profileUrl);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -104,18 +104,15 @@ public SigninDTO callProfileApi(String token) throws Exception {
                 response.append(responseLine.trim());
             }
 
-            // Chuyển đổi chuỗi JSON thành đối tượng SigninDTO bằng org.json
-            String jsonResponse = response.toString();
+            // Chuyển đổi chuỗi JSON thành đối tượng SigninDTO
             Gson gson = new Gson();
-
-            // Tạo đối tượng User và ánh xạ các giá trị từ JSON
-           
-            return gson.fromJson(jsonResponse, SigninDTO.class);
+            return gson.fromJson(response.toString(), SigninDTO.class);
         }
     } else {
         throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
     }
 }
+
 
 
 

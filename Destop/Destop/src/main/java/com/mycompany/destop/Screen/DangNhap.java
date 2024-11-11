@@ -210,11 +210,14 @@ if (builder.length() > 0) {
         ApiClient apiClient = new ApiClient();
        JwtResponse reponse= apiClient.callLoginApi(username, password);
         System.out.println(reponse.getAccessToken());
+        if(reponse !=null){
         SigninDTO signinDTO = apiClient.callProfileApi(reponse.getAccessToken());
         if(signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN)||signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)){
         JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
         }
         else JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
+        }
+        else JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
     } catch (Exception e) {
         e.printStackTrace();
         

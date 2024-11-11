@@ -33,6 +33,11 @@ public class BaiTapImplement implements BaiTapService {
         return baiTapRepo.findByIdBuoiHoc(idBuoi);
     }
 
+    @Override
+    public List<BaiTap> findByIdBuoiTrue(Long idBuoi) {
+        return baiTapRepo.findByIdBuoiHocTrue(idBuoi);
+    }
+
 //    @Override
 //    public List<BaiTap> findByIdHV(Long idHV) {
 //        return baiTapRepo.FindByIdHV(idHV);

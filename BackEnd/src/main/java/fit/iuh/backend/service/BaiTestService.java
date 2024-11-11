@@ -12,6 +12,7 @@ public interface BaiTestService {
     List<BaiTest> finByIdLop(Long idLop);
 
     BaiTest createBaiTest (BaiTest bt);
+    List<BaiTest> finByIdLopTrue(Long idLop);
     List<BaiTest> findAll(BaiTest bt) ;
 
 }

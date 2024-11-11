@@ -66,17 +66,36 @@ public class BaiTestController {
         baiTest.setTrangThai(true);
         return baiTestService.createBaiTest(baiTest);
     }
+    @Operation(
+            summary = "get bai test thoe idLop có trang thái true",
+            description = """     
+    """
+    )
+    @GetMapping("/getBaiTestofLopTrue/{idLop}")
+    public List<BaiTest> findBTByLopTrue(@PathVariable Long idLop){
+        return baiTestService.finByIdLopTrue(idLop);
+    }
+    @Operation(
+            summary = "get bai test thoe idLop ",
+            description = """     
+    """
+    )
+    @GetMapping("/getBaiTestofLop/{idLop}")
+    public List<BaiTest> findBTByLop(@PathVariable Long idLop){
+        return baiTestService.finByIdLop(idLop);
+    }
     @GetMapping("/deleteBaiTest/{id}")
     public BaiTest deleteBT(@PathVariable Long id){
         BaiTest bt = baiTestService.findById(id);
         bt.setTrangThai(false);
         return bt;
     }
+
     @Operation(
             summary = "kiem tra date test",
             description = """ 
            
-            truyen id Bai Test  nếu quá nagyf hay chưa tới sẽ ko hiện 
+            truyen id Bai Test  nếu quá ngay hay chưa tới sẽ ko hiện 
     """
     )
     @GetMapping("/kiemtraDate/{id}")

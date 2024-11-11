@@ -12,4 +12,6 @@ import java.util.List;
 public interface BaiTestRepo extends JpaRepository<BaiTest,Long> {
     @Query("select test from BaiTest  test join LopHoc  lop on test.lopHoc.idLopHoc= lop.idLopHoc where test.lopHoc.idLopHoc =:id")
     List<BaiTest> getListTestByIdLop (@Param("id") Long idLop);
+    @Query("select test from BaiTest  test join LopHoc  lop on test.lopHoc.idLopHoc= lop.idLopHoc where test.lopHoc.idLopHoc =:id AND test.TrangThai= true")
+    List<BaiTest> getListTestByIdLopandTrangThaitrue (@Param("id") Long idLop);
 }
