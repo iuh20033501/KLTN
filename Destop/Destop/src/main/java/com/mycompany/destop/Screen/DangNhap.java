@@ -192,42 +192,50 @@ public class DangNhap extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-    String username = txtUserNawme.getText();   
-String password = new String(txtPassword.getPassword());
-StringBuilder builder = new StringBuilder();
+        String username = txtUserNawme.getText();   
+    String password = new String(txtPassword.getPassword());
+    StringBuilder builder = new StringBuilder();
 
-if (username.isEmpty()) {
-    builder.append("Username đang rỗng\n");
-}
-if (password.isEmpty()) {
-    builder.append("Password đang rỗng\n");
-}
-
-if (builder.length() > 0) {
-    JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
-} else {
-    try {
-        ApiClient apiClient = new ApiClient();
-       JwtResponse reponse= apiClient.callLoginApi(username, password);
-        System.out.println(reponse.getAccessToken());
-        if(reponse !=null){
-        SigninDTO signinDTO = apiClient.callProfileApi(reponse.getAccessToken());
-        if(signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN)||signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)){
-        JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
-        }
-        else JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
-        }
-        else JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
-    } catch (Exception e) {
-        e.printStackTrace();
-        
+    // Kiểm tra xem tên đăng nhập và mật khẩu có rỗng không
+    if (username.isEmpty()) {
+        builder.append("Username đang rỗng\n");
     }
-}
+    if (password.isEmpty()) {
+        builder.append("Password đang rỗng\n");
+    }
 
+    // Nếu có lỗi, hiển thị thông báo
+    if (builder.length() > 0) {
+        JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
+    } else {
+        try {
+            ApiClient apiClient = new ApiClient();
+            JwtResponse response = apiClient.callLoginApi(username, password);  // Sửa lại tên biến từ 'reponse' thành 'response'
+            System.out.println(response.getAccessToken());
+            if (response != null) {
+                
+                SigninDTO signinDTO = apiClient.callProfileApi(response.getAccessToken());
+                
+                // Kiểm tra quyền của người dùng
+                if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
+                // Xóa mật khẩu khi đăng nhập thất bại
+                txtPassword.setText("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_jButtonLoginActionPerformed
+                                           
     
 
-       
-    }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
         // TODO add your handling code here:
