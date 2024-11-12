@@ -44,7 +44,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/baitap/getCauHoiTrue/${assignmentId}`, {
+            const response = await http.get(`baitap/getCauHoiTrue/${assignmentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const questionsData = response.data || [];
@@ -69,7 +69,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return [];
             }
-            const response = await http.get(`/baitap/getCauTraLoi/${questionId}`, {
+            const response = await http.get(`baitap/getCauTraLoi/${questionId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return Array.isArray(response.data) ? response.data : [];
@@ -117,7 +117,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return;
             }
-            await http.get(`/baitap/deleteCauHoi/${selectedQuestion.idCauHoi}`, {
+            await http.get(`baitap/deleteCauHoi/${selectedQuestion.idCauHoi}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setConfirmModalVisible(false);
@@ -137,7 +137,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return;
             }
-            await http.put(`/baitap/updateCauHoi/${selectedQuestion.idCauHoi}/${assignmentId}`, {
+            await http.put(`baitap/updateCauHoi/${selectedQuestion.idCauHoi}/${assignmentId}`, {
                 noiDung: questionText,
                 loiGiai: explanationText,
                 trangThai: 1
@@ -146,7 +146,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
             });
             await Promise.all(
                 answers.map(answer =>
-                    http.put(`/cauTraLoi/create/${selectedQuestion.idCauHoi}/${answer.idCauTraLoi}`, {
+                    http.put(`cauTraLoi/create/${selectedQuestion.idCauHoi}/${answer.idCauTraLoi}`, {
                         ...answer,
                         ketQua: answer.idCauTraLoi === correctAnswerId
                     }, {
@@ -190,7 +190,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
 
             await Promise.all(
                 answers.map((answer, index) =>
-                    http.post(`/cauTraLoi/create/${newQuestionId}`, {
+                    http.post(`cauTraLoi/create/${newQuestionId}`, {
                         noiDung: answer.noiDung,
                         ketQua: index === correctAnswerId,
                     }, {

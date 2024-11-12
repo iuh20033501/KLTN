@@ -33,21 +33,37 @@ export default function LoginScreen({navigation}: {navigation: any}) {
     }
   
     try {
-      const response = await http.post("auth/noauth/signin", {
-        username: userName,  
+      const loginResponse = await http.post("auth/noauth/signin", {
+        username: userName,
         password: passWord,
       });
-
-      if (response.status === 200) {
-        const { accessToken } = response.data;  
-        await AsyncStorage.setItem('accessToken', accessToken);  
-        console.log("Đăng nhập thành công: ", accessToken);
-        navigation.navigate('MainTabs'); 
+  
+      if (loginResponse.status === 200) {
+        const { accessToken } = loginResponse.data;
+        await AsyncStorage.setItem('accessToken', accessToken);
+  
+        const profileResponse = await http.get("/auth/profile", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+  
+        if (profileResponse.status === 200) {
+          const { cvEnum } = profileResponse.data;
+          console.log(cvEnum)
+          if (cvEnum === "STUDENT") {
+            console.log("Đăng nhập thành công: ", accessToken);
+            navigation.navigate('MainTabs');
+          } else {
+            Alert.alert("Đăng nhập thất bại", "Chỉ học viên mới được phép đăng nhập vào ứng dụng");
+            await AsyncStorage.removeItem('accessToken'); // Clear token if role check fails
+          }
+        } else {
+          Alert.alert("Lỗi", "Không thể lấy thông tin người dùng");
+        }
       } else {
         Alert.alert("Đăng nhập thất bại", "Sai thông tin đăng nhập");
       }
     } catch (error) {
-      Alert.alert("Đăng nhập thất bại","Vui lòng kiểm tra lại tài khoản và mật khẩu của bạn");
+      Alert.alert("Đăng nhập thất bại", "Vui lòng kiểm tra lại tài khoản và mật khẩu của bạn");
     }
   };
 

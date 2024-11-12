@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
             setModalVisible(true);
             return;
         }
-
+    
         if (!validatePassword(password)) {
             setErrorMessage('Mật khẩu không hợp lệ. Mật khẩu có độ dài từ 6 đến 32 ký tự.');
             setModalVisible(true);
@@ -46,19 +46,38 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
         }
         setErrorMessage('');
         setModalVisible(false);
+    
         try {
             const response = await http.post("auth/noauth/signin", {
                 username: username,
                 password: password,
             });
-
+    
             if (response.status === 200) {
                 const { accessToken } = response.data;
                 await AsyncStorage.setItem('accessToken', accessToken);
-                setTimeout(() => {
-                    navigation.navigate('DashboardScreen');
-                }, 500);
-                
+    
+                const profileResponse = await http.get("auth/profile", {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+    
+                if (profileResponse.status === 200) {
+                    const { cvEnum } = profileResponse.data;
+    
+                    if (cvEnum === "STUDENT" || cvEnum === "TEACHER") {
+                        console.log("Đăng nhập thành công");
+                        setTimeout(() => {
+                            navigation.navigate('DashboardScreen');
+                        }, 500);
+                    } else {
+                        setErrorMessage("Chỉ học viên và giáo viên mới được phép đăng nhập vào ứng dụng");
+                        setModalVisible(true);
+                        await AsyncStorage.removeItem('accessToken');
+                    }
+                } else {
+                    setErrorMessage("Không thể lấy thông tin người dùng");
+                    setModalVisible(true);
+                }
             } else {
                 setErrorMessage("Sai thông tin đăng nhập");
                 setModalVisible(true);
@@ -66,9 +85,9 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
         } catch (error) {
             setErrorMessage("Đăng nhập thất bại");
             setModalVisible(true);
-
         }
     };
+    
     return (
         <ImageBackground
             source={require('../../../image/bglogin.png')}

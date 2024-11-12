@@ -83,7 +83,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getByLop/${idLopHoc}`, {
+            const response = await http.get(`lopHoc/getByLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = Array.isArray(response.data) ? response.data : [];
@@ -103,7 +103,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getLop/${idLopHoc}`, {
+            const response = await http.get(`lopHoc/getLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setClassDetail(response.data);
@@ -122,7 +122,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/buoihoc/getbuoiHocByLop/${idLopHoc}`, {
+            const response = await http.get(`buoihoc/getbuoiHocByLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setSessions(response.data);
@@ -147,7 +147,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/baitap/getBaiTapofBuoiTrue/${sessionId}`, {
+            const response = await http.get(`baitap/getBaiTapofBuoiTrue/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAssignments((prev) => ({
@@ -175,7 +175,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            await http.get(`/baitap/deleteBtap/${id}`, {
+            await http.get(`baitap/deleteBtap/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchAssignments(sessionId);
@@ -235,8 +235,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                         )}
                                     </View>
                                 ))
-                            ) : (
-                                <Text>Không có buổi học nào.</Text>
+                            ) : (   
+                                <Text>Không có buổi học nào.</Text> 
                             )
                         )}
                     </ScrollView>

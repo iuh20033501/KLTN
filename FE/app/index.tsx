@@ -19,7 +19,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Animated } from 'react-native'; 
 import LessonDetailScreen from "@/components/screens/detailScreen/lessonDetailScreen";
 import ScoreBoardScreen from "@/components/screens/detailScreen/scoreBoardScreen";
-import ListEXScreen from "@/components/screens/exercise/listEXScreen";
 import LessionListScreen from "@/components/screens/exercise/lessionScreen";
 import UserProfileScreen from "@/components/screens/profileScreen/userProfileScreen";
 import UpdateProfileScreen from "@/components/screens/profileScreen/updateProfileScreen";
@@ -29,6 +28,9 @@ import AuthenticationForgetPassword from "@/components/screens/resetPassword/aut
 import DetailProfileScreen from "@/components/screens/profileScreen/detaiProfileScreen";
 import UserInfoScreen from "@/components/screens/profileScreen/userInfoScreen";
 import ResetPassword from "@/components/screens/resetPassword/resetPassword";
+import StudentClassesScreen from "@/components/screens/exercise/studentClassesScreen";
+import LessonListScreen from "@/components/screens/exercise/lessionScreen";
+import ExerciseListScreen from "@/components/screens/exercise/exerciseListScreen";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -41,8 +43,7 @@ type RootStackParamList = {
   SecondTab :undefined;
   LessonDetailScreen: undefined;
   ScoreBoardScreen: undefined;
-  ListEXScreen: undefined;
-  LessionListScreen : undefined;
+  LessonListScreen : undefined;
   ExerciseScreen: undefined;
   UserProfileScreen: undefined;
   UpdateProfileScreen:undefined;
@@ -51,6 +52,8 @@ type RootStackParamList = {
   DetailProfileScreen: undefined;
   UserInfoScreen:undefined;
   ResetPassword:undefined;
+  StudentClassesScreen:undefined;
+  ExerciseListScreen:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -130,8 +133,8 @@ export default function Router() {
         <Stack.Screen name="SecondTab" component={SecondTab} />
         <Stack.Screen name="LessonDetailScreen" component={LessonDetailScreen} />
         <Stack.Screen name="ScoreBoardScreen" component={ScoreBoardScreen} />
-        <Stack.Screen name="ListEXScreen" component={ListEXScreen} />
-        <Stack.Screen name="LessionListScreen" component={LessionListScreen} />
+        <Stack.Screen name="StudentClassesScreen" component={StudentClassesScreen} />
+        <Stack.Screen name="LessonListScreen" component={LessonListScreen} />
         <Stack.Screen name="ExerciseScreen" component={ExerciseScreen} />
         <Stack.Screen name="UserProfileScreen" component={UserProfileScreen} />
         <Stack.Screen name="UpdateProfileScreen" component={UpdateProfileScreen} />
@@ -140,6 +143,7 @@ export default function Router() {
         <Stack.Screen name="DetailProfileScreen" component={DetailProfileScreen} />
         <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
 
 
         

@@ -1,53 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface LessonInfo {
-  chuDe: string;
-  idBuoiHoc: number;
-  tenBuoiHoc: string;
-  ngayHoc: string;
-  thoiGianBatDau: string;
-  thoiGianKetThuc: string;
+interface ExerciseInfo {
+  idBaiTap: number;
+  tenBaiTap: string;
+  moTa: string;
 }
 
-export default function LessonListScreen({ navigation, route }: { navigation: any; route: any }) {
-  const [lessons, setLessons] = useState<LessonInfo[]>([]);
+export default function ExerciseListScreen({ navigation, route }: { navigation: any; route: any }) {
+  const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { idLopHoc } = route.params;
+  const { idBuoiHoc } = route.params;
 
-
-  const fetchLessons = async () => {
+  const fetchExercises = async () => {
       try {
           const token = await AsyncStorage.getItem('accessToken');
           if (!token) {
               console.error('No token found');
               return;
           }
-          const response = await http.get(`buoihoc/getbuoiHocByLop/${idLopHoc}`, {
+          const response = await http.get(`baitap/getBaiTapofBuoiTrue/${idBuoiHoc}`, {
               headers: {
                   Authorization: `Bearer ${token}`,
               },
           });
-          setLessons(response.data);
+          setExercises(response.data);
       } catch (error) {
-          console.error('Failed to fetch lessons:', error);
+          console.error('Failed to fetch exercises:', error);
       } finally {
           setIsLoading(false);
       }
   };
   
   useEffect(() => {
-      fetchLessons();
+      fetchExercises();
   }, []);
-  const renderLessonCard = ({ item }: { item: LessonInfo }) => (
-    <TouchableOpacity style={styles.lessonButton} onPress={() => navigation.navigate('ExerciseListScreen', { idBuoiHoc: item.idBuoiHoc })}>
+
+  const renderExerciseCard = ({ item }: { item: ExerciseInfo }) => (
+    <TouchableOpacity onPress={() => navigation.navigate('ExerciseScreen', { idBaiTap: item.idBaiTap, tenBaiTap: item.tenBaiTap })}>
       <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.buttonGradient}>
-        <Text style={styles.lessonText}>{item.chuDe}</Text>
-       
+        <Text style={styles.exerciseText}>{item.tenBaiTap}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -58,18 +54,17 @@ export default function LessonListScreen({ navigation, route }: { navigation: an
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Bài tập </Text>
-        <Icon name="star-outline" size={24} color="gold" style={styles.starIcon} />
+        <Text style={styles.headerText}>Danh sách bài tập</Text>
       </View>
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#00405d" />
       ) : (
         <FlatList
-          data={lessons}
-          renderItem={renderLessonCard}
-          keyExtractor={(item) => item.idBuoiHoc.toString()}
-          contentContainerStyle={styles.lessonList}
+          data={exercises}
+          renderItem={renderExerciseCard}
+          keyExtractor={(item) => item.idBaiTap.toString()}
+          contentContainerStyle={styles.exerciseList}
         />
       )}
     </View>
@@ -85,43 +80,30 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
     marginBottom: 20,
   },
   headerText: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#00bf63',
-    marginLeft: 10,
+    textAlign: 'center',
+    flex: 1,
+    marginRight: 24, 
   },
-  lessonList: {
+  exerciseList: {
     paddingBottom: 20,
   },
-  lessonButton: {
-    marginBottom: 16,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
   buttonGradient: {
-    paddingVertical: 20,
     borderRadius: 8,
-    justifyContent: 'center',
+    paddingVertical: 20,
     paddingHorizontal: 15,
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  lessonText: {
-    fontSize: 20,
+  exerciseText: {
+    fontSize: 18,
     color: '#ffffff',
-    textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  lessonDetails: {
-    fontSize: 16,
-    color: '#ffffff',
     textAlign: 'center',
-  },
-  starIcon: {
-    marginRight: 10,
   },
 });

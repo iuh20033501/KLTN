@@ -106,7 +106,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
             const option = field as keyof Assignment['answers'];
             newAssignments[index].answers[option].noiDung = value;
         } else {
-            newAssignments[index][field as keyof Assignment] = value;
+            newAssignments[index][field as keyof Assignment] = value as any;
         }
         setAssignments(newAssignments);
     };
@@ -137,7 +137,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                 ngayKT: endDate ? formatDate(endDate) : null,
             };
 
-            const response = await http.post(`/baitap/createBaiTap/${sessionId}`, assignmentData, {
+            const response = await http.post(`baitap/createBaiTap/${sessionId}`, assignmentData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -150,7 +150,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                         loiGiai: question.loiGiai,
                     };
 
-                    const questionResponse = await http.post(`/baitap/createCauHoi/${idBaiTap}`, questionData, {
+                    const questionResponse = await http.post(`baitap/createCauHoi/${idBaiTap}`, questionData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -164,7 +164,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                 ketQua: answer.ketQua,
                             };
 
-                            return http.post(`/cauTraLoi/create/${idCauHoi}`, answerData, {
+                            return http.post(`cauTraLoi/create/${idCauHoi}`, answerData, {
                                 headers: { Authorization: `Bearer ${token}` },
                             });
                         })
@@ -245,7 +245,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                     <TextInput
                                         style={[styles.input, { flex: 1 }]}
                                         placeholder={`Đáp án ${option}`}
-                                        value={question.answers[`answer${option}`].noiDung}
+                                        value={question.answers[`answer${option}` as keyof Assignment['answers']].noiDung}
                                         onChangeText={(text) => handleInputChange(index, `answer${option}`, text)}
                                     />
                                 </View>
