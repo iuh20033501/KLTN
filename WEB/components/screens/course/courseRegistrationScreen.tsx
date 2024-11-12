@@ -224,9 +224,8 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         return;
       }
 
-      const response = await http.post(
+      const response = await http.get(
         `thanhToan/create/${selectedClass.idLopHoc}/${idUser}`,
-        {},
         {
           headers: { Authorization: `Bearer ${token}` },
         }

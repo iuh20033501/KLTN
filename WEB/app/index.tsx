@@ -22,6 +22,7 @@ import StudentClassesScreen from '@/components/screens/class/studentClassesScree
 import SelectSessionScreen from '@/components/screens/session/selectSessionScreen';
 import AssignmentDetailScreen from '@/components/screens/assignment/assignmentDetailScreen';
 import TeacherClassDetailScreen from '@/components/screens/class/teacherClassDetailScreen';
+import AddAssignmentScreen from '@/components/screens/assignment/addAssignmentScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -40,6 +41,7 @@ type RootStackParamList = {
   TeacherClassDetailScreen:undefined;
   SelectSessionScreen:undefined;
   AssignmentDetailScreen:undefined;
+  AddAssignmentScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -62,6 +64,8 @@ export default function App() {
       <Stack.Screen name="TeacherClassDetailScreen" component={TeacherClassDetailScreen} />
       <Stack.Screen name="SelectSessionScreen" component={SelectSessionScreen} />
       <Stack.Screen name="AssignmentDetailScreen" component={AssignmentDetailScreen} />
+      <Stack.Screen name="AddAssignmentScreen" component={AddAssignmentScreen} />
+
 
     </Stack.Navigator>
   </NavigationContainer>
