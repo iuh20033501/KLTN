@@ -226,15 +226,16 @@ public class BaiTapController {
     )
     @GetMapping("/updateTienTrinh/{idHocvien}/{idBaiTap}")
     public TienTrinh lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
-
-        TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien, idBaiTap);
+        System.out.println("idHocVien: " + idHocVien);
+        System.out.println("idBaiTap: " + idBaiTap);
+        TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien,idBaiTap);
         if(tienTrinh==null) {
             BaiTap baiTap = baiTapService.findById(idBaiTap);
             HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("Hoc Vien not found"));
             return tienTrinhService.createTT(new TienTrinh(0l, hocVien, baiTap));
         }else{
             Long soCau = tienTrinh.getCauDung();
-            tienTrinh.setCauDung(soCau++);
+            tienTrinh.setCauDung(soCau+1);
             return tienTrinhService.createTT(tienTrinh);
         }
     }
