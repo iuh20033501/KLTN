@@ -5,6 +5,7 @@
 package com.mycompany.destop.Screen;
 
 import com.google.gson.Gson;
+import com.mycompany.destop.DTO.PhoneNumberDTO;
 
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Enum.ChucVuEnum;
@@ -18,8 +19,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
 
 /**
  *
@@ -30,9 +34,10 @@ public class DangNhap extends javax.swing.JFrame {
     /**
      * Creates new form DangNhap
      */
+    private ApiClient apiClient = new ApiClient();
     public DangNhap() {
         initComponents();
-        ApiClient apiClient = new ApiClient();
+        
     }
 
     /**
@@ -210,7 +215,7 @@ public class DangNhap extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
     } else {
         try {
-            ApiClient apiClient = new ApiClient();
+//            ApiClient apiClient = new ApiClient();
             JwtResponse response = apiClient.callLoginApi(username, password);  // Sửa lại tên biến từ 'reponse' thành 'response'
 //            System.out.println(response.getAccessToken());
             if (response != null) {
@@ -244,27 +249,52 @@ public class DangNhap extends javax.swing.JFrame {
 
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
-        // TODO add your handling code here:
-         String phoneNumber = JOptionPane.showInputDialog(null, "Nhập số điện thoại:");
+                                               
+    // Nhập số điện thoại từ người dùng
+    String phoneNumber = JOptionPane.showInputDialog(null, "Nhập số điện thoại:");
+// ApiClient apiClient = new ApiClient(); // Khởi tạo apiClient nếu cần
 
-    // Kiểm tra xem người dùng đã nhập số điện thoại hay chưa
-    if (phoneNumber != null && !phoneNumber.isEmpty()) {
-        // Regex để kiểm tra định dạng số điện thoại (ví dụ: chỉ cho phép số và độ dài từ 10 đến 15 ký tự)
-        String regex = "^(\\+\\d{1,3}[- ]?)?\\d{10,15}$";
-
-        if (phoneNumber.matches(regex)) {
-         String otp=  JOptionPane.showInputDialog(null, "Nhập mã otp vừa được gửi tới " + phoneNumber+":");
-         
-            if (otp != null && !otp.isEmpty()) {
+// Kiểm tra xem người dùng đã nhập số điện thoại chưa
+if (phoneNumber != null && !phoneNumber.isEmpty()) {
+    // Regex để kiểm tra định dạng số điện thoại
+    String regex = "^(\\+\\d{1,3}[- ]?)?\\d{10}$";
+    
+    if (phoneNumber.matches(regex)) {
+        try {
+            String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phoneNumber + ":");
+            
+            if (otpInput != null && !otpInput.isEmpty()) {
+                // Tạo đối tượng PhoneNumberDTO và gửi yêu cầu OTP
+                PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
                 
+                String OTP = apiClient.sendOTP(phoneNumberDTO);
+                
+                // Kiểm tra xem OTP đã được gửi thành công hay chưa
+                if (OTP != null) {
+                    // Xử lý khi người dùng nhập mã OTP ở đây
+                    if (otpInput.equals(OTP)) {
+                        JOptionPane.showMessageDialog(null, "Xác thực thành công!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Không thể gửi mã OTP. Vui lòng thử lại sau.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Mã OTP không thể bỏ trống. Vui lòng nhập mã OTP.");
             }
-            else JOptionPane.showMessageDialog(null, "Bạn chưa nhập mã OTP.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ. Vui lòng thử lại.");
+        } catch (Exception ex) {
+            Logger.getLogger(DangNhap.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi trong quá trình gửi mã OTP. Vui lòng thử lại sau.");
         }
     } else {
-        JOptionPane.showMessageDialog(null, "Bạn chưa nhập số điện thoại.");
+        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ. Đảm bảo số điện thoại có định dạng đúng.");
     }
+} else {
+    JOptionPane.showMessageDialog(null, "Bạn chưa nhập số điện thoại. Vui lòng nhập số điện thoại để tiếp tục.");
+}
+
+
     }//GEN-LAST:event_jButtonResetActionPerformed
 
     private void txtUserNawmeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserNawmeActionPerformed

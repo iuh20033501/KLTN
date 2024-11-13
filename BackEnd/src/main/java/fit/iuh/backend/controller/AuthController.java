@@ -100,7 +100,7 @@ public class AuthController {
     @Operation(
             summary = "Xác thực mã OTP",
             description = """
-                    Nếu xác thực đúng thì trả về JWT và tạo ra tài khoản trong database với status là UNVERIFIED
+                    Mỗi làn chạy một làn xác thực bắt buộc phải chạy mọt hàm reset hoặc signup
                     
                     Gọi tới v1/auth/register để cập nhật lại các thông tin cơ bản
                     
@@ -130,8 +130,8 @@ public class AuthController {
         } else throw new RuntimeException("không tìm thấy profile user có hoc viên: " + u.getTenDangNhap());
     }
     @GetMapping("/profile")
-    @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ" +
-            "Mỗi làn chạy một làn xác thực bắt buộc phải chạy mọt hàm reset hoặc signup")
+    @Operation(summary = "Lấy thông tin user sau khi đăng nhập trả về thông tin user và enum chức vụ"
+           )
     public SigninDTO validAdmin(@AuthenticationPrincipal TaiKhoanDto dto) {
         User u = authenProfile(dto);
         SigninDTO signinDTO= new SigninDTO(u,dto.getRole());

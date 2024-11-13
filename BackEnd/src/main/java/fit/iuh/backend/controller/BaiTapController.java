@@ -50,7 +50,7 @@ public class BaiTapController {
         return baiTapService.findByIdBuoi(idBuoi);
     }
     @Operation(
-            summary = "get bai tap thoe idBuoi có trang thái true",
+            summary = "get bai tap th idBuoi có trang thái true",
             description = """     
     """
     )
@@ -128,7 +128,7 @@ public class BaiTapController {
             truyen idCauHoi 
     """
     )
-    @GetMapping("/getCauHoi/{idCauHoi}")
+    @GetMapping("/deleteCauHoi/{idCauHoi}")
     public CauHoi deleteCauHoi (@PathVariable Long idCauHoi){
         CauHoi cauHoi = cauHoiService.findById(idCauHoi);
          cauHoi.setTrangThai(false);

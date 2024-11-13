@@ -67,7 +67,7 @@ public class BaiTestController {
         return baiTestService.createBaiTest(baiTest);
     }
     @Operation(
-            summary = "get bai test thoe idLop có trang thái true",
+            summary = "get bai test theo idLop có trang thái true",
             description = """     
     """
     )
@@ -76,7 +76,7 @@ public class BaiTestController {
         return baiTestService.finByIdLopTrue(idLop);
     }
     @Operation(
-            summary = "get bai test thoe idLop ",
+            summary = "get bai test theo idLop ",
             description = """     
     """
     )
@@ -84,6 +84,7 @@ public class BaiTestController {
     public List<BaiTest> findBTByLop(@PathVariable Long idLop){
         return baiTestService.finByIdLop(idLop);
     }
+
     @GetMapping("/deleteBaiTest/{id}")
     public BaiTest deleteBT(@PathVariable Long id){
         BaiTest bt = baiTestService.findById(id);
@@ -144,7 +145,7 @@ public class BaiTestController {
             truyen idCauHoi 
     """
     )
-    @GetMapping("/getCauHoi/{idCauHoi}")
+    @GetMapping("/deleteCauHoi/{idCauHoi}")
     public CauHoi deleteCauHoi (@PathVariable Long idCauHoi){
         CauHoi cauHoi = cauHoiService.findById(idCauHoi);
         cauHoi.setTrangThai(false);

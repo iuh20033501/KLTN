@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mycompany.destop.DTO.PhoneNumberDTO;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Modul.User;
@@ -11,6 +12,7 @@ import com.mycompany.destop.Reponse.ApiResponse;
 import com.mycompany.destop.Reponse.JwtResponse;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -118,6 +120,47 @@ public SigninDTO callProfileApi(String token) throws Exception {
         throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
     }
 }
+public String sendOTP(PhoneNumberDTO phoneNumberDTO) throws Exception {
+    String profileUrl = "http://localhost:8081/auth/noauth/send";
+    URL url = new URL(profileUrl);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+    // Cấu hình yêu cầu POST
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty("Content-Type", "application/json");
+    conn.setDoOutput(true);
+
+    // Tạo dữ liệu yêu cầu JSON
+    String jsonInputString = "{ \"phone\": \"" + phoneNumberDTO.getPhone() + "\" }";
+    System.out.println(jsonInputString);
+    // Gửi dữ liệu JSON lên server
+    try (OutputStream os = conn.getOutputStream()) {
+        byte[] input = jsonInputString.getBytes("UTF-8"); // sửa thành "UTF-8"
+        os.write(input, 0, input.length);
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Lỗi khi gửi yêu cầu: " + e.getMessage());
+        return null;
+    }
+    
+    // Đọc phản hồi từ server
+    int responseCode = conn.getResponseCode();
+    if (responseCode == HttpURLConnection.HTTP_OK) { // HTTP 200
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        // Trả về toàn bộ phản hồi JSON dưới dạng chuỗi
+        return response.toString();
+    } else {
+        JOptionPane.showMessageDialog(null, "Gửi mã OTP thất bại (lỗi " + responseCode + ")");
+        return null;
+    }
+}
+}
 
 
 
@@ -163,4 +206,4 @@ public SigninDTO callProfileApi(String token) throws Exception {
 //}
 
 
-}
+
