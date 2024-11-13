@@ -224,7 +224,7 @@ public class BaiTapController {
             
     """
     )
-    @GetMapping("/updateTienTrinh/{idHocvien}/{idBaiTap}")
+    @GetMapping("/updateTienTrinh/{idHocVien}/{idBaiTap}")
     public TienTrinh lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
         System.out.println("idHocVien: " + idHocVien);
         System.out.println("idBaiTap: " + idBaiTap);
