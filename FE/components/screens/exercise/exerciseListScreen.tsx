@@ -9,39 +9,52 @@ interface ExerciseInfo {
   idBaiTap: number;
   tenBaiTap: string;
   moTa: string;
+  ngayBD: string;
+  ngayKT: string;
 }
 
 export default function ExerciseListScreen({ navigation, route }: { navigation: any; route: any }) {
   const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { idBuoiHoc } = route.params;
+  const { idBuoiHoc,idUser } = route.params;
 
   const fetchExercises = async () => {
-      try {
-          const token = await AsyncStorage.getItem('accessToken');
-          if (!token) {
-              console.error('No token found');
-              return;
-          }
-          const response = await http.get(`baitap/getBaiTapofBuoiTrue/${idBuoiHoc}`, {
-              headers: {
-                  Authorization: `Bearer ${token}`,
-              },
-          });
-          setExercises(response.data);
-      } catch (error) {
-          console.error('Failed to fetch exercises:', error);
-      } finally {
-          setIsLoading(false);
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('No token found');
+        return;
       }
+
+      const response = await http.get(`baitap/getBaiTapofBuoiTrue/${idBuoiHoc}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const currentDate = new Date();
+      const filteredExercises = response.data.filter((exercise: ExerciseInfo) => {
+        const ngayBD = new Date(exercise.ngayBD);
+        const ngayKT = new Date(exercise.ngayKT);
+
+        // Kiểm tra nếu ngày hiện tại nằm trong khoảng ngày bắt đầu và ngày kết thúc
+        return currentDate >= ngayBD && currentDate <= ngayKT;
+      });
+
+      setExercises(filteredExercises);
+    } catch (error) {
+      console.error('Failed to fetch exercises:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   useEffect(() => {
-      fetchExercises();
+    fetchExercises();
   }, []);
 
   const renderExerciseCard = ({ item }: { item: ExerciseInfo }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('ExerciseScreen', { idBaiTap: item.idBaiTap, tenBaiTap: item.tenBaiTap })}>
+    <TouchableOpacity onPress={() => navigation.navigate('ExerciseScreen', { idBaiTap: item.idBaiTap, tenBaiTap: item.tenBaiTap,idUser })}>
       <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.buttonGradient}>
         <Text style={styles.exerciseText}>{item.tenBaiTap}</Text>
       </LinearGradient>
@@ -59,13 +72,17 @@ export default function ExerciseListScreen({ navigation, route }: { navigation: 
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#00405d" />
-      ) : (
+      ) : exercises.length > 0 ? (
         <FlatList
           data={exercises}
           renderItem={renderExerciseCard}
           keyExtractor={(item) => item.idBaiTap.toString()}
           contentContainerStyle={styles.exerciseList}
         />
+      ) : (
+        <View style={styles.noExerciseContainer}>
+          <Text style={styles.noExerciseText}>Không có bài tập nào</Text>
+        </View>
       )}
     </View>
   );
@@ -105,5 +122,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  noExerciseContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noExerciseText: {
+    fontSize: 18,
+    color: '#333',
+    fontWeight: 'bold',
   },
 });

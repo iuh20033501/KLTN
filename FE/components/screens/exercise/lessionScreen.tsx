@@ -17,7 +17,7 @@ interface LessonInfo {
 export default function LessonListScreen({ navigation, route }: { navigation: any; route: any }) {
   const [lessons, setLessons] = useState<LessonInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { idLopHoc } = route.params;
+  const { idLopHoc,idUser } = route.params;
 
 
   const fetchLessons = async () => {
@@ -44,7 +44,7 @@ export default function LessonListScreen({ navigation, route }: { navigation: an
       fetchLessons();
   }, []);
   const renderLessonCard = ({ item }: { item: LessonInfo }) => (
-    <TouchableOpacity style={styles.lessonButton} onPress={() => navigation.navigate('ExerciseListScreen', { idBuoiHoc: item.idBuoiHoc })}>
+    <TouchableOpacity style={styles.lessonButton} onPress={() => navigation.navigate('ExerciseListScreen', { idBuoiHoc: item.idBuoiHoc,idUser })}>
       <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.buttonGradient}>
         <Text style={styles.lessonText}>{item.chuDe}</Text>
        

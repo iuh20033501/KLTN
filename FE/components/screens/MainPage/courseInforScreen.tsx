@@ -76,7 +76,6 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
             <MaterialIcons name="schedule" size={24} color="orange" />
             <Text style={styles.optionText}>Lịch học</Text>
           </View>
-          <Text style={styles.optionValue}>16/24</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ScoreBoardScreen')}>
