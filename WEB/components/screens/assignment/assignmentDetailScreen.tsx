@@ -23,12 +23,15 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
     const [isLoading, setIsLoading] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [answers, setAnswers] = useState<Answer[]>([]);
     const [correctAnswerId, setCorrectAnswerId] = useState<number | null>(null);
-    const [questionText, setQuestionText] = useState<string>(""); // Thêm trạng thái cho câu hỏi
+    const [questionText, setQuestionText] = useState<string>("");
     const [explanationText, setExplanationText] = useState<string>("");
     const answerOptions = ["A", "B", "C", "D"];
-
+    const [addQuestionModalVisible, setAddQuestionModalVisible] = useState(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     useEffect(() => {
         fetchAssignmentDetails();
     }, []);
@@ -41,7 +44,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/baitap/getCauHoi/${assignmentId}`, {
+            const response = await http.get(`baitap/getCauHoiTrue/${assignmentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const questionsData = response.data || [];
@@ -66,7 +69,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return [];
             }
-            const response = await http.get(`/baitap/getCauTraLoi/${questionId}`, {
+            const response = await http.get(`baitap/getCauTraLoi/${questionId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return Array.isArray(response.data) ? response.data : [];
@@ -78,15 +81,54 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
 
     const openEditModal = (question: Question) => {
         setSelectedQuestion(question);
-        setQuestionText(question.noiDung || ""); // Thiết lập nội dung câu hỏi
-        setExplanationText(question.loiGiai || ""); // Thiết lập lời giải
+        setQuestionText(question.noiDung || "");
+        setExplanationText(question.loiGiai || "");
         const correctAnswer = question.dapAn?.find(answer => answer.ketQua);
         setCorrectAnswerId(correctAnswer?.idCauTraLoi || null);
         setAnswers(question.dapAn || []);
         setModalVisible(true);
     };
 
+    const openAddQuestionModal = () => {
+        setQuestionText("");
+        setExplanationText("");
+        setAnswers([
+            { idCauTraLoi: 1, noiDung: "", ketQua: false },
+            { idCauTraLoi: 2, noiDung: "", ketQua: false },
+            { idCauTraLoi: 3, noiDung: "", ketQua: false },
+            { idCauTraLoi: 4, noiDung: "", ketQua: false },
+        ]);
+        setCorrectAnswerId(null);
+        setAddQuestionModalVisible(true);
+    };
+
+    const confirmDeleteQuestion = (question: Question) => {
+        setSelectedQuestion(question);
+        setConfirmModalVisible(true);
+    };
+
+    
+    const deleteQuestion = async () => {
+        if (!selectedQuestion) return;
+
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            await http.get(`baitap/deleteCauHoi/${selectedQuestion.idCauHoi}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setConfirmModalVisible(false);
+            fetchAssignmentDetails();
+        } catch (error) {
+            console.error(`Failed to delete question ${selectedQuestion.idCauHoi}:`, error);
+        }
+    };
+
     const saveCorrectAnswer = async () => {
+        if (!validateInputs()) return;
         if (!selectedQuestion || correctAnswerId === null) return;
 
         try {
@@ -95,15 +137,16 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                 console.error('No token found');
                 return;
             }
-            // await http.put(`/baitap/updateCauHoi/${selectedQuestion.idCauHoi}`, {
-            //     noiDung: questionText,
-            //     loiGiai: explanationText,
-            // }, {
-            //     headers: { Authorization: `Bearer ${token}` },
-            // });
+            await http.put(`baitap/updateCauHoi/${selectedQuestion.idCauHoi}/${assignmentId}`, {
+                noiDung: questionText,
+                loiGiai: explanationText,
+                trangThai: 1
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             await Promise.all(
-                answers.map(answer => 
-                    http.put(`/cauTraLoi/create/${selectedQuestion.idCauHoi}/${answer.idCauTraLoi}`, {
+                answers.map(answer =>
+                    http.put(`cauTraLoi/create/${selectedQuestion.idCauHoi}/${answer.idCauTraLoi}`, {
                         ...answer,
                         ketQua: answer.idCauTraLoi === correctAnswerId
                     }, {
@@ -120,11 +163,73 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
     };
 
     const updateAnswerText = (idCauTraLoi: number, text: string) => {
-        setAnswers(prevAnswers => 
-            prevAnswers.map(answer => 
+        setAnswers(prevAnswers =>
+            prevAnswers.map(answer =>
                 answer.idCauTraLoi === idCauTraLoi ? { ...answer, noiDung: text } : answer
             )
         );
+    };
+
+    const saveNewQuestion = async () => {
+        if (!validateInputs()) return;
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await http.post(`/baitap/createCauHoi/${assignmentId}`, {
+                noiDung: questionText,
+                loiGiai: explanationText,
+                trangThai: 1
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const newQuestionId = response.data.idCauHoi;
+
+            await Promise.all(
+                answers.map((answer, index) =>
+                    http.post(`cauTraLoi/create/${newQuestionId}`, {
+                        noiDung: answer.noiDung,
+                        ketQua: index === correctAnswerId,
+                    }, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    })
+                )
+            );
+            fetchAssignmentDetails();
+        } catch (error) {
+            console.error('Failed to save new question:', error);
+        } finally {
+            setAddQuestionModalVisible(false);
+        }
+    };
+    const validateInputs = () => {
+        
+        if (!questionText.trim()) {
+            setErrorMessage('Nội dung câu hỏi không được để trống');
+            setErrorModalVisible(true);
+            return false;
+        }
+        if (!explanationText.trim()) {
+            setErrorMessage('Lời giải không được để trống');
+            setErrorModalVisible(true);
+            return false;
+        }
+        for (const answer of answers) {
+            if (!answer.noiDung.trim()) {
+                setErrorMessage('Tất cả các đáp án không được để trống');
+                setErrorModalVisible(true);
+                return false;
+            }   
+        }
+        if (correctAnswerId === null) {
+            setErrorMessage('Vui lòng chọn đáp án đúng');
+            setErrorModalVisible(true);
+            return false;
+        }
+        return true;
     };
 
     return (
@@ -134,10 +239,11 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                     <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                         <Text style={styles.backButtonText}>Quay về</Text>
                     </TouchableOpacity>
+
                 </View>
-                
+
                 <Text style={styles.title}>Chi tiết Bài Tập</Text>
-                
+
                 {isLoading ? (
                     <ActivityIndicator size="large" color="#00405d" />
                 ) : (
@@ -149,15 +255,20 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                                         <Text style={styles.questionText}>
                                             {index + 1}. {question.noiDung}
                                         </Text>
-                                        <TouchableOpacity onPress={() => openEditModal(question)}>
-                                            <Icon name="pencil" size={20} color="#ff6600" style={styles.editIcon} />
-                                        </TouchableOpacity>
+                                        <View style={styles.iconContainer}>
+                                            <TouchableOpacity onPress={() => openEditModal(question)}>
+                                                <Icon name="pencil" size={20} color="#ff6600" style={styles.editIcon} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => confirmDeleteQuestion(question)}>
+                                                <Icon name="delete" size={20} color="red" style={styles.deleteIcon} />
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                     <View style={styles.answerList}>
                                         {Array.isArray(question.dapAn) ? (
                                             question.dapAn.map((answer, idx) => (
-                                                <View 
-                                                    key={`${question.idCauHoi}-${answer.idCauTraLoi}`} 
+                                                <View
+                                                    key={`${question.idCauHoi}-${answer.idCauTraLoi}`}
                                                     style={styles.answerOption}
                                                 >
                                                     <Text style={styles.optionLabel}>{answerOptions[idx]}.</Text>
@@ -191,8 +302,29 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                         )}
                     </ScrollView>
                 )}
+                <View style={styles.addButtonContainer}>
+                    <TouchableOpacity style={styles.addButton} onPress={openAddQuestionModal}>
+                        <Icon name="plus" size={20} color="#fff" />
+                    </TouchableOpacity>
+                </View>
 
-                {/* Modal chỉnh sửa câu hỏi, đáp án đúng và lời giải */}
+                {/* Modal xác nhận xóa */}
+                <Modal visible={confirmModalVisible} transparent={true} animationType="slide">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContainer2}>
+                            <Text style={styles.modalText}>Bạn có chắc chắn muốn xóa câu hỏi này không?</Text>
+                            <View style={styles.modalButtons2}>
+                                <TouchableOpacity onPress={() => setConfirmModalVisible(false)} style={styles.modalButton2}>
+                                    <Text style={styles.modalButtonText}>Hủy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={deleteQuestion} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Đồng ý</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
                 <Modal visible={modalVisible} transparent={true} animationType="slide">
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
@@ -233,7 +365,7 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                                 ))}
                             </select>
                             <View style={styles.modalButtons}>
-                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton2}>
                                     <Text style={styles.modalButtonText}>Hủy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={saveCorrectAnswer} style={styles.modalButton}>
@@ -243,10 +375,76 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
                         </View>
                     </View>
                 </Modal>
+                
+                <Modal visible={addQuestionModalVisible} transparent={true} animationType="slide">
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>Thêm câu hỏi mới</Text>
+                            <TextInput
+                                style={[styles.input, styles.questionInput]}
+                                value={questionText}
+                                onChangeText={setQuestionText}
+                                placeholder="Nhập nội dung câu hỏi"
+                            />
+                            {answers.map((answer, idx) => (
+                                <View key={answer.idCauTraLoi} style={styles.modalOption}>
+                                    <Text style={styles.optionLabel}>{answerOptions[idx]}.</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={answer.noiDung}
+                                        onChangeText={(text) => updateAnswerText(answer.idCauTraLoi, text)}
+                                    />
+                                </View>
+                            ))}
+                            <Text style={styles.correctAnswerLabel}>Lời giải</Text>
+                            <TextInput
+                                style={[styles.input, styles.explanationInput]}
+                                value={explanationText}
+                                onChangeText={setExplanationText}
+                                placeholder="Nhập lời giải"
+                            />
+                            <Text style={styles.correctAnswerLabel}>Chọn đáp án đúng</Text>
+                            <select
+                                value={correctAnswerId ?? ""}
+                                onChange={(e) => setCorrectAnswerId(Number(e.target.value))}
+                                style={styles.picker}
+                            >
+                                {answers.map((answer, idx) => (
+                                    <option key={answer.idCauTraLoi} value={answer.idCauTraLoi}>
+                                        {`${answerOptions[idx]}. ${answer.noiDung}`}
+                                    </option>
+                                ))}
+                            </select>
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity onPress={() => setAddQuestionModalVisible(false)} style={styles.modalButton2}>
+                                    <Text style={styles.modalButtonText}>Hủy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={saveNewQuestion} style={styles.modalButton}>
+                                    <Text style={styles.modalButtonText}>Lưu</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
+                <Modal visible={errorModalVisible} transparent={true} animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainerM}>
+                        <Text style={styles.modalText}>{errorMessage}</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton2}
+                            onPress={() => setErrorModalVisible(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Đóng</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
             </View>
         </ImageBackground>
     );
 };
+
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -298,6 +496,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    iconContainer: {
+        flexDirection: 'row',
+    },
+    editIcon: {
+        marginLeft: 10,
+    },
+    deleteIcon: {
+        marginLeft: 10,
+    },
     answerList: {
         paddingLeft: 10,
     },
@@ -335,13 +542,103 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-    editIcon: {
-        marginLeft: 10,
-    },
-    modalContainer: {
+    modalOverlay: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: 'auto',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    modalContainerM: {
+        width: '80%',
+        maxWidth: 400,
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalContainer2: {
+        width: '100%',
+        maxWidth: 400,
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20
+    },
+    modalButtons2: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    modalButton: {
+        backgroundColor: '#ff0000',
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 10,
+    },
+    modalButton2: {
+        backgroundColor: '#00405d',
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 10,
+    },
+    modalButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    input: {
+        flex: 1,
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        padding: 5,
+    },
+    correctAnswerLabel: {
+        marginTop: 10,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 10,
+    },
+    picker: {
+        flex: 1,
+        marginVertical: 10,
+    },
+    explanationInput: {
+        marginTop: 10,
+        borderColor: '#ddd',
+        padding: 8,
+    },
+    questionInput: {
+        marginBottom: 15,
+        fontSize: 16,
+        padding: 10,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+    },
+    modalOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10,
     },
     modalContent: {
         margin: 20,
@@ -361,54 +658,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
     },
-    modalOption: {
-        flexDirection: 'row',
+    addButtonContainer: {
+        justifyContent:'center',
         alignItems: 'center',
-        marginVertical: 10,
+        position: 'absolute',
+        bottom: 20,
+        width: '100%',
     },
-    input: {
-        flex: 1,
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
-        padding: 5,
-    },
-    correctAnswerLabel: {
-        marginTop: 10,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 10,
-    },
-    picker: {
-        flex: 1,
-        marginVertical: 10,
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    modalButton: {
-        padding: 10,
-        backgroundColor: '#ff6600',
-        borderRadius: 5,
-    },
-    modalButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    explanationInput: {
-        marginTop: 10,
-        borderColor: '#ddd',
-        padding: 8,
-    },
-    questionInput: {
-        marginBottom: 15,
-        fontSize: 16,
-        padding: 10,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 5,
+    addButton: {
+        backgroundColor: '#28a745', 
+        borderRadius: 50,
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right:-400,
     },
 });
 

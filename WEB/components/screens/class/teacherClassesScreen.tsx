@@ -27,7 +27,7 @@ export default function TeacherClassesScreen({ navigation, route }: { navigation
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getByGv/${idUser}`, {
+            const response = await http.get(`lopHoc/getByGv/${idUser}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

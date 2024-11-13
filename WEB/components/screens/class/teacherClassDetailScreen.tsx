@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect,useCallback  } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as DocumentPicker from 'expo-document-picker';
-// import AWS from 'aws-sdk';
-// import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME } from '@env';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface MemberInfo {
     idHocVien: number;
@@ -40,16 +38,6 @@ interface Assignment {
     ngayBD: string;
     ngayKT: string;
 }
-interface DocumentPickerSuccessResult {
-    type: 'success';
-    uri: string;
-    mimeType: string | null;
-    name: string;
-}
-interface DocumentPickerCancelResult {
-    type: 'cancel';
-}
-type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCancelResult;
 
 const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, route: any }) => {
     const { idLopHoc, tenLopHoc, role } = route.params;
@@ -61,16 +49,21 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
     const [isLoadingMembers, setIsLoadingMembers] = useState(false);
     const [isLoadingClassInfo, setIsLoadingClassInfo] = useState(false);
     const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+    const [selectedAssignment, setSelectedAssignment] = useState<{ id: number; name: string; sessionId: number } | null>(null);
+    const [selectedQuestion, setSelectedQuestion] = useState<{ id: number; name: string } | null>(null);
 
-    useEffect(() => {
-        if (activeTab === 'Members') {
-            fetchMembers();
-        } else if (activeTab === 'ClassInfo') {
-            fetchClassInfo();
-        } else if (activeTab === 'Assignments') {
-            fetchSessions();
-        }
-    }, [activeTab]);
+    useFocusEffect(
+        useCallback(() => {
+            if (activeTab === 'Assignments') {
+                fetchSessions();
+            } else if (activeTab === 'Members') {
+                fetchMembers();
+            } else if (activeTab === 'ClassInfo') {
+                fetchClassInfo();
+            }
+        }, [activeTab])
+    );
 
     useEffect(() => {
         if (activeTab === 'Assignments' && sessions.length > 0) {
@@ -90,7 +83,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getByLop/${idLopHoc}`, {
+            const response = await http.get(`lopHoc/getByLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = Array.isArray(response.data) ? response.data : [];
@@ -110,7 +103,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/lopHoc/getLop/${idLopHoc}`, {
+            const response = await http.get(`lopHoc/getLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setClassDetail(response.data);
@@ -129,7 +122,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/buoihoc/getbuoiHocByLop/${idLopHoc}`, {
+            const response = await http.get(`buoihoc/getbuoiHocByLop/${idLopHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setSessions(response.data);
@@ -154,7 +147,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`/baitap/getBaiTapofBuoi/${sessionId}`, {
+            const response = await http.get(`baitap/getBaiTapofBuoiTrue/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAssignments((prev) => ({
@@ -166,81 +159,35 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         }
     };
 
-    // const s3 = new AWS.S3({
-    //     accessKeyId: AWS_ACCESS_KEY_ID,
-    //     secretAccessKey: AWS_SECRET_ACCESS_KEY,
-    //     region: AWS_REGION,
-    // });
+    const confirmDeleteAssignment = (assignmentId: number, assignmentName: string, sessionId: number) => {
+        setSelectedAssignment({ id: assignmentId, name: assignmentName, sessionId });
+        setConfirmModalVisible(true);
+    };
 
-    // const uploadDocument = async (sessionId: any) => {
-    //     try {
-    //       const result = await DocumentPicker.getDocumentAsync({});
-      
-    //       if (result.type === 'cancel') {
-    //         console.log("User cancelled the document picker.");
-    //         Alert.alert('Thông báo', 'Bạn đã hủy việc chọn tài liệu.');
-    //         return;
-    //       }
-      
-    //       const asset = result.assets ? result.assets[0] : null;
-      
-    //       if (asset && asset.uri) {
-    //         const response = await fetch(asset.uri);
-    //         const blob = await response.blob();
-      
-    //         const params = {
-    //           Bucket: AWS_BUCKET_NAME,
-    //           Key: `uploads/${asset.name}`, // Tên file sẽ được lưu trên S3
-    //           Body: blob,
-    //           ContentType: asset.mimeType || 'application/octet-stream',
-    //         };
-      
-    //         // Upload file lên S3
-    //         s3.upload(params, async (err: any, data: { Location: any; }) => {
-    //           if (err) {
-    //             console.error('Error uploading file:', err);
-    //             Alert.alert('Lỗi', 'Tải tài liệu lên thất bại.');
-    //             return;
-    //           }
-              
-    //           // Lấy đường dẫn file từ S3
-    //           const fileUrl = data.Location;
-      
-    //           // Chuẩn bị dữ liệu để gửi đến server
-    //           const formData = {
-    //             tenTaiLieu: asset.name || 'unknown_file.pdf',
-    //             noiDung: '',
-    //             linkLoad: fileUrl, // Sử dụng URL từ S3
-    //             ngayMo: new Date().toISOString(),
-    //             ngayDong: new Date().toISOString(),
-    //           };
-      
-    //           // Gửi thông tin tài liệu lên server
-    //           const token = await AsyncStorage.getItem('accessToken');
-    //           if (!token) {
-    //             console.error('No token found');
-    //             Alert.alert('Lỗi', 'Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
-    //             return;
-    //           }
-      
-    //           const responseUpload = await http.post(`/taiLieu/create/${sessionId}`, formData, {
-    //             headers: {
-    //               Authorization: `Bearer ${token}`,
-    //             },
-    //           });
-      
-    //           console.log('Document uploaded successfully:', responseUpload.data);
-    //           Alert.alert('Thông báo', 'Tải tài liệu lên thành công!');
-    //         });
-    //       } else {
-    //         console.error('No valid asset found');
-    //         Alert.alert('Lỗi', 'Không tìm thấy tài liệu hợp lệ.');
-    //       }
-    //     } catch (error) {
-    //       console.error('Failed to upload document:', error);
-    //       Alert.alert('Lỗi', 'Tải tài liệu lên thất bại. Vui lòng thử lại.');
-    //     }
-    //   };
+
+    const deleteAssignment = async () => {
+        if (!selectedAssignment) return;
+        const { id, sessionId } = selectedAssignment;
+
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            await http.get(`baitap/deleteBtap/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            fetchAssignments(sessionId);
+        } catch (error) {
+            console.error(`Failed to delete assignment ${id}:`, error);
+        } finally {
+            setConfirmModalVisible(false);
+            setSelectedAssignment(null);
+        }
+    };
+    
+
     const renderContent = () => {
         switch (activeTab) {
             case 'Assignments':
@@ -258,31 +205,29 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                             <View style={styles.buttonRow}>
                                                 <TouchableOpacity
                                                     style={styles.createButton}
-                                                    onPress={() => navigation.navigate('CreateAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc })}
+                                                    onPress={() => navigation.navigate('AddAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc, tenLopHoc, role })}
                                                 >
                                                     <Text style={styles.createButtonText}>Thêm bài tập</Text>
                                                 </TouchableOpacity>
-                                                {/* <TouchableOpacity
-                                                    style={styles.createButton}
-                                                    onPress={() => uploadDocument(session.idBuoiHoc)}
-                                                >
-                                                    <Text style={styles.createButtonText}>Thêm tài liệu</Text>
-                                                </TouchableOpacity> */}
                                             </View>
                                         )}
                                         {assignments[session.idBuoiHoc] && assignments[session.idBuoiHoc].length > 0 ? (
                                             <View style={styles.assignmentList}>
                                                 {assignments[session.idBuoiHoc].map((assignment) => (
-                                                    <TouchableOpacity
-                                                        key={assignment.idBaiTap}
-                                                        style={styles.assignmentItem}
-                                                        onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap })}
-                                                    >
-                                                        <Icon name="file-document" size={20} color="#ff6600" />
-                                                        <Text style={styles.assignmentText}>
-                                                            {assignment.tenBaiTap}
-                                                        </Text>
-                                                    </TouchableOpacity>
+                                                    <View key={assignment.idBaiTap} style={styles.assignmentItemContainer}>
+                                                        <TouchableOpacity
+                                                            style={styles.assignmentItem}
+                                                            onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap })}
+                                                        >
+                                                            <Icon name="file-document" size={20} color="#ff6600" />
+                                                            <Text style={styles.assignmentText}>
+                                                                {assignment.tenBaiTap}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity onPress={() => confirmDeleteAssignment(assignment.idBaiTap, assignment.tenBaiTap, session.idBuoiHoc)}>
+                                                            <Icon name="delete" size={20} color="red" />
+                                                        </TouchableOpacity>
+                                                    </View>
                                                 ))}
                                             </View>
                                         ) : (
@@ -290,8 +235,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                         )}
                                     </View>
                                 ))
-                            ) : (
-                                <Text>Không có buổi học nào.</Text>
+                            ) : (   
+                                <Text>Không có buổi học nào.</Text> 
                             )
                         )}
                     </ScrollView>
@@ -375,6 +320,33 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     </TouchableOpacity>
                 </View>
                 {renderContent()}
+
+                {/* Modal Xác nhận xóa */}
+                <Modal
+                    visible={confirmModalVisible}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setConfirmModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalTitle}>Xác nhận xóa</Text>
+                            {selectedAssignment && (
+                                <Text style={styles.modalMessage}>
+                                    Bạn có chắc chắn muốn xóa bài tập "{selectedAssignment.name}"?
+                                </Text>
+                            )}
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity onPress={() => setConfirmModalVisible(false)} style={styles.cancelButton}>
+                                    <Text style={styles.modalButtonText}>Hủy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={deleteAssignment} style={styles.confirmButton}>
+                                    <Text style={styles.modalButtonText}>Đồng ý</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </ImageBackground>
     );
@@ -500,15 +472,69 @@ const styles = StyleSheet.create({
     assignmentList: {
         marginTop: 5,
     },
+    assignmentItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 5,
+    },
     assignmentItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 5,
     },
     assignmentText: {
         fontSize: 16,
         color: '#333',
         paddingLeft: 10,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+
+    },
+    modalContainer: {
+        width: '100%',
+        maxWidth: 400,
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    modalMessage: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    cancelButton: {
+        flex: 1,
+        backgroundColor: '#00405d',
+        padding: 10,
+        borderRadius: 5,
+        marginRight: 10,
+        alignItems: 'center',
+    },
+    confirmButton: {
+        flex: 1,
+        backgroundColor: '#ff0000',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
 

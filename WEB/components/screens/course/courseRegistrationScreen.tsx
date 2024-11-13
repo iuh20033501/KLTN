@@ -103,7 +103,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         return;
       }
 
-      const response = await http.get(`/lopHoc/getByKhoa/${courseId}`, {
+      const response = await http.get(`lopHoc/getByKhoa/${courseId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -125,7 +125,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         return;
       }
 
-      const response = await http.get(`/thanhToan/findByIdLopNotCancel/${classId}`, {
+      const response = await http.get(`thanhToan/findByIdLopNotCancel/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,7 +146,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         return;
       }
 
-      const response = await http.get(`/buoihoc/getbuoiHocByLop/${classId}`, {
+      const response = await http.get(`buoihoc/getbuoiHocByLop/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -224,9 +224,8 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
         return;
       }
 
-      const response = await http.post(
+      const response = await http.get(
         `thanhToan/create/${selectedClass.idLopHoc}/${idUser}`,
-        {},
         {
           headers: { Authorization: `Bearer ${token}` },
         }
