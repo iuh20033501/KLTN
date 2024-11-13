@@ -234,8 +234,8 @@ public class BaiTapController {
             HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("Hoc Vien not found"));
             return tienTrinhService.createTT(new TienTrinh(0l, hocVien, baiTap));
         }else{
-            Long soCau = tienTrinh.getCauDung();
-            tienTrinh.setCauDung(soCau+1);
+            Long soCau = tienTrinh.getCauDung()+1;
+            tienTrinh.setCauDung(soCau);
             return tienTrinhService.createTT(tienTrinh);
         }
     }
