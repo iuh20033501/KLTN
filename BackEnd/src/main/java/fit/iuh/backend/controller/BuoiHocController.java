@@ -59,5 +59,15 @@ public class BuoiHocController {
     public List<BuoiHoc> getByHocVien(@PathVariable Long id ){
         return buoiHocService.getBuoiByHocVien(id);
     }
+    @Operation(
+            summary = "Get Buổi học đã học",
+            description = """ 
+           so sánh ngày học của buổi so với ngày hiên tại đã qua thì tính đã học.
+    """
+    )
+    @GetMapping("/getBuoiDaHoc")
+    public List<BuoiHoc> getBuoiDaHoc(){
+        return buoiHocService.getBuoiDaHoc();
+    }
 
 }

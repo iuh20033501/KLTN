@@ -37,4 +37,9 @@ public class BuoiHocImplement implements BuoiHocService {
     public List<BuoiHoc> getBuoiByHocVien(Long id) {
         return buoiHocRepo.getBuoiHocTheoIdHocVien(id);
     }
+
+    @Override
+    public List<BuoiHoc> getBuoiDaHoc() {
+        return buoiHocRepo.getBuoiDaHoc();
+    }
 }

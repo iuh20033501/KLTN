@@ -19,6 +19,8 @@ public interface BuoiHocRepo extends JpaRepository<BuoiHoc,Long> {
             "ORDER BY bh.ngayHoc ASC")
     List<BuoiHoc> getBuoiHocTheoIdHocVien(@Param("id") Long id);
 
+    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE")
+    List<BuoiHoc> getBuoiDaHoc();
 
 
 

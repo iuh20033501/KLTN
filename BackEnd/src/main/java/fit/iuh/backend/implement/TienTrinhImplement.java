@@ -41,4 +41,9 @@ public class TienTrinhImplement implements TienTrinhService {
     public TienTrinh findByIdHvIdBTap(Long idHV, Long idBt) {
         return tienTrinhRepo.getByIdHVAndIdBT(idHV,idBt);
     }
+
+    @Override
+    public List<TienTrinh> findByIdHvIdLop(Long idHV, Long idLop) {
+        return tienTrinhRepo.getByIdHocVienIdLop(idHV,idLop);
+    }
 }

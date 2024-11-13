@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -26,7 +28,9 @@ public class BaiTapController {
     @Qualifier("buoiHocImplement")
     @Autowired
     private BuoiHocService buoiHoccService;
-
+    @Qualifier("lopHocImplement")
+    @Autowired
+    private LopHocService lopHoccService;
     @Operation(
             summary = "thêm  bài tap",
             description = """ 
@@ -48,6 +52,11 @@ public class BaiTapController {
     @GetMapping("/getBaiTapofBuoi/{idBuoi}")
     public List<BaiTap> findBTByBuoi(@PathVariable Long idBuoi){
         return baiTapService.findByIdBuoi(idBuoi);
+    }
+    @GetMapping("/getBaiTapofLop/{idLop}")
+    public List<BaiTap> findBTByLop(@PathVariable Long idLop){
+        LopHoc lop = lopHoccService.findById(idLop).orElseThrow(()->new RuntimeException("Lop hoc not found "));
+        return baiTapService.findByIdLop(idLop);
     }
     @Operation(
             summary = "get bai tap th idBuoi có trang thái true",
@@ -183,7 +192,7 @@ public class BaiTapController {
     """
     )
     @GetMapping("/getTienTrinh/{idHocVien}/{idBaiTap}")
-    public TienTrinh getListTienTrih(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
+    public TienTrinh getTienTrihByHVAndBT(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
         TienTrinh tt = tienTrinhService.findByIdHvIdBTap(idHocVien, idBaiTap);
         return  tt;
     }
@@ -215,30 +224,86 @@ public class BaiTapController {
     @Operation(
             summary = "tạo và update tiên trình khi làm  bài tập",
             description = """
-            load danh sách câu hỏi trước câu trả lời đúng cũng là só thứ tự câu hỏi cần load
-            khi chưa làm thì khi nhấn vào sẽ tạo ra 
-            chạy khi câu tra lời đúng thì chạy hàm vào update tiến trình lên số câu đúng vưa tính điểm 
-            vừa là số câu hỏi trông list câu hỏi của bài tâp . 
+            kiểm tra xem có tién trình chưa phải có tiến trình mới được update nếu khôgn pass update
+            chạy khi câu tra lời  so cau đúng thì chạy hàm vào update tiến trình lên số câu đúng vưa tính điểm  
             
             truyền id bai test, học viên.
             
     """
     )
-    @GetMapping("/updateTienTrinh/{idHocVien}/{idBaiTap}")
-    public TienTrinh lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
+    @GetMapping("/updateTienTrinh/{idHocVien}/{idBaiTap}/{soCauDung}")
+    public ResponseEntity<TienTrinh> lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap,@PathVariable Long soCauDung){
         System.out.println("idHocVien: " + idHocVien);
         System.out.println("idBaiTap: " + idBaiTap);
         TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien,idBaiTap);
-        if(tienTrinh==null) {
+        if(tienTrinh !=null) {
+            Long soCau = tienTrinh.getCauDung()+soCauDung;
+            tienTrinh.setCauDung(soCau);
+            return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(tienTrinh));
+        }
+        else return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+    @Operation(
+            summary = "tạo tiên trình khi làm  bài tập",
+            description = """
+            khi chưa làm thì khi nhấn vào sẽ tạo ra tiến trình của học viên trong bài tập
+            **Lưu ý : nếu đã có tiên trình của học viên trong bài tập thì sẽ pass ko tạo thêm
+            
+            truyền id bai test, học viên.
+            
+    """
+    )
+    @GetMapping("/createTienTrinh/{idHocVien}/{idBaiTap}")
+    public ResponseEntity<TienTrinh>  crateTienTrinhBaiTest(@PathVariable Long idHocVien, @PathVariable Long idBaiTap, @PathVariable Long soCauDung) {
+
+        TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien, idBaiTap);
+        if (tienTrinh == null) {
             BaiTap baiTap = baiTapService.findById(idBaiTap);
             HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("Hoc Vien not found"));
-            return tienTrinhService.createTT(new TienTrinh(0l, hocVien, baiTap));
-        }else{
-            Long soCau = tienTrinh.getCauDung()+1;
-            tienTrinh.setCauDung(soCau);
-            return tienTrinhService.createTT(tienTrinh);
+            return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(new TienTrinh(0l, hocVien, baiTap)));
         }
+            return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
+    @Operation(
+            summary = "get  danh sách tiến trình của học viên trong lớp",
+            description = """ 
+            truyền id hoc vien và idLop ra danh sách câu trả lời
+            
+    """
+    )
+    @GetMapping("/getTienTrinh/{idHocVien}/{idLop}")
+    public List<TienTrinh> getListTienTrinh(@PathVariable Long idHocVien,@PathVariable Long idLop){
+        HocVien hv = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("hoc vien not found"));
+        LopHoc lop = lopHoccService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
 
+        List<TienTrinh> listTT = tienTrinhService.findByIdHvIdLop(idHocVien, idLop);
+
+        if (listTT.isEmpty()) {
+            throw new RuntimeException("Không có TienTrinh nào cho HocVien này trong LopHoc này");
+        }
+
+        return listTT;
+    }
+    @Operation(
+            summary = "get tiến trình bài tập đã làm của học viên trong lớp",
+            description = """ 
+            số bài tập học viên đã làm tính bằng số tiến trình đã có (làm bài tập mới có tiến trình và 1 bài tập chỉ có 1 tiến trình)
+            tính bằng số bài tập đã làm / tổng số bài tập của lớp trả về kiểu Long.
+            truyền id hoc vien và idLop ra danh sách câu trả lời
+            
+    """
+    )
+    @GetMapping("/getTienTrinhBaiTap/{idHocVien}/{idLop}")
+    public Long getTienTinhBaiTap(@PathVariable Long idHocVien,@PathVariable Long idLop){
+        HocVien hv = hocVienService.findByIdHocVien(idHocVien).orElseThrow(()->new RuntimeException("hoc vien not found "));
+        LopHoc lop = lopHoccService.findById(idLop).orElseThrow(()->new RuntimeException("Lop hoc not found "));
+        Long listBTSize = (long)baiTapService.findByIdLop(idLop).size();
+        Long listTTSize = (long)tienTrinhService.findByIdHvIdLop(idHocVien, idLop).size();
+        if(listBTSize>=listTTSize) {
+            Long tienTrinh = (long) (listTTSize/listBTSize);
+            return tienTrinh;
+        }
+        return null;
+    }
 
 }

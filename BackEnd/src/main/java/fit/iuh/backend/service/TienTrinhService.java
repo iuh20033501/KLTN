@@ -13,4 +13,5 @@ public interface TienTrinhService {
     List<TienTrinh> findByIdHv(Long idHV);
     List<TienTrinh> findByIdBatTap(Long idbt);
     TienTrinh findByIdHvIdBTap(Long idHV,Long idBt);
+    List<TienTrinh> findByIdHvIdLop(Long idHV,Long idLop);
 }

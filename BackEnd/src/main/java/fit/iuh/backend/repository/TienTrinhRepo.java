@@ -16,4 +16,9 @@ public interface TienTrinhRepo extends JpaRepository<TienTrinh,Long> {
     List<TienTrinh> getByIdBT (@Param("id") Long idBT);
     @Query("select tt from TienTrinh tt where tt.hocVien.idUser =:idHV and tt.baiTap.idBaiTap =:idBT")
     TienTrinh getByIdHVAndIdBT(@Param("idHV") Long idHV, @Param("idBT") Long idBT);
+
+    @Query("select tt from TienTrinh tt join tt.baiTap.buoiHoc.lopHoc lop where tt.hocVien.idUser =:idHocVien AND lop.idLopHoc =:idLop")
+    List<TienTrinh> getByIdHocVienIdLop(@Param("idHocVien") Long idHV, @Param("idLop") Long idLop);
+
+
 }
