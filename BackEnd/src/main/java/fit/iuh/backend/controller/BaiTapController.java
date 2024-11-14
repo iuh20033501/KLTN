@@ -237,8 +237,8 @@ public class BaiTapController {
         System.out.println("idBaiTap: " + idBaiTap);
         TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien,idBaiTap);
         if(tienTrinh !=null) {
-            Long soCau = tienTrinh.getCauDung()+soCauDung;
-            tienTrinh.setCauDung(soCau);
+//            Long soCau = tienTrinh.getCauDung()+soCauDung;
+            tienTrinh.setCauDung(soCauDung);
             return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(tienTrinh));
         }
         else return ResponseEntity.status(HttpStatus.CREATED).body(null);
