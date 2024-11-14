@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator, Image, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,7 @@ interface QuestionInfo {
   loiGiai: string;
   idCauHoi: number;
   noiDung: string;
+  linkAnh: string | null;
 }
 
 interface AnswerInfo {
@@ -180,10 +181,20 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
       </View>
 
       <Text style={styles.questionHeader}>Chọn câu trả lời đúng</Text>
+      <ScrollView
+       showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
+       showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang (nếu có)
+      >
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>
           {questions[currentQuestion].noiDung}
         </Text>
+        {questions[currentQuestion].linkAnh && (
+          <Image
+            source={{ uri: questions[currentQuestion].linkAnh }}
+            style={styles.questionImage}
+          />
+        )}
       </View>
 
       {answers.map((option) => (
@@ -211,6 +222,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
           </Text>
         </TouchableOpacity>
       )}
+      </ScrollView>
 
       <Modal
         visible={showExplanationModal}
@@ -292,7 +304,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   headerText: {
     fontSize: 22,
@@ -306,7 +318,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 1,
   },
   progressText: {
     fontSize: 18,
@@ -339,7 +351,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    marginVertical: 10,
+    marginVertical: 5,
     justifyContent: 'center',
   },
   optionText: {
@@ -439,5 +451,12 @@ const styles = StyleSheet.create({
     color: '#333',
     marginVertical: 10,
     textAlign: 'center',
+  },
+  questionImage: {
+    width: '100%', // Đặt kích thước theo chiều rộng màn hình
+    height: 200,   // Chiều cao cố định, có thể điều chỉnh
+    borderRadius: 10,
+    marginTop: 10,
+    resizeMode: 'contain', // Giữ nguyên tỉ lệ hình ảnh
   },
 });

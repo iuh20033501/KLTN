@@ -23,6 +23,7 @@ import SelectSessionScreen from '@/components/screens/session/selectSessionScree
 import AssignmentDetailScreen from '@/components/screens/assignment/assignmentDetailScreen';
 import TeacherClassDetailScreen from '@/components/screens/class/teacherClassDetailScreen';
 import AddAssignmentScreen from '@/components/screens/assignment/addAssignmentScreen';
+import 'react-native-gesture-handler';
 
 type RootStackParamList = {
   HomeScreen: undefined;

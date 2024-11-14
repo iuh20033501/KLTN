@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground, Modal, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground, Modal, ScrollView, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,6 +7,8 @@ import { vi } from 'date-fns/locale';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from "expo-image-picker";
+import { uploadFileToS3 } from '../client/s3Client'; // Import hàm upload từ s3Client
 
 type AnswerOption = {
     noiDung: string;
@@ -18,10 +20,12 @@ type Assignment = {
     correctAnswer: string;
     loiGiai: string;
     answers: { [key in `answer${'A' | 'B' | 'C' | 'D'}`]: AnswerOption };
+    imageUri?: string; // Thêm thuộc tính để lưu URI ảnh
+    linkAnh?: string;  // Thêm thuộc tính để lưu link AWS S3
 };
 
 const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: any }) => {
-    const { idLopHoc,sessionId, tenLopHoc,role, } = route.params;
+    const { idLopHoc, sessionId, tenLopHoc, role, } = route.params;
     const [assignmentName, setAssignmentName] = useState('');
     const [assignments, setAssignments] = useState<Assignment[]>([
         {
@@ -120,6 +124,19 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
         setAssignments(newAssignments);
     };
 
+    const pickImage = async (index: number) => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const newAssignments = [...assignments];
+            newAssignments[index].imageUri = result.assets[0].uri;
+            setAssignments(newAssignments);
+        }
+    };
+
     const handleSubmitAssignments = async () => {
         if (!validateDates() || !validateInputs()) return;
 
@@ -145,9 +162,17 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
 
             await Promise.all(
                 assignments.map(async (question) => {
+                    let imageUrl: string | null = null;
+
+                    if (question.imageUri) {
+                        const fileBlob = await fetch(question.imageUri).then(res => res.blob());
+                        imageUrl = await uploadFileToS3(fileBlob, `imgCauHoi/question-image-${Date.now()}`);
+                    }
+
                     const questionData = {
                         noiDung: question.questionName,
                         loiGiai: question.loiGiai,
+                        linkAnh: imageUrl || '', 
                     };
 
                     const questionResponse = await http.post(`baitap/createCauHoi/${idBaiTap}`, questionData, {
@@ -175,13 +200,14 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
             setMessageText('Thêm bài tập và câu hỏi thành công.');
             setMessageModalVisible(true);
             setTimeout(() => {
-                navigation.navigate('TeacherClassDetailScreen', { idLopHoc, sessionId, tenLopHoc ,role })
+                navigation.navigate('TeacherClassDetailScreen', { idLopHoc, sessionId, tenLopHoc, role })
             }, 2000);
         } catch (error) {
             setMessageText('Lỗi: Không thể thêm bài tập. Vui lòng thử lại.');
             setMessageModalVisible(true);
         }
     };
+
     const handleStartDateChange = (date: Date) => {
         setStartDate(date);
         setIsStartDatePickerOpen(false);
@@ -239,6 +265,20 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                 value={question.questionName}
                                 onChangeText={(text) => handleInputChange(index, 'questionName', text)}
                             />
+                            <TouchableOpacity
+                                style={styles.imagePickerButton}
+                                onPress={() => pickImage(index)}
+                            >
+                                <Text style={styles.imagePickerButtonText}>Chọn ảnh bài tập</Text>
+                            </TouchableOpacity>
+                            {question.imageUri && (
+                                <View style={styles.imageContainer}>
+                                    <Image
+                                        source={{ uri: question.imageUri }}
+                                        style={styles.selectedImage}
+                                    />
+                                </View>
+                            )}
                             {['A', 'B', 'C', 'D'].map((option) => (
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginHorizontal: 10 }} key={option}>
                                     <Text style={styles.answerLabel}>{option}</Text>
@@ -298,7 +338,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                     </View>
                 </Modal>
 
-                 <Modal
+                <Modal
                     visible={isStartDatePickerOpen}
                     transparent
                     animationType="fade"
@@ -320,7 +360,6 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                     </View>
                 </Modal>
 
-                {/* Modal chọn Ngày Kết Thúc */}
                 <Modal
                     visible={isEndDatePickerOpen}
                     transparent
@@ -346,7 +385,6 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
         </ImageBackground>
     );
 };
-
 
 const styles = StyleSheet.create({
     background: {
@@ -499,18 +537,6 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
-    modalContainer2: {
-        flex: 1,
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        paddingHorizontal: 20, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
     modalMessage: {
         fontSize: 16,
         textAlign: 'center',
@@ -543,6 +569,27 @@ const styles = StyleSheet.create({
     },
     datePickerWrapper: {
         padding: 20,
+        borderRadius: 10,
+    },
+    imagePickerButton: {
+        backgroundColor: '#00bf63',
+        borderRadius: 5,
+        width:150,
+        padding: 10,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    imagePickerButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    imageContainer: {
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    selectedImage: {
+        width: 500,
+        height: 500,
         borderRadius: 10,
     },
 });

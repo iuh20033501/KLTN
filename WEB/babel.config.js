@@ -11,7 +11,8 @@ module.exports = function (api) {
         "safe": false,
         "allowUndefined": true,
         "verbose": false
-      }]
+      }],
+      'react-native-reanimated/plugin' // Thêm plugin này vào cuối danh sách
     ]
   };
 };

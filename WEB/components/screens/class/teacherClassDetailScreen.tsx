@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { deleteFileFromS3 } from '../client/s3Client'; // Ensure this function is imported
 
 interface MemberInfo {
     idHocVien: number;
@@ -164,21 +165,49 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         setConfirmModalVisible(true);
     };
 
-
-    const deleteAssignment = async () => {
-        if (!selectedAssignment) return;
-        const { id, sessionId } = selectedAssignment;
-
+    const deleteImagesForAssignment = async (assignmentId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
                 console.error('No token found');
                 return;
             }
+            
+            // Fetch questions associated with the assignment
+            const response = await http.get(`baitap/getCauHoiTrue/${assignmentId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            
+            const questions = response.data;
+    
+            for (const question of questions) {
+                if (question.linkAnh) {
+                    const fileName = question.linkAnh.split('/').pop();
+                    if (fileName) {
+                        await deleteFileFromS3(`imgCauHoi/${fileName}`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(`Failed to delete images for assignment ${assignmentId}:`, error);
+        }
+    };
+    const deleteAssignment = async () => {
+        if (!selectedAssignment) return;
+        const { id, sessionId } = selectedAssignment;
+    
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+    
+            await deleteImagesForAssignment(id);
             await http.get(`baitap/deleteBtap/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            fetchAssignments(sessionId);
+            fetchAssignments(sessionId); 
         } catch (error) {
             console.error(`Failed to delete assignment ${id}:`, error);
         } finally {
