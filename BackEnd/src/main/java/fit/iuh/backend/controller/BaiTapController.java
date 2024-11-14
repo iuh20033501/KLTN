@@ -254,7 +254,7 @@ public class BaiTapController {
     """
     )
     @GetMapping("/createTienTrinh/{idHocVien}/{idBaiTap}")
-    public ResponseEntity<TienTrinh>  crateTienTrinhBaiTest(@PathVariable Long idHocVien, @PathVariable Long idBaiTap, @PathVariable Long soCauDung) {
+    public ResponseEntity<TienTrinh>  crateTienTrinhBaiTest(@PathVariable Long idHocVien, @PathVariable Long idBaiTap) {
 
         TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien, idBaiTap);
         if (tienTrinh == null) {

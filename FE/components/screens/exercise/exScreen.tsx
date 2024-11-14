@@ -25,8 +25,11 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
   const [score, setScore] = useState(0);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false); // Modal xác nhận thoát
 
-  const { idBaiTap, tenBaiTap } = route.params;
+  const { idBaiTap, tenBaiTap, idUser } = route.params;
 
   const fetchQuestions = async () => {
     try {
@@ -66,7 +69,44 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
     }
   };
 
+  const createExerciseProgress = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+      const response = await http.get(`baitap/createTienTrinh/${idUser}/${idBaiTap}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Progress created:', response.data);
+    } catch (error) {
+      console.error('Failed to create exercise progress:', error);
+    }
+  };
+
+  const submitExercise = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+      await http.get(`baitap/updateTienTrinh/${idUser}/${idBaiTap}/${correctAnswersCount}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setShowResultModal(true); // Hiển thị modal kết quả
+    } catch (error) {
+      console.error('Failed to update exercise progress:', error);
+    }
+  };
+
   useEffect(() => {
+    createExerciseProgress();
     fetchQuestions();
   }, []);
 
@@ -81,21 +121,36 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
     if (option.ketQua) {
       setIsCorrect(true);
       setScore(score + 10);
+      setCorrectAnswersCount(correctAnswersCount + 1);
     } else {
       setIsCorrect(false);
       setShowExplanationModal(true);
     }
   };
 
-  const handleNextQuestion = () => {
-    setSelectedOption(null);
-    setIsCorrect(null);
-    setShowExplanationModal(false);
+  const handleNextOrSubmit = () => {
     if (currentQuestion < questions.length - 1) {
+      setSelectedOption(null);
+      setIsCorrect(null);
+      setShowExplanationModal(false);
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      alert(`Bạn đã hoàn thành bài tập này với số điểm: ${score}`);
+      submitExercise();
     }
+  };
+
+  const handleExit = () => {
+    setShowExitModal(true); // Hiển thị modal xác nhận khi người dùng muốn thoát
+  };
+
+  const handleExitConfirm = async () => {
+    await submitExercise(); // Cập nhật tiến trình trước khi thoát
+    setShowExitModal(false);
+    setShowResultModal(true); // Hiển thị modal kết quả
+  };
+
+  const handleExitCancel = () => {
+    setShowExitModal(false); // Tiếp tục làm bài
   };
 
   if (isLoading) {
@@ -113,7 +168,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={handleExit}>
           <Icon name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerText}>{tenBaiTap}</Text>
@@ -121,9 +176,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
 
       <View style={styles.topBar}>
         <Text style={styles.progressText}>{currentQuestion + 1}/{questions.length}</Text>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${((currentQuestion + 1) / questions.length) * 100}%` }]} />
-        </View>
+        <Text style={styles.scoreText}>Điểm: {score}</Text>
       </View>
 
       <Text style={styles.questionHeader}>Chọn câu trả lời đúng</Text>
@@ -152,8 +205,10 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
       ))}
 
       {selectedOption !== null && (
-        <TouchableOpacity onPress={handleNextQuestion} style={styles.checkButton}>
-          <Text style={styles.checkButtonText}>Next</Text>
+        <TouchableOpacity onPress={handleNextOrSubmit} style={styles.checkButton}>
+          <Text style={styles.checkButtonText}>
+            {currentQuestion === questions.length - 1 ? 'Nộp bài' : 'Tiếp tục'}
+          </Text>
         </TouchableOpacity>
       )}
 
@@ -177,6 +232,50 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
             >
               <Text style={styles.continueButtonText}>Tiếp tục</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Result Modal */}
+      <Modal
+        visible={showResultModal}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Kết quả</Text>
+            <Text style={styles.resultText}>Điểm đạt được: {score} / {questions.length * 10}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShowResultModal(false);
+                navigation.goBack();
+              }}
+              style={styles.continueButton}
+            >
+              <Text style={styles.continueButtonText}>Quay lại</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Exit Confirmation Modal */}
+      <Modal
+        visible={showExitModal}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Bạn có muốn kết thúc bài tập giữa chừng?</Text>
+            <View style={styles.exitButtonsContainer}>
+              <TouchableOpacity onPress={handleExitConfirm} style={styles.exitButton}>
+                <Text style={styles.exitButtonText}>Đồng ý</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleExitCancel} style={styles.exitButton}>
+                <Text style={styles.exitButtonText}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -214,17 +313,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#6b6b6b',
   },
-  progressBar: {
-    flex: 1,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#e0e0e0',
-    marginLeft: 10,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#00bf63',
-    borderRadius: 5,
+  scoreText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#00bf63',
   },
   questionHeader: {
     fontSize: 18,
@@ -311,6 +403,30 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: 'white',
+    fontWeight: 'bold',
+  },
+  resultText: {
+    fontSize: 18,
+    color: '#333',
+    marginVertical: 5,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  exitButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  exitButton: {
+    backgroundColor: '#00bf63',
+    padding: 10,
+    borderRadius: 5,
+    width: '40%',
+    alignItems: 'center',
+  },
+  exitButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
   noQuestionsText: {

@@ -128,14 +128,14 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
       <View style={styles.datePickerContainer}>
       
         <TouchableOpacity style={styles.navigationButton} onPress={handlePreviousWeek}>
-          <Text style={styles.navigationButtonText}>Tuần trước</Text>
+          <Text style={styles.navigationButtonText}>{"<"}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navigationButton} onPress={handleCurrentWeek}>
           <Text style={styles.navigationButtonText}>Tuần hiện tại</Text>
         </TouchableOpacity>
        
         <TouchableOpacity style={styles.navigationButton} onPress={handleNextWeek}>
-          <Text style={styles.navigationButtonText}>Tuần kế tiếp</Text>
+          <Text style={styles.navigationButtonText}>{">"}</Text>
         </TouchableOpacity>
       </View>
 

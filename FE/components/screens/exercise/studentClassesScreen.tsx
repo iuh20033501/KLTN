@@ -73,7 +73,7 @@ export default function StudentClassesScreen({ navigation, route }: { navigation
                 <FlatList
                     data={classes}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.exerciseButton} onPress={() => navigation.navigate('LessonListScreen', { idLopHoc: item.idLopHoc })}>
+                        <TouchableOpacity style={styles.exerciseButton} onPress={() => navigation.navigate('LessonListScreen', { idLopHoc: item.idLopHoc, idUser })}>
                             <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.gradientButton}>
                                 <Image source={getImageUri(item.khoaHoc.image)} style={styles.classImage} />
                                 <Text style={styles.exerciseText}>{item.tenLopHoc}</Text>
