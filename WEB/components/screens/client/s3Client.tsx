@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 
-// Cấu hình AWS S3 sử dụng các biến môi trường
+//Cấu hình AWS S3 sử dụng các biến môi trường
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
