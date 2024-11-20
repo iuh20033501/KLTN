@@ -20,6 +20,7 @@ import {
 export default function ChangePassword({navigation}: {navigation: any}) {
     const [confirmOldPassword, setConfirmOldPassword] = useState('');
     const [password, setPassword] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
     const [verifyPassword, setVerifyPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(''); 
     const [modalVisible, setModalVisible] = useState(false);
@@ -28,7 +29,6 @@ export default function ChangePassword({navigation}: {navigation: any}) {
     const [isPasswordVisible3, setIsPasswordVisible3] = useState(false);
 
     const handleChangePassword = async () => {
-<<<<<<< Updated upstream
         if (oldPassword.length < 6 || oldPassword.length > 32) {
           setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
           setModalVisible(true)
@@ -94,13 +94,6 @@ export default function ChangePassword({navigation}: {navigation: any}) {
             console.error("General error:", error.message);
             setErrorMessage('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
           }
-=======
-
-        if (confirmOldPassword.length < 5 || confirmOldPassword.length > 32) {
-            setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
-            setModalVisible(true); 
-            return;
->>>>>>> Stashed changes
         }
     
         if (password.length < 5 || password.length > 32) {
@@ -193,16 +186,10 @@ export default function ChangePassword({navigation}: {navigation: any}) {
                         style={styles.input}
                         placeholder="Nhập mật khẩu cũ"
                         placeholderTextColor="#888"
-<<<<<<< Updated upstream
                         value={oldPassword}
                         onChangeText={setOldPassword}
                         secureTextEntry={!isPasswordVisible}
 
-=======
-                        value={confirmOldPassword}
-                        onChangeText={setConfirmOldPassword}
-                        secureTextEntry
->>>>>>> Stashed changes
                     />
                      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
                         <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={26} color="gray" />
@@ -279,10 +266,6 @@ const styles = StyleSheet.create({
     },
     container: {
         borderRadius: 15,
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -321,10 +304,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
-<<<<<<< Updated upstream
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,

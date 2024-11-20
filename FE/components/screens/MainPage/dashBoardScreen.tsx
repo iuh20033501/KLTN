@@ -80,15 +80,15 @@ const getAvatarUri = () => {
   const defaultMimeType = "image/png";
   let mimeType = defaultMimeType;
   if (/^\/9j/.test(selectedAvatar)) {
-    mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
+    mimeType = "image/jpeg";
   } else if (/^iVBOR/.test(selectedAvatar)) {
-    mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
+    mimeType = "image/png";
   } else if (/^R0lGOD/.test(selectedAvatar)) {
-    mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
+    mimeType = "image/gif"; 
   } else if (/^Qk/.test(selectedAvatar)) {
-    mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
+    mimeType = "image/bmp"; 
   } else if (/^UklGR/.test(selectedAvatar)) {
-    mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
+    mimeType = "image/webp"; 
   }
 
   return `data:${mimeType};base64,${selectedAvatar}`;

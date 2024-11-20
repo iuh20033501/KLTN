@@ -20,11 +20,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     const [password, setPassword] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-<<<<<<< Updated upstream
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-=======
-    const [showPassword, setShowPassword] = useState(false);
->>>>>>> Stashed changes
 
     const validateUsername = (name: string) => {
         const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{5,31}$/;
@@ -56,7 +52,6 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
                 username: username,
                 password: password,
             });
-<<<<<<< Updated upstream
     
             if (response.status === 200) {
                 const { accessToken } = response.data;
@@ -83,19 +78,6 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
                     setErrorMessage("Không thể lấy thông tin người dùng");
                     setModalVisible(true);
                 }
-=======
-
-            if (response.status === 200) {
-                const { accessToken } = response.data;
-                await AsyncStorage.setItem('accessToken', accessToken);
-                await AsyncStorage.setItem('userPassword', password);
-                setErrorMessage('Đăng nhập thành công');
-                setModalVisible(true);
-                setTimeout(() => {
-                    setModalVisible(false);
-                    navigation.navigate('DashboardScreen');
-                }, 1250);
->>>>>>> Stashed changes
             } else {
                 setErrorMessage("Sai thông tin đăng nhập");
                 setModalVisible(true);
@@ -103,15 +85,9 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
         } catch (error) {
             setErrorMessage("Đăng nhập thất bại");
             setModalVisible(true);
-<<<<<<< Updated upstream
         }
     };
     
-=======
-
-        }
-    };
->>>>>>> Stashed changes
     return (
         <ImageBackground
             source={require('../../../image/bglogin.png')}
@@ -141,17 +117,10 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
                         placeholderTextColor="#888"
                         value={password}
                         onChangeText={setPassword}
-<<<<<<< Updated upstream
                         secureTextEntry={!isPasswordVisible}
                     />
                     <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
                         <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={26} color="gray" />
-=======
-                        secureTextEntry={!showPassword}
-                    />
-                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                        <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={26} color="gray" />
->>>>>>> Stashed changes
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.forgotPassword}
                         onPress={() => navigation.navigate('ResetPassword')}>
@@ -214,7 +183,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-<<<<<<< Updated upstream
         borderRadius: 15,
 
         width: '100%',
@@ -231,23 +199,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
 
-=======
-        width: '100%',
-        maxWidth: 500,
-        minWidth: 400,
-        height: 450,
-        borderRadius: 15,
-        backgroundColor: '#fff',
-        padding: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 5 },
-        shadowRadius: 10,
-        elevation: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-
->>>>>>> Stashed changes
     },
     logo: {
         width: 350,
@@ -261,19 +212,12 @@ const styles = StyleSheet.create({
         top: 50
     },
     container2: {
-<<<<<<< Updated upstream
         borderRadius: 15,
 
-=======
->>>>>>> Stashed changes
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
         height: 50,
-<<<<<<< Updated upstream
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         backgroundColor: '#fff',
         padding: 20,
         shadowColor: '#000',
@@ -296,19 +240,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
-<<<<<<< Updated upstream
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
         fontSize: 18,
-<<<<<<< Updated upstream
         borderRadius: 15,
-=======
->>>>>>> Stashed changes
 
     },
     forgotPassword: {
@@ -413,14 +350,8 @@ const styles = StyleSheet.create({
     },
     eyeIcon: {
         position: 'absolute',
-<<<<<<< Updated upstream
         right: 15,
         marginTop: -90,
       },
-=======
-        right: 25,
-        top:153
-    },
->>>>>>> Stashed changes
 });
 

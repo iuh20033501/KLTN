@@ -12,11 +12,7 @@ import {
     ImageBackground,
     Modal,
 } from 'react-native';
-<<<<<<< Updated upstream
 import { Ionicons } from '@expo/vector-icons';
-=======
-import Icon from 'react-native-vector-icons/Ionicons';
->>>>>>> Stashed changes
 
 export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [username, setUsername] = useState('');
@@ -24,11 +20,7 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [verifyPassword, setVerifyPassword] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
-<<<<<<< Updated upstream
     const [gender, setGender] = useState('Nam');
-=======
-    const [gender, setGender] = useState("Nam");
->>>>>>> Stashed changes
     const [phone, setPhone] = useState('');
     const defaultAVT = "";
     const [birthday, setBirthday] = useState('');
@@ -39,15 +31,9 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [otp, setOTP] = useState('');
-<<<<<<< Updated upstream
     const [otpConfirm, setOTPConfirm] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showVerifyPassword, setShowVerifyPassword] = useState(false);
-=======
-    const [showPassword, setShowPassword] = useState(false);
-    const [showVerifyPassword, setShowVerifyPassword] = useState(false);
-    const [confirmOtp, setConfirmOTP] = useState('');
->>>>>>> Stashed changes
 
     const validateUsername = (name: string) => {
         const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{5,31}$/;
@@ -85,49 +71,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
         return null;
     };
 
-<<<<<<< Updated upstream
-=======
-    const handleSubmit = async () => {
-        const formattedBirthday = handleDateFormat(birthday);
-        const genderValue = gender === 'Nam' ? true : false;
-        try {
-            const response = await http.post(
-                "auth/account/signup/1",
-                {
-                    username,
-                    name,
-                    email,
-                    password,
-                    gender: genderValue,
-                    phone,
-                    birthday: formattedBirthday,
-                    image: defaultAVT,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${signToken}`,
-                    },
-                }
-            );
-
-            if (response.status === 200) {
-                console.log('Đăng ký thành công.');
-                setErrorMessage('Đăng ký thành công.');
-                setModalVisible(true);
-                await handleLogin();
-            } else {
-                setErrorMessage('Đăng ký thất bại. Vui lòng thử lại.');
-                setModalVisible(true);
-            }
-        } catch (error) {
-            console.error("Lỗi khi đăng ký:", error);
-            setErrorMessage('Không thể hoàn tất đăng ký. Vui lòng kiểm tra kết nối mạng.');
-            setModalVisible(true);
-        }
-    };
-
->>>>>>> Stashed changes
     const handleNext = async () => {
         let isValid = true;
         setErrorMessage('');
@@ -172,15 +115,9 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                 try {
                     const response = await http.post('auth/noauth/send', { phone });
                     if (response.status === 200) {
-<<<<<<< Updated upstream
                         setOTPConfirm(response.data)
                         setErrorMessage('');
                         console.log('OTP đã được gửi thành công đến số điện thoại.', response.data);
-=======
-                        setErrorMessage('');
-                        console.log(response.data);
-                        setConfirmOTP(response.data)
->>>>>>> Stashed changes
                         setShowInfoForm(false);
                         setShowOTPForm(true);
                     } else {
@@ -197,7 +134,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
             }
         }
         else if (showOTPForm) {
-<<<<<<< Updated upstream
             if (String(otp.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
                 setErrorMessage('Mã OTP không đúng');
                 setModalVisible(true);
@@ -209,24 +145,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                     const response = await http.post(
                         "auth/noauth/validate",
                         { phone:phone, otp:otp }, 
-=======
-            const formattedBirthday = handleDateFormat(birthday);
-            if (!validateOTP(otp)) {
-                setErrorMessage('OTP phải bao gồm 6 chữ số.');
-                setModalVisible(true);
-                isValid = false;
-            }
-            if (otp !== confirmOtp) {
-                setErrorMessage('OTP không chính xác.');
-                setModalVisible(true);
-                isValid = false;
-            }
-            if (isValid) {
-                try {
-                    const response = await http.post(
-                        "auth/noauth/validate",
-                        { phone, otp:otp },
->>>>>>> Stashed changes
                         {
                             headers: {
                                 "Content-Type": "application/json",
@@ -235,15 +153,9 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                     );
                     if (response.status === 200) {
                         console.log(response.data);
-<<<<<<< Updated upstream
                         signToken = response.data.accessToken; 
                         console.log(signToken)
                         await handleSubmit(); 
-=======
-                        const accessToken = response.data.accessToken;
-                        await AsyncStorage.setItem('accessToken', accessToken);
-                        await handleSubmit();
->>>>>>> Stashed changes
                     } else {
                         setErrorMessage('Xác thực otp thất bại');
                         setModalVisible(true);
@@ -361,7 +273,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 secureTextEntry={!showPassword}
                                 maxLength={32}
                             />
-<<<<<<< Updated upstream
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                                 <Ionicons
                                     name={showPassword ? "eye-off" : "eye"}
@@ -371,11 +282,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 />
                             </TouchableOpacity>
 
-=======
-                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                                <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={26} color="gray" />
-                            </TouchableOpacity>
->>>>>>> Stashed changes
                             <TextInput
                                 style={[styles.input, { flex: 1 }]}
                                 placeholder="Nhập lại mật khẩu"
@@ -385,7 +291,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 secureTextEntry={!showVerifyPassword}
                                 maxLength={32}
                             />
-<<<<<<< Updated upstream
                             <TouchableOpacity onPress={() => setShowVerifyPassword(!showVerifyPassword)}>
                                 <Ionicons
                                     name={showVerifyPassword ? "eye-off" : "eye"}
@@ -396,11 +301,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                             </TouchableOpacity>
 
 
-=======
-                            <TouchableOpacity onPress={() => setShowVerifyPassword(!showVerifyPassword)} style={styles.eyeIcon2}>
-                                <FontAwesome name={showVerifyPassword ? 'eye-slash' : 'eye'} size={26} color="gray" />
-                            </TouchableOpacity>
->>>>>>> Stashed changes
                             <TouchableOpacity style={styles.useful}>
                                 <Text style={styles.linkText}>Hướng dẫn đăng ký</Text>
                             </TouchableOpacity>
@@ -441,21 +341,13 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                             />
                             <View style={styles.rowContainer}>
                                 <TextInput
-<<<<<<< Updated upstream
                                     style={[styles.input, { flex: 7 }]}
-=======
-                                    style={[styles.input, { flex: 8 }]} 
->>>>>>> Stashed changes
                                     placeholder="Ngày sinh (dd/mm/yyyy)"
                                     placeholderTextColor="#888"
                                     value={birthday}
                                     onChangeText={setBirthday}
                                 />
-<<<<<<< Updated upstream
                                 <TouchableOpacity onPress={() => setGender(gender === 'Nam' ? 'Nữ' : 'Nam')} style={{ flex: 2 }}>
-=======
-                                <TouchableOpacity onPress={() => setGender(gender === 'Nam' ? 'Nữ' : 'Nam')} style={{ flex: 2 }}> 
->>>>>>> Stashed changes
                                     <Text style={styles.dropdown}>{gender || 'Chọn giới tính'}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -479,10 +371,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                                 value={otp}
                                 onChangeText={setOTP}
                                 maxLength={6}
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
                             />
                             <View style={styles.buttonsContainer}>
                                 <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -550,9 +438,7 @@ const styles = StyleSheet.create({
     },
     container: {
         borderRadius: 15,
-
         width: '100%',
-        borderRadius: 15,
         maxWidth: 500,
         minWidth: 400,
         height: 450,
@@ -574,10 +460,6 @@ const styles = StyleSheet.create({
     },
     container2: {
         borderRadius: 15,
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -619,11 +501,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
-<<<<<<< Updated upstream
-
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,
@@ -638,11 +515,6 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         marginTop: 80,
-<<<<<<< Updated upstream
-
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -754,7 +626,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     dropdown: {
-<<<<<<< Updated upstream
         fontSize: 18,
         borderRadius: 10,
         padding: 10,
@@ -782,34 +653,4 @@ const styles = StyleSheet.create({
         marginBottom: 10,
 
     },
-=======
-        fontSize: 16,
-        borderRadius: 10,
-        padding: 10,
-        borderWidth: 1,
-        marginLeft:150,
-        marginBottom: 20,
-        width: 70,
-        height:50,
-        textAlign: 'center',
-        left:-135,
-        top:5
-    },
-    eyeIcon: {
-        position: 'absolute',
-        right: 25,
-        top: 165
-    },
-    eyeIcon2: {
-        position: 'absolute',
-        right: 25,
-        top: 230
-    },
-    rowContainer: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        marginBottom: 10, 
-    },
-   
->>>>>>> Stashed changes
 });

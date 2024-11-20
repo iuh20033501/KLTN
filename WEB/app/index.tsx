@@ -12,7 +12,6 @@ import SignUpScreen from '@/components/screens/signUp/signUpScreen';
 import { Image, StyleSheet, Platform, View, ScrollView } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-<<<<<<< Updated upstream
 import EditProfileScreen from '@/components/screens/profileScreen/editProfileScreen';
 import CourseRegistrationScreen from '@/components/screens/course/courseRegistrationScreen';
 import PaymentScreen from '@/components/screens/payment/paymentScreen';
@@ -25,9 +24,8 @@ import AssignmentDetailScreen from '@/components/screens/assignment/assignmentDe
 import TeacherClassDetailScreen from '@/components/screens/class/teacherClassDetailScreen';
 import AddAssignmentScreen from '@/components/screens/assignment/addAssignmentScreen';
 import 'react-native-gesture-handler';
-=======
-import EditProfileScreen from '@/components/screens/editProfileScreen/editProfileScreen';
->>>>>>> Stashed changes
+import React from 'react';
+import TeacherDocumentScreen from '@/components/screens/documents/teacherDocumentScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -36,7 +34,6 @@ type RootStackParamList = {
   DashboardScreen:undefined;
   ChangePassword: undefined;
   ResetPassword:undefined;
-<<<<<<< Updated upstream
   EditProfileScreen:undefined;
   CourseRegistrationScreen:undefined;
   PaymentScreen:undefined;
@@ -48,9 +45,7 @@ type RootStackParamList = {
   SelectSessionScreen:undefined;
   AssignmentDetailScreen:undefined;
   AddAssignmentScreen:undefined;
-=======
-  EditProfileScreen: undefined
->>>>>>> Stashed changes
+  TeacherDocumentScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -64,7 +59,6 @@ export default function App() {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
-<<<<<<< Updated upstream
       <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
       <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
@@ -75,10 +69,8 @@ export default function App() {
       <Stack.Screen name="SelectSessionScreen" component={SelectSessionScreen} />
       <Stack.Screen name="AssignmentDetailScreen" component={AssignmentDetailScreen} />
       <Stack.Screen name="AddAssignmentScreen" component={AddAssignmentScreen} />
+      <Stack.Screen name="TeacherDocumentScreen" component={TeacherDocumentScreen} />
 
-
-=======
->>>>>>> Stashed changes
     </Stack.Navigator>
   </NavigationContainer>
   

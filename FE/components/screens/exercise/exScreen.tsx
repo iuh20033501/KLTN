@@ -3,12 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator, Ima
 import Icon from 'react-native-vector-icons/Ionicons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Audio } from 'expo-av';
+import AudioPlayer from '../audio/audioPlayer';
 
 interface QuestionInfo {
   loiGiai: string;
   idCauHoi: number;
   noiDung: string;
   linkAnh: string | null;
+  linkAmThanh: string | null;
 }
 
 interface AnswerInfo {
@@ -82,7 +85,6 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Progress created:', response.data);
     } catch (error) {
       console.error('Failed to create exercise progress:', error);
     }
@@ -141,17 +143,17 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
   };
 
   const handleExit = () => {
-    setShowExitModal(true); // Hiển thị modal xác nhận khi người dùng muốn thoát
+    setShowExitModal(true); 
   };
 
   const handleExitConfirm = async () => {
-    await submitExercise(); // Cập nhật tiến trình trước khi thoát
+    await submitExercise(); 
     setShowExitModal(false);
-    setShowResultModal(true); // Hiển thị modal kết quả
+    setShowResultModal(true); 
   };
 
   const handleExitCancel = () => {
-    setShowExitModal(false); // Tiếp tục làm bài
+    setShowExitModal(false); 
   };
 
   if (isLoading) {
@@ -182,46 +184,51 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
 
       <Text style={styles.questionHeader}>Chọn câu trả lời đúng</Text>
       <ScrollView
-       showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
-       showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang (nếu có)
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>
-          {questions[currentQuestion].noiDung}
-        </Text>
-        {questions[currentQuestion].linkAnh && (
-          <Image
-            source={{ uri: questions[currentQuestion].linkAnh }}
-            style={styles.questionImage}
-          />
-        )}
-      </View>
-
-      {answers.map((option) => (
-        <TouchableOpacity
-          key={option.idCauTraLoi}
-          style={[
-            styles.optionButton,
-            selectedOption === option && isCorrect === true
-              ? styles.correctOption
-              : selectedOption === option && isCorrect === false
-                ? styles.wrongOption
-                : styles.defaultOption,
-          ]}
-          onPress={() => handleOptionPress(option)}
-          disabled={selectedOption !== null}
-        >
-          <Text style={styles.optionText}>{option.noiDung}</Text>
-        </TouchableOpacity>
-      ))}
-
-      {selectedOption !== null && (
-        <TouchableOpacity onPress={handleNextOrSubmit} style={styles.checkButton}>
-          <Text style={styles.checkButtonText}>
-            {currentQuestion === questions.length - 1 ? 'Nộp bài' : 'Tiếp tục'}
+        <View style={styles.questionContainer}>
+          <Text style={styles.questionText}>
+            {questions[currentQuestion]?.noiDung}
           </Text>
-        </TouchableOpacity>
-      )}
+
+          {questions[currentQuestion]?.linkAnh && (
+            <Image
+              source={{ uri: questions[currentQuestion].linkAnh }}
+              style={styles.questionImage}
+            />
+          )}
+
+          {questions[currentQuestion]?.linkAmThanh && (
+            <AudioPlayer audioUri={questions[currentQuestion].linkAmThanh} />
+          )}
+        </View>
+
+        {answers.map((option) => (
+          <TouchableOpacity
+            key={option.idCauTraLoi}
+            style={[
+              styles.optionButton,
+              selectedOption === option && isCorrect === true
+                ? styles.correctOption
+                : selectedOption === option && isCorrect === false
+                  ? styles.wrongOption
+                  : styles.defaultOption,
+            ]}
+            onPress={() => handleOptionPress(option)}
+            disabled={selectedOption !== null}
+          >
+            <Text style={styles.optionText}>{option.noiDung}</Text>
+          </TouchableOpacity>
+        ))}
+
+        {selectedOption !== null && (
+          <TouchableOpacity onPress={handleNextOrSubmit} style={styles.checkButton}>
+            <Text style={styles.checkButtonText}>
+              {currentQuestion === questions.length - 1 ? 'Nộp bài' : 'Tiếp tục'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       <Modal
@@ -453,10 +460,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   questionImage: {
-    width: '100%', // Đặt kích thước theo chiều rộng màn hình
-    height: 200,   // Chiều cao cố định, có thể điều chỉnh
+    width: '100%', 
+    height: 200,   
     borderRadius: 10,
     marginTop: 10,
-    resizeMode: 'contain', // Giữ nguyên tỉ lệ hình ảnh
+    resizeMode: 'contain', 
   },
 });

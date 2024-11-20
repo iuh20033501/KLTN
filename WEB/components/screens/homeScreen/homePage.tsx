@@ -3,6 +3,7 @@ import CoursesComponent from '@/components/screens/homeScreen/courses';
 import FooterComponent from '@/components/screens/homeScreen/footer';
 import HeaderComponent from '@/components/screens/homeScreen/header';
 import SectionComponent from '@/components/screens/homeScreen/section';
+import React from 'react';
 import { Image, StyleSheet, Platform, View, ScrollView } from 'react-native';
 
 

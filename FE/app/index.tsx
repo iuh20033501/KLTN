@@ -150,10 +150,7 @@ export default function Router() {
 
       </Stack.Navigator>
     </NavigationContainer>
-    // <SafeAreaView>
-    //   <LessonDetailScreen></LessonDetailScreen>
-        
-    // </SafeAreaView>
+   
   );
 }
 

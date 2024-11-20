@@ -1,9 +1,5 @@
 import http from '@/utils/http';
-<<<<<<< Updated upstream
 import { Ionicons } from '@expo/vector-icons';
-=======
-import { FontAwesome } from '@expo/vector-icons';
->>>>>>> Stashed changes
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import {
@@ -33,10 +29,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
     const [showOTPForm, setShowOTPForm] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-<<<<<<< Updated upstream
     const [otpConfirm, setOTPConfirm] = useState('');
-=======
->>>>>>> Stashed changes
     const [showPassword, setShowPassword] = useState(false);
     const [showVerifyPassword, setShowVerifyPassword] = useState(false);
     const validateUsername = (name: string) => {
@@ -90,7 +83,6 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                     const phoneNumber = userAccount.user.sdt;
                     const response = await http.post('auth/noauth/send', { phone: phoneNumber });
                     if (response.status === 200) {
-<<<<<<< Updated upstream
                         setErrorMessage('Đã gửi mã OTP đến điện thoại của bạn');
                         setModalVisible(true);
                         console.log(response.data);
@@ -101,14 +93,6 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                             setShowOTPForm(true);
                         }, 1000);
 
-=======
-                        console.log(response.data);
-                        setConfirmOTP(response.data);
-                        setShowUserForm(false);
-                        setShowOTPForm(true);
-                        setErrorMessage('OTP đã được gửi thành công đến số điện thoại của bạn',);
-                        setModalVisible(true);
->>>>>>> Stashed changes
                     } else {
                         setErrorMessage('Không thể gửi mã OTP. Vui lòng thử lại.');
                         setModalVisible(true);
@@ -156,19 +140,11 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                     if (response.status === 200) {
                         console.log(response.data);
                         setErrorMessage('Đã cập nhật lại mật khẩu');
-<<<<<<< Updated upstream
                         setModalVisible(true)
                         setTimeout(() => {
                             setModalVisible(false);
                             navigation.navigate('LoginScreen');
                         }, 1000);
-=======
-                        setModalVisible(true);
-                        setTimeout(() => {
-                            setModalVisible(false);
-                            navigation.navigate('LoginScreen');
-                        }, 1250);
->>>>>>> Stashed changes
                     } else {
                         console.log('Lỗi cập nhật mật khẩu:', response.data);
                         throw new Error(response.data.message || "Lỗi đổi mật khẩu");
@@ -182,26 +158,12 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
             }
         }
         else if (showOTPForm) {
-<<<<<<< Updated upstream
             if (String(otp.trim()) !== String(otpConfirm?.trim?.() || otpConfirm)) {
                 setErrorMessage('Mã OTP không đúng');
                 setModalVisible(true);
                 isValid = false;
                 console.log(`otp: ${otp}, otpConfirm: ${otpConfirm}`);
             }
-=======
-            if (!validateOTP(otp)) {
-                setErrorMessage('OTP phải bao gồm 6 chữ số.');
-                setModalVisible(true);
-                isValid = false;
-            }
-            if (otp !== confirmOtp) {
-                setErrorMessage('OTP không chính xác.');
-                setModalVisible(true);
-                isValid = false;
-            }
-
->>>>>>> Stashed changes
             if (isValid) {
                 try {
                     const userAccount = data.find(item => item.tenDangNhap === username);
@@ -221,11 +183,7 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                         setShowInfoForm(true);
                         setShowOTPForm(false);
                     } else {
-<<<<<<< Updated upstream
                         setErrorMessage('Lỗi xác thực OTP');
-=======
-                        setErrorMessage("Xác thực OTP thất bại");
->>>>>>> Stashed changes
                         setModalVisible(true);
                     }
                 } catch (error) {
@@ -300,7 +258,6 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                                 secureTextEntry={!showPassword}
                                 maxLength={32}
                             />
-<<<<<<< Updated upstream
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                                 <Ionicons
                                     name={showPassword ? "eye-off" : "eye"}
@@ -310,11 +267,6 @@ export default function ResetPassword({ navigation }: { navigation: any }) {
                                 />
                             </TouchableOpacity>
 
-=======
-                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                                <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={26} color="gray" />
-                            </TouchableOpacity>
->>>>>>> Stashed changes
                             <TextInput
                                 style={styles.resetPassInput2}
                                 placeholder="Nhập lại mật khẩu"
@@ -411,8 +363,6 @@ const styles = StyleSheet.create({
         marginTop: -150
     },
     container: {
-        borderRadius: 15,
-
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -462,10 +412,6 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         marginTop: 80,
-<<<<<<< Updated upstream
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -479,10 +425,6 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         marginTop: 100,
-<<<<<<< Updated upstream
-=======
-        borderRadius: 15,
->>>>>>> Stashed changes
         borderColor: '#ddd',
         borderWidth: 1,
         color: '#333',
@@ -655,7 +597,6 @@ const styles = StyleSheet.create({
     },
     eyeIcon: {
         position: 'absolute',
-<<<<<<< Updated upstream
         marginTop: -42,
         right: -210
     },
@@ -663,14 +604,5 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: -210,
         marginTop: -115,
-=======
-        right: 25,
-        top: 165
-    },
-    eyeIcon2: {
-        position: 'absolute',
-        right: 25,
-        top: 230
->>>>>>> Stashed changes
     },
 });

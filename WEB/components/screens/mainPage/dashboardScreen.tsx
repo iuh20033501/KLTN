@@ -9,30 +9,15 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-<<<<<<< Updated upstream
   const [selectedAvatar, setSelectedAvatar] = useState('');
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [classInfo, setClassInfo] = useState<any>(null);
   const [classLength, setClassLength] = useState<any>(null);
-=======
-  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
-  const [isAvatarModalVisible, setAvatarModalVisible] = useState(false); 
->>>>>>> Stashed changes
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-  const parseCvEnum = (cvEnum: string): string => {
-    switch (cvEnum) {
-      case 'STUDENT':
-        return 'Học viên';
-      case 'TEACHER':
-        return 'Giảng viên';
-      default:
-        return 'Không xác định';
-    }
-  };
+  
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -45,11 +30,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         console.log("Response Data:", response.data);
         if (response.status === 200) {
           setUser(response.data);
-<<<<<<< Updated upstream
           setSelectedAvatar(response.data.u.image);
-=======
-          setSelectedAvatar(response.data.u.image)
->>>>>>> Stashed changes
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
         }
@@ -176,11 +157,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
             <Image
               style={styles.profileImageHeader}
-<<<<<<< Updated upstream
               source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')}
-=======
-              source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/efy.png')}
->>>>>>> Stashed changes
             />
           </TouchableOpacity>
         </View>
@@ -189,13 +166,8 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.studentOverviewContainer}>
           <View style={styles.studentInfoCard}>
             <View style={styles.studentImageContainer}>
-<<<<<<< Updated upstream
               <Image style={styles.studentImage} source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')} />
               <Text style={{ fontSize: 18 }}>{parseCvEnum(user.cvEnum)}</Text>
-=======
-              <Image style={styles.studentImage} source={selectedAvatar ? { uri: `data:image/png;base64,${selectedAvatar}` } : require('../../../image/efy.png')} />
-                <Text style={styles.linkText}>{parseCvEnum(user.cvEnum)}</Text>
->>>>>>> Stashed changes
             </View>
             <View style={styles.studentDetails}>
               <Text style={styles.studentLabel}>Họ tên: <Text style={styles.studentData}>{user.u?.hoTen}</Text></Text>
@@ -293,13 +265,17 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                   navigation.navigate('TeacherClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
                 }}>
                 <AntDesign name="book" size={24} color="black" />
-                <Text style={styles.featureText}>Lớp học phụ trách</Text>
+                <Text style={styles.featureText}>Quản lý bài tập</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}>
                 <MaterialIcons name="feedback" size={24} color="black" />
                 <Text style={styles.featureText}>Phản hồi từ học viên</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+               onPress={() => {
+                navigation.navigate('TeacherDocumentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+              }}>
+                
                 <AntDesign name="profile" size={24} color="black" />
                 <Text style={styles.featureText}>Quản lý tài liệu</Text>
               </TouchableOpacity>
@@ -349,7 +325,6 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 </View>
               </View>
 
-<<<<<<< Updated upstream
               <View style={[styles.section, { marginLeft: 10 }]}>
                 <Text style={styles.sectionTitle}>Chương trình giảng dạy</Text>
                 <View style={styles.classList}>
@@ -378,16 +353,6 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               </View>
             </>
           )}
-=======
-          <View style={[styles.section, { marginLeft: 10 }]}>
-            <Text style={styles.sectionTitle}>Tiến độ học tập</Text>
-            <View style={styles.classList}>
-              <Text style={styles.classItem}>Unit 1: Hello!</Text>
-              <Text style={styles.classItem}>Unit 2: Watch movie</Text>
-              <Text style={styles.classItem}>Unit 3: Go to school</Text>
-            </View>
-          </View>
->>>>>>> Stashed changes
         </View>
       </ScrollView>
       <Modal
@@ -404,21 +369,11 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           }}>
             <Text style={styles.modalText}>Thông tin cá nhân</Text>
           </TouchableOpacity>
-<<<<<<< Updated upstream
           <TouchableOpacity style={styles.modalItem}
             onPress={() => {
               setModalVisible(false);
               navigation.navigate('ChangePassword');
             }}>
-=======
-          <TouchableOpacity
-            style={styles.modalItem}
-            onPress={() => {
-              setModalVisible(false);
-              navigation.navigate('ChangePassword');
-            }}
-          >
->>>>>>> Stashed changes
             <Text style={styles.modalText}>Đổi mật khẩu</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -435,10 +390,6 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
       </Modal>
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
       <Modal
         animationType="slide"
         transparent={true}
@@ -514,10 +465,6 @@ const styles = StyleSheet.create({
   },
   studentInfoCard: {
     borderRadius: 15,
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     flexDirection: 'row',
     backgroundColor: '#fff',
     padding: 15,
@@ -573,10 +520,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 2,
     height: 150,
-<<<<<<< Updated upstream
-=======
-    borderRadius: 15,
->>>>>>> Stashed changes
 
   },
   scheduleCard2: {
@@ -589,10 +532,6 @@ const styles = StyleSheet.create({
     width: 212,
     marginStart: 10,
     left: -5,
-<<<<<<< Updated upstream
-=======
-    borderRadius: 15,
->>>>>>> Stashed changes
 
   },
   scheduleTitle: {
@@ -614,10 +553,6 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     borderRadius: 15,
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     width: '19%',
     backgroundColor: '#fff',
     padding: 15,
@@ -636,10 +571,6 @@ const styles = StyleSheet.create({
   },
   section: {
     borderRadius: 15,
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     width: '49%',
     backgroundColor: '#fff',
     height: 400,
@@ -749,10 +680,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 });
 
 
