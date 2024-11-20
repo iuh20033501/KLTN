@@ -172,8 +172,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 console.error('No token found');
                 return;
             }
-            
-            // Fetch questions associated with the assignment
             const response = await http.get(`baitap/getCauHoiTrue/${assignmentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -234,7 +232,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                             <View style={styles.buttonRow}>
                                                 <TouchableOpacity
                                                     style={styles.createButton}
-                                                    onPress={() => navigation.navigate('AddAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc, tenLopHoc, role })}
+                                                    onPress={() => navigation.navigate('AddAssignmentScreen', { idLopHoc, sessionId: session.idBuoiHoc, tenLopHoc, role,})}
                                                 >
                                                     <Text style={styles.createButtonText}>Thêm bài tập</Text>
                                                 </TouchableOpacity>
@@ -246,7 +244,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                                     <View key={assignment.idBaiTap} style={styles.assignmentItemContainer}>
                                                         <TouchableOpacity
                                                             style={styles.assignmentItem}
-                                                            onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap })}
+                                                            onPress={() => navigation.navigate('AssignmentDetailScreen', { assignmentId: assignment.idBaiTap,sessionId: session.idBuoiHoc })}
                                                         >
                                                             <Icon name="file-document" size={20} color="#ff6600" />
                                                             <Text style={styles.assignmentText}>

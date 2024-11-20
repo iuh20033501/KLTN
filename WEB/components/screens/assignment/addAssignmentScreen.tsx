@@ -8,7 +8,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from "expo-image-picker";
-import { uploadFileToS3 } from '../client/s3Client'; // Import hàm upload từ s3Client
+import { uploadFileToS3 } from '../client/s3Client';
+import * as DocumentPicker from 'expo-document-picker';
+import { Audio } from 'expo-av';
+import AudioPlayer from '../audio/audioPlayer';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
 type AnswerOption = {
     noiDung: string;
@@ -20,8 +24,10 @@ type Assignment = {
     correctAnswer: string;
     loiGiai: string;
     answers: { [key in `answer${'A' | 'B' | 'C' | 'D'}`]: AnswerOption };
-    imageUri?: string; // Thêm thuộc tính để lưu URI ảnh
-    linkAnh?: string;  // Thêm thuộc tính để lưu link AWS S3
+    imageUri?: string;
+    linkAnh?: string;
+    audioUri?: string | null;
+    linkAmThanh?: string;
 };
 
 const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: any }) => {
@@ -46,6 +52,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
     const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
     const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [messageText, setMessageText] = useState('');
+    const [audioName, setAudioName] = useState<string | null>(null);
 
     const handleAddNewQuestion = () => {
         setAssignments([
@@ -136,7 +143,38 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
             setAssignments(newAssignments);
         }
     };
+    const handleRemoveImage = (index: number) => {
+        const newAssignments = [...assignments];
+        newAssignments[index].imageUri = undefined;
+        setAssignments(newAssignments);
+    };
+    const pickAudioFile = async (index: number) => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'audio/*',
+                copyToCacheDirectory: true,
+            });
 
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const fileUri = result.assets[0].uri;
+                const fileName = result.assets[0].name;
+                setAudioName(fileName);
+                const newAssignments = [...assignments];
+                newAssignments[index].audioUri = fileUri;
+                setAssignments(newAssignments);
+            } else {
+                console.log('User canceled the picker.');
+            }
+        } catch (error) {
+            console.error('Error picking audio file:', error);
+        }
+    };
+    const handleClearAudio = (index: number) => {
+        const newAssignments = [...assignments];
+        newAssignments[index].audioUri = null;
+        setAssignments(newAssignments);
+        setAudioName(null)
+    };
     const handleSubmitAssignments = async () => {
         if (!validateDates() || !validateInputs()) return;
 
@@ -163,24 +201,26 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
             await Promise.all(
                 assignments.map(async (question) => {
                     let imageUrl: string | null = null;
-
+                    let audioUrl: string | null = null;
                     if (question.imageUri) {
                         const fileBlob = await fetch(question.imageUri).then(res => res.blob());
-                        imageUrl = await uploadFileToS3(fileBlob, `imgCauHoi/question-image-${Date.now()}`);
+                        imageUrl = await uploadFileToS3(fileBlob, `imgCauHoi/question-image-assignmentId-${idBaiTap}-${Date.now()}`);
+                    }
+                    if (question.audioUri) {
+                        const fileBlob = await fetch(question.audioUri).then(res => res.blob());
+                        audioUrl = await uploadFileToS3(fileBlob, `audioCauHoi/question-audio-assignmentId-${idBaiTap}-${Date.now()}`);
                     }
 
                     const questionData = {
                         noiDung: question.questionName,
                         loiGiai: question.loiGiai,
-                        linkAnh: imageUrl || '', 
+                        linkAnh: imageUrl || '',
+                        linkAmThanh: audioUrl || '',
                     };
-
                     const questionResponse = await http.post(`baitap/createCauHoi/${idBaiTap}`, questionData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
-
                     const { idCauHoi } = questionResponse.data;
-
                     await Promise.all(
                         Object.keys(question.answers).map((key) => {
                             const answer = question.answers[key as keyof Assignment['answers']];
@@ -197,16 +237,18 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                 })
             );
 
-            setMessageText('Thêm bài tập và câu hỏi thành công.');
+            setMessageText('Thêm bài tập, câu hỏi và câu trả lời thành công.');
             setMessageModalVisible(true);
             setTimeout(() => {
-                navigation.navigate('TeacherClassDetailScreen', { idLopHoc, sessionId, tenLopHoc, role })
+                navigation.navigate('TeacherClassDetailScreen', { idLopHoc, sessionId, tenLopHoc, role });
             }, 2000);
         } catch (error) {
+            console.error('Error while submitting assignments:', error);
             setMessageText('Lỗi: Không thể thêm bài tập. Vui lòng thử lại.');
             setMessageModalVisible(true);
         }
     };
+
 
     const handleStartDateChange = (date: Date) => {
         setStartDate(date);
@@ -265,18 +307,50 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                 value={question.questionName}
                                 onChangeText={(text) => handleInputChange(index, 'questionName', text)}
                             />
-                            <TouchableOpacity
-                                style={styles.imagePickerButton}
-                                onPress={() => pickImage(index)}
-                            >
-                                <Text style={styles.imagePickerButtonText}>Chọn ảnh bài tập</Text>
-                            </TouchableOpacity>
+                            <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity
+                                    style={styles.imagePickerButton}
+                                    onPress={() => pickImage(index)}
+                                >
+                                    <Text style={styles.imagePickerButtonText}>Chọn ảnh bài tập</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.audioPickerButton}
+                                    onPress={() => pickAudioFile(index)}
+                                >
+                                    <Text style={styles.imagePickerButtonText}>Chọn âm thanh</Text>
+                                </TouchableOpacity>
+                            </View>
+
                             {question.imageUri && (
                                 <View style={styles.imageContainer}>
                                     <Image
                                         source={{ uri: question.imageUri }}
                                         style={styles.selectedImage}
                                     />
+                                    <TouchableOpacity
+                                        style={styles.removeImageButton}
+                                        onPress={() => handleRemoveImage(index)}
+                                    >
+                                        <MaterialIcons name="close" size={24} color="red" />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                            {audioName ? (
+                                <Text style={styles.audioName}>{audioName}</Text>
+                            ) : (
+                                <Text style={styles.audioName}>Chưa chọn tệp âm thanh</Text>
+                            )}
+
+                            {question.audioUri && (
+                                <View style={styles.audioContainer}>
+                                    <AudioPlayer audioUri={question.audioUri} />
+                                    <TouchableOpacity
+                                        style={styles.deleteAudioIcon}
+                                        onPress={() => handleClearAudio(index)}
+                                    >
+                                        <MaterialIcons name="close" size={24} color="red" />
+                                        </TouchableOpacity>
                                 </View>
                             )}
                             {['A', 'B', 'C', 'D'].map((option) => (
@@ -574,10 +648,19 @@ const styles = StyleSheet.create({
     imagePickerButton: {
         backgroundColor: '#00bf63',
         borderRadius: 5,
-        width:150,
+        width: 150,
         padding: 10,
         alignItems: 'center',
         marginTop: 10,
+    },
+    audioPickerButton: {
+        backgroundColor: '#00bf63',
+        borderRadius: 5,
+        width: 150,
+        padding: 10,
+        alignItems: 'center',
+        marginTop: 10,
+        marginLeft: 20
     },
     imagePickerButtonText: {
         color: '#fff',
@@ -586,11 +669,51 @@ const styles = StyleSheet.create({
     imageContainer: {
         alignItems: 'center',
         marginBottom: 10,
+        marginTop: 20,
     },
     selectedImage: {
-        width: 500,
+        width: 800,
         height: 500,
         borderRadius: 10,
+    },
+    audioContainer: {
+        marginVertical: 10,
+        alignItems: 'center',
+    },
+    audioText: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 5,
+    },
+    playButton: {
+        backgroundColor: '#00bf63',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+    },
+    playButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    audioName: {
+        fontSize: 14,
+        color: '#333',
+        marginTop: 5,
+        textAlign: 'center',
+    },
+    removeImageButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        borderRadius: 50,
+        padding: 5,
+        elevation: 3,
+    },
+    deleteAudioIcon: {
+        position: 'absolute',
+        top: -10,
+        right: 20,
+        zIndex: 1,
     },
 });
 

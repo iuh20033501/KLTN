@@ -18,7 +18,7 @@ import {
 
 
 export default function ChangePassword({navigation}: {navigation: any}) {
-    const [oldPassword, setOldPassword] = useState('');
+    const [confirmOldPassword, setConfirmOldPassword] = useState('');
     const [password, setPassword] = useState('');
     const [verifyPassword, setVerifyPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(''); 
@@ -28,6 +28,7 @@ export default function ChangePassword({navigation}: {navigation: any}) {
     const [isPasswordVisible3, setIsPasswordVisible3] = useState(false);
 
     const handleChangePassword = async () => {
+<<<<<<< Updated upstream
         if (oldPassword.length < 6 || oldPassword.length > 32) {
           setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
           setModalVisible(true)
@@ -93,8 +94,83 @@ export default function ChangePassword({navigation}: {navigation: any}) {
             console.error("General error:", error.message);
             setErrorMessage('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
           }
+=======
+
+        if (confirmOldPassword.length < 5 || confirmOldPassword.length > 32) {
+            setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
+            setModalVisible(true); 
+            return;
+>>>>>>> Stashed changes
         }
-      };
+    
+        if (password.length < 5 || password.length > 32) {
+            setErrorMessage('Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
+            setModalVisible(true); 
+            return;
+        }
+    
+        if (password !== verifyPassword) {
+            setErrorMessage('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+            setModalVisible(true); 
+            return;
+        }
+    
+        try {
+            const oldPassword = await AsyncStorage.getItem('userPassword'); 
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                setErrorMessage('Token không tồn tại hoặc đã hết hạn. Vui lòng đăng nhập lại.');
+                setModalVisible(true);
+                return;
+            }
+            if (oldPassword !== confirmOldPassword) {
+                setErrorMessage('Mật khẩu cũ không chính xác');
+                setModalVisible(true);
+                return;
+            }
+            const response = await http.post(
+                "auth/account/changepass",
+                {
+                    newPass: password,
+                    oldPass: confirmOldPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                console.log(response.data);
+                setErrorMessage('Đổi mật khẩu thành công, trở lại màn hình đăng nhập');
+                setModalVisible(true); 
+                setTimeout(() => {
+                    setModalVisible(false);
+                    navigation.navigate('LoginScreen');
+                }, 1250);
+            } else {
+                setErrorMessage('Lỗi đổi mật khẩu, hãy chắc chắn rằng bạn đã nhập đúng mật khẩu cũ');
+                setModalVisible(true); 
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error.response) {
+                    console.error("Response error:", error.response.data);
+                    setErrorMessage(error.response.data.message || 'Đã có lỗi xảy ra khi đổi mật khẩu.');
+                    setModalVisible(true); 
+                } else if (error.request) {
+                    console.error("Request error:", error.request);
+                    setErrorMessage('Không có phản hồi từ máy chủ. Vui lòng kiểm tra kết nối.');
+                    setModalVisible(true); 
+                }
+            } else if (error instanceof Error) {
+                console.error("General error:", error.message);
+                setErrorMessage('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
+                setModalVisible(true); 
+            }
+        }
+    };
       const handleBack = () => {
         navigation.goBack()
     };
@@ -117,10 +193,16 @@ export default function ChangePassword({navigation}: {navigation: any}) {
                         style={styles.input}
                         placeholder="Nhập mật khẩu cũ"
                         placeholderTextColor="#888"
+<<<<<<< Updated upstream
                         value={oldPassword}
                         onChangeText={setOldPassword}
                         secureTextEntry={!isPasswordVisible}
 
+=======
+                        value={confirmOldPassword}
+                        onChangeText={setConfirmOldPassword}
+                        secureTextEntry
+>>>>>>> Stashed changes
                     />
                      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
                         <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={26} color="gray" />
@@ -197,7 +279,10 @@ const styles = StyleSheet.create({
     },
     container: {
         borderRadius: 15,
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         width: '100%',
         maxWidth: 500,
         minWidth: 400,
@@ -236,6 +321,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         padding: 15,
+<<<<<<< Updated upstream
+=======
+        borderRadius: 15,
+>>>>>>> Stashed changes
         marginBottom: 10,
         borderColor: '#ddd',
         borderWidth: 1,
