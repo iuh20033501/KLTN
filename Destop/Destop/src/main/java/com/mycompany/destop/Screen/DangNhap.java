@@ -5,10 +5,13 @@
 package com.mycompany.destop.Screen;
 
 import com.google.gson.Gson;
+import com.mycompany.destop.DTO.OTPRequestDTO;
+import com.mycompany.destop.DTO.OTPResponseDTO;
 import com.mycompany.destop.DTO.PhoneNumberDTO;
 
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Modul.TaiKhoanLogin;
 import com.mycompany.destop.Reponse.ApiResponse;
 import com.mycompany.destop.Reponse.JwtResponse;
 
@@ -35,9 +38,10 @@ public class DangNhap extends javax.swing.JFrame {
      * Creates new form DangNhap
      */
     private ApiClient apiClient = new ApiClient();
+
     public DangNhap() {
         initComponents();
-        
+
     }
 
     /**
@@ -198,101 +202,113 @@ public class DangNhap extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-    String username = txtUserNawme.getText();   
-    String password = new String(txtPassword.getPassword());
-    StringBuilder builder = new StringBuilder();
+        String username = txtUserNawme.getText();
+        String password = new String(txtPassword.getPassword());
+        StringBuilder builder = new StringBuilder();
 
-    // Kiểm tra xem tên đăng nhập và mật khẩu có rỗng không
-    if (username.isEmpty()) {
-        builder.append("Username đang rỗng\n");
-    }
-    if (password.isEmpty()) {
-        builder.append("Password đang rỗng\n");
-    }
-
-    // Nếu có lỗi, hiển thị thông báo
-    if (builder.length() > 0) {
-        JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
-    } else {
-        try {
-//            ApiClient apiClient = new ApiClient();
-            JwtResponse response = apiClient.callLoginApi(username, password);  // Sửa lại tên biến từ 'reponse' thành 'response'
-//            System.out.println(response.getAccessToken());
-            if (response != null) {
-                
-                SigninDTO signinDTO = apiClient.callProfileApi(response.getAccessToken());
-                
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                String formattedDate = signinDTO.getU().getNgaySinh().format(formatter);
-//                System.out.println("Ngày sinh định dạng: " + formattedDate);
-                // Kiểm tra quyền của người dùng
-                if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
-                    
-                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
-                }
-            } else {
-                txtUserNawme.setText(""); // Làm trống trường tên người dùng 
-                txtPassword.setText("");
-                System.out.println( txtUserNawme.getText());
-                JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        // Kiểm tra xem tên đăng nhập và mật khẩu có rỗng không
+        if (username.isEmpty()) {
+            builder.append("Username đang rỗng\n");
         }
-    }
+        if (password.isEmpty()) {
+            builder.append("Password đang rỗng\n");
+        }
+
+        // Nếu có lỗi, hiển thị thông báo
+        if (builder.length() > 0) {
+            JOptionPane.showMessageDialog(this, builder.toString(), "Invalidation", JOptionPane.ERROR_MESSAGE);
+        } else {
+            try {
+//            ApiClient apiClient = new ApiClient();
+                JwtResponse response = apiClient.callLoginApi(username, password);  // Sửa lại tên biến từ 'reponse' thành 'response'
+//            System.out.println(response.getAccessToken());
+                if (response != null) {
+
+                    SigninDTO signinDTO = apiClient.callProfileApi(response.getAccessToken());
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    String formattedDate = signinDTO.getU().getNgaySinh().format(formatter);
+//                System.out.println("Ngày sinh định dạng: " + formattedDate);
+                    // Kiểm tra quyền của người dùng
+                    if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
+
+                        JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
+                    }
+                } else {
+                    txtUserNawme.setText(""); // Làm trống trường tên người dùng 
+                    txtPassword.setText("");
+                    System.out.println(txtUserNawme.getText());
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thất bại");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_jButtonLoginActionPerformed
-                                           
-    
 
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
-                                               
-    // Nhập số điện thoại từ người dùng
-    String phoneNumber = JOptionPane.showInputDialog(null, "Nhập số điện thoại:");
+
+        // Nhập số điện thoại từ người dùng
+        String phoneNumber = JOptionPane.showInputDialog(null, "Nhập số điện thoại:");
 // ApiClient apiClient = new ApiClient(); // Khởi tạo apiClient nếu cần
 
 // Kiểm tra xem người dùng đã nhập số điện thoại chưa
-if (phoneNumber != null && !phoneNumber.isEmpty()) {
-    // Regex để kiểm tra định dạng số điện thoại
-    String regex = "^(\\+\\d{1,3}[- ]?)?\\d{10}$";
-    
-    if (phoneNumber.matches(regex)) {
         try {
-            String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phoneNumber + ":");
-            
-            if (otpInput != null && !otpInput.isEmpty()) {
-                // Tạo đối tượng PhoneNumberDTO và gửi yêu cầu OTP
-                PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
-                
-                String OTP = apiClient.sendOTP(phoneNumberDTO);
-                
-                // Kiểm tra xem OTP đã được gửi thành công hay chưa
-                if (OTP != null) {
-                    // Xử lý khi người dùng nhập mã OTP ở đây
-                    if (otpInput.equals(OTP)) {
-                        JOptionPane.showMessageDialog(null, "Xác thực thành công!");
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                // Regex để kiểm tra định dạng số điện thoại
+                String regex = "^(\\+\\d{1,3}[- ]?)?\\d{10}$";
+
+                if (phoneNumber.matches(regex)) {
+                    TaiKhoanLogin taiKhoan = apiClient.getTaiKhoanBySDT(phoneNumber);
+                    if (taiKhoan != null) {
+                        PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
+                        String OTP = apiClient.sendOTP(phoneNumberDTO);
+                        System.out.println(OTP);
+                        String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phoneNumber + ":");
+                        if (OTP != null) {
+                            if (otpInput != null && !otpInput.isEmpty()) {
+                                
+                                
+                                if (otpInput.equals(OTP)) {
+                                    System.out.println("thanhcong");
+                                    OTPResponseDTO reponseOTP = apiClient.verifyOTPFromClient(new OTPRequestDTO(phoneNumber, otpInput));
+                                    JOptionPane.showMessageDialog(null, "Xác thực thành công!");
+                                    String newPass = JOptionPane.showInputDialog(null, "Nhập mật khẩu mới:");
+                                    System.out.println(newPass);
+                                    String regex2 = "^.{6,}$";
+                                    if (phoneNumber != null && !phoneNumber.isEmpty() && newPass.matches(regex2)) {
+                                        String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), newPass);
+                                        JOptionPane.showMessageDialog(null, "Đăng nhập thành công!");
+                                    } else {
+                                        String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), taiKhoan.getMatKhau());
+                                        JOptionPane.showMessageDialog(null, "Mật khẩu mới không được rỗng và có ít nhất 6 kí tự.");
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Mã OTP không thể bỏ trống. Vui lòng nhập mã OTP.");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Không thể gửi mã OTP. Vui lòng thử lại sau.");
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
+                        JOptionPane.showMessageDialog(null, "Số điện thoại chưa được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Không thể gửi mã OTP. Vui lòng thử lại sau.");
+                    JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại để tiếp tục.");
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Mã OTP không thể bỏ trống. Vui lòng nhập mã OTP.");
+                JOptionPane.showMessageDialog(null, "Bạn chưa nhập số điện thoại. Vui lòng nhập số điện thoại để tiếp tục.");
             }
         } catch (Exception ex) {
             Logger.getLogger(DangNhap.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi trong quá trình gửi mã OTP. Vui lòng thử lại sau.");
         }
-    } else {
-        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ. Đảm bảo số điện thoại có định dạng đúng.");
-    }
-} else {
-    JOptionPane.showMessageDialog(null, "Bạn chưa nhập số điện thoại. Vui lòng nhập số điện thoại để tiếp tục.");
-}
 
 
     }//GEN-LAST:event_jButtonResetActionPerformed
@@ -300,7 +316,7 @@ if (phoneNumber != null && !phoneNumber.isEmpty()) {
     private void txtUserNawmeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserNawmeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUserNawmeActionPerformed
-     
+
     /**
      * @param args the command line arguments
      */

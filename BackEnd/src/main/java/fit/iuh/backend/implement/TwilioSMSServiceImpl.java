@@ -45,7 +45,7 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
     }
     @Override
     public String sendSMSToVerifyV(PhoneNumberDTO phoneNumberDTO) {
-        String otpResponseDto = null;
+
         try {
             PhoneNumber to = new PhoneNumber(chinhSoPhone(phoneNumberDTO.getPhone()));
             PhoneNumber from = new PhoneNumber(twilioConfig.getPhoneNumberTrial()); // from
@@ -56,12 +56,11 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
                             otpMessage)
                     .create();
             otpMap.put(phoneNumberDTO.getPhone(), otp);
-            otpResponseDto = otpMessage;
+            return otp;
         } catch (Exception e) {
             e.printStackTrace();
-            otpResponseDto =  e.getMessage();
+            return e.getMessage();
         }
-        return otpResponseDto;
 
     }
 

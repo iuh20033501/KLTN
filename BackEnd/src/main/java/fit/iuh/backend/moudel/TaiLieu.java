@@ -17,28 +17,22 @@ public class TaiLieu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTaiLieu;
     private String tenTaiLieu;
-    private String noiDung;
+//    private String noiDung;
     private String linkLoad;
     @ManyToOne
     private BuoiHoc buoiHoc;
-    private Date ngayMo;
-    private Date ngayDong;
+//    private Date ngayMo;
+//    private Date ngayDong;
     private Boolean trangThai;
 
-    public TaiLieu(String tenTaiLieu, String noiDung, String linkLoad, Date ngayMo, Date ngayDong, Boolean trangThai) {
+    public TaiLieu(String tenTaiLieu, String linkLoad) {
         this.tenTaiLieu = tenTaiLieu;
-        this.noiDung = noiDung;
         this.linkLoad = linkLoad;
-        this.ngayMo = ngayMo;
-        this.ngayDong = ngayDong;
-        this.trangThai = trangThai;
     }
 
-    public TaiLieu(String tenTaiLieu, String noiDung, String linkLoad, Date ngayMo, Date ngayDong) {
+    public TaiLieu(String tenTaiLieu, String linkLoad, Boolean trangThai) {
         this.tenTaiLieu = tenTaiLieu;
-        this.noiDung = noiDung;
         this.linkLoad = linkLoad;
-        this.ngayMo = ngayMo;
-        this.ngayDong = ngayDong;
+        this.trangThai = trangThai;
     }
 }

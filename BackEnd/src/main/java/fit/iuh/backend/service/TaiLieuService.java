@@ -12,6 +12,7 @@ public interface TaiLieuService {
     TaiLieu createTaiLieu(TaiLieu tailieu);
     Optional<TaiLieu> findById(Long id);
     List<TaiLieu> finfByIdBuoi(Long idBuoi);
+    List<TaiLieu> finfByIdLop(Long idLop);
     List<TaiLieu> finfAll();
     //    List<TienTrinh> findByIdHv(Long idHV);
 

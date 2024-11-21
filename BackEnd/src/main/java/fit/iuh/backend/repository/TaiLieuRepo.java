@@ -12,4 +12,6 @@ import java.util.List;
 public interface TaiLieuRepo extends JpaRepository<TaiLieu,Long> {
     @Query("select tl from TaiLieu tl join BuoiHoc bh on tl.buoiHoc.idBuoiHoc= bh.idBuoiHoc where tl.buoiHoc.idBuoiHoc=:id")
     List<TaiLieu> findByBuoiHoc(@Param("id") Long idBuoiHoc);
+    @Query("select tl from TaiLieu tl join LopHoc lop on tl.buoiHoc.lopHoc.idLopHoc= lop.idLopHoc where tl.buoiHoc.lopHoc.idLopHoc=:id")
+    List<TaiLieu> findByLopHoc(@Param("id") Long idLopHoc);
 }

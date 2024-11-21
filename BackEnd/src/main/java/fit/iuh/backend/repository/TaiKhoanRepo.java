@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface TaiKhoanRepo extends JpaRepository <TaiKhoanLogin,Long>{
        Optional<TaiKhoanLogin> findByTenDangNhap(String tenDangNhap) ;
 
-       @Query("select tk from TaiKhoanLogin tk join User u on tk.user.idUser =u.idUser where tk.user.sdt= :id")
-       Optional<TaiKhoanLogin> findSDT(@Param("id") String id) ;
+       @Query("SELECT tk FROM TaiKhoanLogin tk WHERE tk.user.sdt =:sdt")
+
+       Optional<TaiKhoanLogin> findSDT(@Param("sdt") String sdt) ;
 }

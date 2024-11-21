@@ -29,6 +29,11 @@ public class TaiLieuImplement implements TaiLieuService {
     }
 
     @Override
+    public List<TaiLieu> finfByIdLop(Long idLop) {
+        return taiLieuRepo.findByLopHoc(idLop);
+    }
+
+    @Override
     public List<TaiLieu> finfAll() {
         return taiLieuRepo.findAll();
     }
