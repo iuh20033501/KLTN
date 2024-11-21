@@ -26,6 +26,7 @@ import AddAssignmentScreen from '@/components/screens/assignment/addAssignmentSc
 import 'react-native-gesture-handler';
 import React from 'react';
 import TeacherDocumentScreen from '@/components/screens/documents/teacherDocumentScreen';
+import TeacherDocumentDetailScreen from '@/components/screens/documents/teacherDocumentDetailScreen';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -46,6 +47,7 @@ type RootStackParamList = {
   AssignmentDetailScreen:undefined;
   AddAssignmentScreen:undefined;
   TeacherDocumentScreen:undefined;
+  TeacherDocumentDetailScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -70,6 +72,7 @@ export default function App() {
       <Stack.Screen name="AssignmentDetailScreen" component={AssignmentDetailScreen} />
       <Stack.Screen name="AddAssignmentScreen" component={AddAssignmentScreen} />
       <Stack.Screen name="TeacherDocumentScreen" component={TeacherDocumentScreen} />
+      <Stack.Screen name="TeacherDocumentDetailScreen" component={TeacherDocumentDetailScreen} />
 
     </Stack.Navigator>
   </NavigationContainer>

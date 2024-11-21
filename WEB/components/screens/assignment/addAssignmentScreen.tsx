@@ -241,7 +241,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
             setMessageModalVisible(true);
             setTimeout(() => {
                 navigation.navigate('TeacherClassDetailScreen', { idLopHoc, sessionId, tenLopHoc, role });
-            }, 2000);
+            }, 1000);
         } catch (error) {
             console.error('Error while submitting assignments:', error);
             setMessageText('Lỗi: Không thể thêm bài tập. Vui lòng thử lại.');
