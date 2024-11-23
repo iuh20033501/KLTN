@@ -1,9 +1,7 @@
 package fit.iuh.backend.service;
 
-import fit.iuh.backend.enumclass.ThanhToanEnum;
-import fit.iuh.backend.moudel.TaiLieu;
+import fit.iuh.backend.enumclass.TrangThaiThanhToan;
 import fit.iuh.backend.moudel.ThanhToan;
-import fit.iuh.backend.repository.ThanhToanRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +18,8 @@ public interface ThanhToanService {
     List<ThanhToan> findAll();
     ThanhToan updateDoneThanhToanAndIdHoaDon (ThanhToan thanhToan, Long idHoaDon);
     ThanhToan updateCancelThanhToan(ThanhToan thanhToan);
-    List<ThanhToan> findByIDHVvaEnum(Long idHV, ThanhToanEnum thanhToanEnum);
-    List<ThanhToan> findByIdLopvaEnum(Long idLop, ThanhToanEnum thanhToanEnum);
+    List<ThanhToan> findByIDHVvaEnum(Long idHV, TrangThaiThanhToan trangThaiThanhToan);
+    List<ThanhToan> findByIdLopvaEnum(Long idLop, TrangThaiThanhToan trangThaiThanhToan);
     void reLoadThanhToanByIdLop(Long idLop);
     List<ThanhToan> findByIdHVAndHoaDonNUll(Long idHV);
 }

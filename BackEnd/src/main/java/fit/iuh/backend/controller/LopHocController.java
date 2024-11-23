@@ -1,6 +1,6 @@
 package fit.iuh.backend.controller;
 
-import fit.iuh.backend.enumclass.LopEnum;
+import fit.iuh.backend.enumclass.TrangThaiLop;
 import fit.iuh.backend.moudel.*;
 import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class LopHocController {
         KhoaHoc khoa = khoaOptional.get();
         lopHoc.setKhoaHoc(khoa);
         lopHoc.setGiangVien(gv);
-        lopHoc.setTrangThai(LopEnum.READY);
+        lopHoc.setTrangThai(TrangThaiLop.READY);
         LopHoc createdLopHoc = lopHocService.createLopHoc(lopHoc);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // Trả về 201 khi tạo thành công
     }
@@ -100,7 +99,7 @@ public class LopHocController {
     @GetMapping("/delete/{id}")
     public LopHoc updateLop(@PathVariable Long id){
         LopHoc lop = lopHocService.findById(id).get();
-        lop.setTrangThai(LopEnum.DELETE);
+        lop.setTrangThai(TrangThaiLop.DELETE);
         return lopHocService.createLopHoc(lop);
     }
     @Operation(
@@ -115,7 +114,7 @@ public class LopHocController {
         LopHoc lop = lopHocService.findById(id).orElseThrow(()->new RuntimeException("lop hoc not found "));
         Date ngay =new Date();
         if(lop.getNgayBD().after(ngay) && lop.getNgayKT().before(ngay) ) {
-            lop.setTrangThai(LopEnum.DELETE);
+            lop.setTrangThai(TrangThaiLop.DELETE);
         }
         return lopHocService.createLopHoc(lop);
     }
@@ -131,7 +130,7 @@ public class LopHocController {
 
         LopHoc lop = lopHocService.findById(id).get();
         if(lop.getSoHocVien()<=soLuong) {
-            lop.setTrangThai(LopEnum.FULL);
+            lop.setTrangThai(TrangThaiLop.FULL);
             return lopHocService.createLopHoc(lop);
         }
         return lopHocService.createLopHoc(lop);

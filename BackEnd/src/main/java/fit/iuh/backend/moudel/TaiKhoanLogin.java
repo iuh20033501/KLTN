@@ -1,7 +1,7 @@
 package fit.iuh.backend.moudel;
 
 import fit.iuh.backend.dto.TaiKhoanDto;
-import fit.iuh.backend.enumclass.ChucVuEnum;
+import fit.iuh.backend.enumclass.ChucVu;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class TaiKhoanLogin {
     @OneToOne
     private User user;
     @Enumerated(value = EnumType.STRING)
-    private ChucVuEnum role;
+    private ChucVu role;
     public TaiKhoanLogin(TaiKhoanDto tk) {
         this.id = tk.getId();
         this.tenDangNhap = tk.getUsername();
@@ -31,7 +31,7 @@ public class TaiKhoanLogin {
         this.user = tk.getUser();
         this.role= tk.getRole();
     }
-    public TaiKhoanLogin(String tenDangNhap, String matKhau, Boolean enable, User user, ChucVuEnum role) {
+    public TaiKhoanLogin(String tenDangNhap, String matKhau, Boolean enable, User user, ChucVu role) {
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.enable = enable;

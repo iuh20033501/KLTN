@@ -1,13 +1,11 @@
 package fit.iuh.backend.moudel;
 
-import fit.iuh.backend.enumclass.SkillEnum;
+import fit.iuh.backend.enumclass.Skill;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,7 +24,7 @@ public class  KhoaHoc {
     private String moTa;
     @Column(length = 1000000000)
     private String image;
-    @ElementCollection(targetClass = SkillEnum.class)
+    @ElementCollection(targetClass = Skill.class)
     @Enumerated(EnumType.ORDINAL)
-    private List<SkillEnum> skillEnum;
+    private List<Skill> skill;
 }

@@ -5,7 +5,7 @@ import fit.iuh.backend.dto.OTPRequestDTO;
 import fit.iuh.backend.dto.OTPResponseDTO;
 import fit.iuh.backend.dto.PhoneNumberDTO;
 import fit.iuh.backend.dto.TaiKhoanDto;
-import fit.iuh.backend.enumclass.ChucVuEnum;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.repository.TaiKhoanRepo;
 import fit.iuh.backend.service.JwtService;
@@ -79,7 +79,7 @@ public class TwilioSMSServiceImpl implements TwilioSMSService {
         // Tiến hành tìm kiếm tài khoản
         Optional<TaiKhoanLogin> tkOptional = taiKhoanService.findBySDT(otpRequestDTO.getPhone());
         TaiKhoanLogin tk = new TaiKhoanLogin();
-        tk.setRole(ChucVuEnum.STUDENT);
+        tk.setRole(ChucVu.STUDENT);
         tk.setTenDangNhap(otpRequestDTO.getPhone());
         TaiKhoanLogin tk0 = tkRepo.save(tk);
 

@@ -1,7 +1,6 @@
 package fit.iuh.backend.implement;
 
-import fit.iuh.backend.enumclass.ThanhToanEnum;
-import fit.iuh.backend.moudel.TaiLieu;
+import fit.iuh.backend.enumclass.TrangThaiThanhToan;
 import fit.iuh.backend.moudel.ThanhToan;
 import fit.iuh.backend.repository.ThanhToanRepo;
 import fit.iuh.backend.service.ThanhToanService;
@@ -55,33 +54,33 @@ public class ThanhToanImplement implements ThanhToanService {
 
     @Override
     public ThanhToan updateDoneThanhToanAndIdHoaDon(ThanhToan thanhToan, Long idHoaDon) {
-        thanhToan.setTrangThai(ThanhToanEnum.DONE);
+        thanhToan.setTrangThai(TrangThaiThanhToan.DONE);
         return thanhToanRepo.save(thanhToan);
     }
     @Override
     public ThanhToan updateCancelThanhToan(ThanhToan thanhToan) {
-        thanhToan.setTrangThai(ThanhToanEnum.CANCEL);
+        thanhToan.setTrangThai(TrangThaiThanhToan.CANCEL);
         return thanhToanRepo.save(thanhToan);
     }
     @Override
-    public List<ThanhToan> findByIDHVvaEnum(Long idHV, ThanhToanEnum thanhToanEnum) {
-        return thanhToanRepo.findByIdHVAndTrangThai(idHV,thanhToanEnum);
+    public List<ThanhToan> findByIDHVvaEnum(Long idHV, TrangThaiThanhToan trangThaiThanhToan) {
+        return thanhToanRepo.findByIdHVAndTrangThai(idHV, trangThaiThanhToan);
     }
 
     @Override
-    public List<ThanhToan> findByIdLopvaEnum(Long idLop, ThanhToanEnum thanhToanEnum) {
+    public List<ThanhToan> findByIdLopvaEnum(Long idLop, TrangThaiThanhToan trangThaiThanhToan) {
 
-        return  thanhToanRepo.findByIdLopAndTrangThai(idLop,thanhToanEnum);
+        return  thanhToanRepo.findByIdLopAndTrangThai(idLop, trangThaiThanhToan);
 
     }
 
     @Override
     public void reLoadThanhToanByIdLop(Long idLop) {
-        List<ThanhToan> list= thanhToanRepo.findByIdLopAndTrangThai(idLop,ThanhToanEnum.WAIT);
+        List<ThanhToan> list= thanhToanRepo.findByIdLopAndTrangThai(idLop, TrangThaiThanhToan.WAIT);
         Date currentDate = new Date();
         list.removeIf(tt -> {
             if (tt.getLopHoc().getNgayBD().before(currentDate)) {
-                tt.setTrangThai(ThanhToanEnum.CANCEL);
+                tt.setTrangThai(TrangThaiThanhToan.CANCEL);
                 return true; // Xóa tt khỏi danh sách
             }
             return false;

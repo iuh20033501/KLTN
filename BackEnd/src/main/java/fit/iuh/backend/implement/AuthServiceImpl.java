@@ -4,7 +4,7 @@ import fit.iuh.backend.dto.ChangePassDTO;
 import fit.iuh.backend.dto.ProfileDto;
 import fit.iuh.backend.dto.SignupDto;
 import fit.iuh.backend.dto.TaiKhoanDto;
-import fit.iuh.backend.enumclass.ChucVuEnum;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.jwt.JwtRequest;
 import fit.iuh.backend.jwt.JwtResponse;
 import fit.iuh.backend.jwt.RefreshTokenRequest;
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             p.setImage(dto.getImage());
 
             HocVien c = hvService.createHocVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVuEnum.STUDENT);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.STUDENT);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
             p.setChuyenMon(dto.getListKiNang());
             p.setImage(dto.getImage());
             GiangVien c = giangVienService.createGiangVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.TEACHER);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.TEACHER);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -120,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
             p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.ADMIN);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.ADMIN);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());
@@ -145,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
             p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
             User c = nhanVienService.createNhanVien(p);
-            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c,ChucVuEnum.QUANLY);
+            TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.QUANLY);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(u.getTenDangNhap(), dto.getPassword()));
             return new ProfileDto(us, r.getAccessToken(), r.getRefreshToken());

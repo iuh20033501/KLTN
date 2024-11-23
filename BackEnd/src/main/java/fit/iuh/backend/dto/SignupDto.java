@@ -1,7 +1,7 @@
 package fit.iuh.backend.dto;
 
 //import jakarta.validation.constraints.*;
-import fit.iuh.backend.enumclass.SkillEnum;
+import fit.iuh.backend.enumclass.Skill;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class SignupDto {
     private String phone;
     private LocalDate birthday;
     private String dto;
-    private List<SkillEnum> ListKiNang;
+    private List<Skill> ListKiNang;
     private Long luong;
     public SignupDto(String username, String name, String email, String password, String address, String image, boolean gender, String phone, LocalDate birthday, Long luong) {
         this.username = username;
@@ -51,7 +51,7 @@ public class SignupDto {
 
 
 
-    public SignupDto(String username, String name, String email, String password, String address, String image,  boolean gender, String phone, LocalDate birthday, List<SkillEnum> listKiNang) {
+    public SignupDto(String username, String name, String email, String password, String address, String image,  boolean gender, String phone, LocalDate birthday, List<Skill> listKiNang) {
         this.username = username;
         this.name = name;
         this.email = email;

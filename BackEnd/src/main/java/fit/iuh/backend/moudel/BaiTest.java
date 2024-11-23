@@ -1,12 +1,11 @@
 package fit.iuh.backend.moudel;
 
-import fit.iuh.backend.enumclass.TestEnum;
+import fit.iuh.backend.enumclass.LoaiTest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -22,10 +21,10 @@ public class BaiTest {
     private String thoiGianLamBai;
     @ManyToOne
     private LopHoc lopHoc;
-    private TestEnum loaiTest;
+    private LoaiTest loaiTest;
     private Boolean TrangThai;
 
-    public BaiTest(Date ngayBD, Date ngayKT, String thoiGianLamBai, TestEnum loaiTest) {
+    public BaiTest(Date ngayBD, Date ngayKT, String thoiGianLamBai, LoaiTest loaiTest) {
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.thoiGianLamBai = thoiGianLamBai;

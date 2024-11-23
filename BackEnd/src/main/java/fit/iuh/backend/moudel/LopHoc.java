@@ -1,13 +1,12 @@
 package fit.iuh.backend.moudel;
 
-import fit.iuh.backend.enumclass.LopEnum;
+import fit.iuh.backend.enumclass.TrangThaiLop;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -19,7 +18,7 @@ public class LopHoc {
     private  Long idLopHoc;
     private Long soHocVien;
     private  String tenLopHoc;
-    private LopEnum trangThai;
+    private TrangThaiLop trangThai;
     private Date ngayBD;
     private Date ngayKT;
     @ManyToOne

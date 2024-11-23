@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum SkillEnum {
+public enum Skill {
     LISTEN (0),
     REAL(1),
     WRITE(2),

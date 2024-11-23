@@ -1,6 +1,6 @@
 package fit.iuh.backend.moudel;
 
-import fit.iuh.backend.enumclass.SkillEnum;
+import fit.iuh.backend.enumclass.Skill;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HocVien extends User{
-    @ElementCollection(targetClass = SkillEnum.class)
+    @ElementCollection(targetClass = Skill.class)
     @Enumerated(EnumType.ORDINAL)
-    private List<SkillEnum> kiNangCan;
+    private List<Skill> kiNangCan;
 }

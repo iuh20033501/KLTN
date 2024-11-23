@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum LopEnum {
-    READY (0),
-    DELETE(1),
-    FULL(2);
+public enum LoaiTest {
+    GK(0),
+    CK(1);
 
-    private final int ValueLop;
+
+    private final int ValueTest;
 }

@@ -1,17 +1,15 @@
 package fit.iuh.backend.controller;
 
-import fit.iuh.backend.enumclass.ThanhToanEnum;
+import fit.iuh.backend.enumclass.TrangThaiThanhToan;
 import fit.iuh.backend.moudel.*;
 import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
 @RestController
 @RequestMapping("/thanhToan")
 public class ThanhToanController {
@@ -41,7 +39,7 @@ public class ThanhToanController {
         thanhToan.setNguoiThanhToan(hocVien);
         thanhToan.setHoaDon(null);
         thanhToan.setLopHoc(lop);
-        thanhToan.setTrangThai(ThanhToanEnum.WAIT);
+        thanhToan.setTrangThai(TrangThaiThanhToan.WAIT);
         return thanhToanService.createThanhToan(thanhToan);
     }
     @Operation(
@@ -61,7 +59,7 @@ public class ThanhToanController {
         thanhToan.setNguoiThanhToan(hocVien);
         thanhToan.setHoaDon(hoaDon);
         thanhToan.setLopHoc(lop);
-        thanhToan.setTrangThai(ThanhToanEnum.DONE);
+        thanhToan.setTrangThai(TrangThaiThanhToan.DONE);
         return thanhToanService.createThanhToan(thanhToan);
     }
     @Operation(
@@ -75,7 +73,7 @@ public class ThanhToanController {
     @GetMapping("/delete/{id}")
     public ThanhToan deleteThanhToan (@PathVariable Long id){
         ThanhToan tt = thanhToanService.findById(id).orElseThrow(() -> new RuntimeException("Thanh toan not found"));
-        tt.setTrangThai(ThanhToanEnum.CANCEL);
+        tt.setTrangThai(TrangThaiThanhToan.CANCEL);
         return thanhToanService.createThanhToan(tt);
     }
     @Operation(
@@ -87,16 +85,16 @@ public class ThanhToanController {
     )
     @GetMapping("/upload/{idHV}")
     public List<ThanhToan> uploadThanhToan(@PathVariable Long idHV) {
-        List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.WAIT);
+        List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, TrangThaiThanhToan.WAIT);
         Date currentDate = new Date();
         list.removeIf(tt -> {
             if (tt.getLopHoc().getNgayBD().before(currentDate)) {
-                tt.setTrangThai(ThanhToanEnum.CANCEL);
+                tt.setTrangThai(TrangThaiThanhToan.CANCEL);
                 return true; // Xóa tt khỏi danh sách
             }
             return false;
         });
-        List<ThanhToan> listDone = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.DONE);
+        List<ThanhToan> listDone = thanhToanService.findByIDHVvaEnum(idHV, TrangThaiThanhToan.DONE);
         list.addAll(listDone);
 
         return list;
@@ -143,8 +141,8 @@ public class ThanhToanController {
     )
     @GetMapping("/findByIdLopNotCancel/{idLop}")
     public List<ThanhToan> findByIdLopNotCancel(@PathVariable Long idLop) {
-        List<ThanhToan> listWait = thanhToanService.findByIdLopvaEnum(idLop, ThanhToanEnum.WAIT);
-        List<ThanhToan> listDone = thanhToanService.findByIdLopvaEnum(idLop, ThanhToanEnum.DONE);
+        List<ThanhToan> listWait = thanhToanService.findByIdLopvaEnum(idLop, TrangThaiThanhToan.WAIT);
+        List<ThanhToan> listDone = thanhToanService.findByIdLopvaEnum(idLop, TrangThaiThanhToan.DONE);
         thanhToanService.reLoadThanhToanByIdLop(idLop);
         listDone.addAll(listWait);
         return listDone;
@@ -172,7 +170,7 @@ public class ThanhToanController {
     )
     @GetMapping("/findByIdHocVienWait/{idHV}")
     public List<ThanhToan> findByIdLopVaEnum (@PathVariable Long idHV){
-        List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, ThanhToanEnum.WAIT);
+        List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, TrangThaiThanhToan.WAIT);
         return list;
     }
 }

@@ -1,7 +1,7 @@
 package fit.iuh.backend.dto;
 
 
-import fit.iuh.backend.enumclass.ChucVuEnum;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.moudel.User;
 import jakarta.persistence.EnumType;
@@ -29,7 +29,7 @@ public class TaiKhoanDto implements UserDetails {
     @OneToOne
     private User user;
     @Enumerated(value = EnumType.STRING)
-    private ChucVuEnum role;
+    private ChucVu role;
 
 
     public TaiKhoanDto(TaiKhoanLogin tk) {
