@@ -32,7 +32,7 @@ public class HoaDonImpement implements HoaDonService {
 
     @Override
     public List<HoaDon> finfByIdHocVien(Long idHV) {
-        return hoaDonRepo.getByIdNV(idHV);
+        return hoaDonRepo.getByIdHV(idHV);
     }
 
     @Override
