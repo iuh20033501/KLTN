@@ -25,8 +25,8 @@ import TeacherClassDetailScreen from '@/components/screens/class/teacherClassDet
 import AddAssignmentScreen from '@/components/screens/assignment/addAssignmentScreen';
 import 'react-native-gesture-handler';
 import React from 'react';
-import TeacherDocumentScreen from '@/components/screens/documents/teacherDocumentScreen';
-import TeacherDocumentDetailScreen from '@/components/screens/documents/teacherDocumentDetailScreen';
+import BillScreen from '@/components/screens/bill/billScreen';
+import ElectroBill from '@/components/screens/bill/electroBill';
 
 type RootStackParamList = {
   HomeScreen: undefined;
@@ -46,8 +46,8 @@ type RootStackParamList = {
   SelectSessionScreen:undefined;
   AssignmentDetailScreen:undefined;
   AddAssignmentScreen:undefined;
-  TeacherDocumentScreen:undefined;
-  TeacherDocumentDetailScreen:undefined;
+  BillScreen:undefined;
+  ElectroBill:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -71,9 +71,7 @@ export default function App() {
       <Stack.Screen name="SelectSessionScreen" component={SelectSessionScreen} />
       <Stack.Screen name="AssignmentDetailScreen" component={AssignmentDetailScreen} />
       <Stack.Screen name="AddAssignmentScreen" component={AddAssignmentScreen} />
-      <Stack.Screen name="TeacherDocumentScreen" component={TeacherDocumentScreen} />
-      <Stack.Screen name="TeacherDocumentDetailScreen" component={TeacherDocumentDetailScreen} />
-
+      <Stack.Screen name="BillScreen" component={BillScreen} />
     </Stack.Navigator>
   </NavigationContainer>
   

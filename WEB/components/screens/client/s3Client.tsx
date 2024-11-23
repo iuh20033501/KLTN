@@ -32,17 +32,21 @@ export const uploadFileToS3 = async (file: Blob, fileName: string): Promise<stri
 export const getFileFromS3 = async (fileName: string): Promise<Blob | null> => {
     const params = {
         Bucket: bucketName,
-        Key: fileName,
+        Key: fileName, // fileName phải đúng và bao gồm cả đường dẫn nếu có
     };
+
+    console.log('Fetching file with key:', fileName);
 
     try {
         const data = await s3.getObject(params).promise();
         if (data.Body) {
+            console.log('File fetched successfully:', fileName);
             return new Blob([data.Body as ArrayBuffer]);
         }
+        console.warn('No body found in the response for:', fileName);
         return null;
     } catch (error) {
-        console.error('Download failed:', error);
+        console.error('Download failed for key:', fileName, error);
         return null;
     }
 };
@@ -59,6 +63,19 @@ export const deleteFileFromS3 = async (fileName: string): Promise<boolean> => {
         return true;
     } catch (error) {
         console.error('Delete failed:', error);
+        return false;
+    }
+};
+export const checkFileExistsInS3 = async (fileName: string): Promise<boolean> => {
+    const params = {
+        Bucket: bucketName,
+        Key: fileName,
+    };
+    try {
+        await s3.headObject(params).promise(); // Kiểm tra sự tồn tại
+        return true;
+    } catch (error) {
+        console.error("File not found:", fileName, error);
         return false;
     }
 };

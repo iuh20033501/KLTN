@@ -4,8 +4,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { deleteFileFromS3, uploadFileToS3 } from '../client/s3Client'; 
+import { deleteFileFromS3, uploadFileToS3 } from '../client/s3Client';
 import * as DocumentPicker from 'expo-document-picker';
+import { Linking } from 'react-native';
 
 interface MemberInfo {
     idHocVien: number;
@@ -259,14 +260,13 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 ...prevDocuments,
                 ...fetchedDocuments.map((doc: Document) => ({
                     ...doc,
-                    sessionId,
+                    sessionId, // Thêm ID buổi học
                 })),
             ]);
         } catch (error) {
             console.error(`Failed to fetch documents for session ${sessionId}:`, error);
         }
     };
-    console.log(documents)
     const pickDocumentFile = async (sessionId: number) => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
@@ -275,8 +275,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             });
 
             if (!result.canceled) {
-                const fileUri = result.assets[0].uri; // Đường dẫn file
-                const fileName = result.assets[0].name; // Tên file
+                const fileUri = result.assets[0].uri;
+                const fileName = result.assets[0].name;
 
                 setSelectedDocument({ fileName, fileUri });
                 setSelectedSessionId(sessionId);
@@ -295,15 +295,26 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         sessionId: number
     ) => {
         try {
+            if (!tenTaiLieu || !linkLoad || sessionId === undefined || sessionId === null) {
+                throw new Error("Missing required parameters for newDocument");
+            }
+
             const newDocument = {
                 idTaiLieu: 0,
                 tenTaiLieu,
                 linkLoad,
                 trangThai,
                 sessionId,
+                isNew: true,
             };
-            setDocuments((prev) => [...prev, newDocument]);
-            await handleSubmitDocuments(sessionId);
+
+            console.log("Adding new document:", newDocument);
+
+            const updatedDocuments = [...documents, newDocument];
+            setDocuments(updatedDocuments);
+
+            await handleSubmitDocuments(updatedDocuments.filter((doc) => doc.sessionId === sessionId), sessionId);
+
             setConfirmDocumentModalVisible(false);
             setSelectedDocument(null);
         } catch (error) {
@@ -312,7 +323,9 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             setMessageModalVisible(true);
         }
     };
-    const handleSubmitDocuments = async (sessionId: number) => {
+
+
+    const handleSubmitDocuments = async (documentsToUpload: any[], sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
@@ -321,10 +334,10 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 return;
             }
 
-            for (const document of documents.filter((doc) => doc.sessionId === sessionId)) {
+            for (const document of documentsToUpload.filter((doc) => doc.isNew)) {
                 if (document.linkLoad) {
                     const fileBlob = await fetch(document.linkLoad).then((res) => res.blob());
-                    const uploadedLink = await uploadFileToS3(fileBlob, `documents/document-sessionId-${sessionId}-${document.tenTaiLieu}`);
+                    const uploadedLink = await uploadFileToS3(fileBlob, `documents/${document.tenTaiLieu}`);
 
                     if (!uploadedLink) {
                         console.error(`Failed to upload document: ${document.tenTaiLieu}`);
@@ -337,9 +350,10 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                         trangThai: document.trangThai,
                     };
 
-                    await http.post(`/taiLieu/create/${sessionId}`, documentData, {
+                    await http.post(`taiLieu/create/${sessionId}`, documentData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+                    document.isNew = false;
                 }
             }
 
@@ -352,16 +366,11 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         }
     };
 
-    const confirmDeleteDocument = (idTaiLieu: number, sessionId: number, linkLoad: string) => {
-        setSelectedDocument2({ idTaiLieu, sessionId, linkLoad });
-        setConfirmDeleteModalVisible(true);
-    };
-
     const handleDeleteDocument = async () => {
         if (!selectedDocument2) return;
-    
+
         const { idTaiLieu, sessionId, linkLoad } = selectedDocument2;
-    
+
         try {
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
@@ -369,18 +378,18 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
-    
+
             if (linkLoad) {
                 const fileName = linkLoad.split('/').pop();
                 if (fileName) {
                     await deleteFileFromS3(`documents/${fileName}`);
                 }
             }
-    
-            await http.post(`/taiLieu/update/${sessionId}/${idTaiLieu}`, { trangThai: false }, {
+
+            await http.post(`taiLieu/update/${sessionId}/${idTaiLieu}`, { trangThai: false }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-    
+
             setDocuments((prevDocuments) =>
                 prevDocuments.filter((doc) => doc.idTaiLieu !== idTaiLieu)
             );
@@ -394,7 +403,13 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             setSelectedDocument(null);
         }
     };
-    
+    const handleOpenDocument = (link: string) => {
+        try {
+            window.open(link, '_blank'); // Mở link trực tiếp trên tab mới
+        } catch (error) {
+            console.error('Error opening document:', error);
+        }
+    };
     const renderContent = () => {
         switch (activeTab) {
             case 'Assignments':
@@ -497,6 +512,15 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     </ScrollView>
                 );
             case 'Documents':
+                const confirmDeleteDocument = (idTaiLieu: number, sessionId: number, linkLoad: string) => {
+                    setSelectedDocument2({
+                        idTaiLieu,
+                        sessionId,
+                        linkLoad,
+                    });
+                    setConfirmDeleteModalVisible(true);
+                };
+
                 return (
                     <ScrollView style={styles.contentContainer}>
                         <Text style={styles.sectionTitle}>Tài Liệu</Text>
@@ -525,9 +549,16 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                                         <View key={index} style={styles.assignmentItemContainer}>
                                                             <TouchableOpacity style={styles.assignmentItem}>
                                                                 <Icon name="file-document-outline" size={20} color="#00405d" />
-                                                                <Text style={styles.assignmentText}>{doc.tenTaiLieu}</Text>
+                                                                <Text
+                                                                    style={styles.assignmentText}
+                                                                    onPress={() => handleOpenDocument(doc.linkLoad)}
+                                                                >
+                                                                    {doc.tenTaiLieu}
+                                                                </Text>
                                                             </TouchableOpacity>
-                                                            <TouchableOpacity onPress={() => confirmDeleteDocument(doc.idTaiLieu, session.idBuoiHoc, doc.linkLoad)}>
+                                                            <TouchableOpacity
+                                                                onPress={() => confirmDeleteDocument(doc.idTaiLieu, session.idBuoiHoc, doc.linkLoad)}
+                                                            >
                                                                 <Icon name="delete" size={20} color="red" />
                                                             </TouchableOpacity>
                                                         </View>

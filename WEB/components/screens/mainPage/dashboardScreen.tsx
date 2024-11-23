@@ -300,7 +300,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Khóa học đã đăng ký</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+               onPress={() => {
+                navigation.navigate('BillScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+              }}>
                 <MaterialIcons name="attach-money" size={24} color="black" />
                 <Text style={styles.featureText}>Tra cứu công nợ</Text>
               </TouchableOpacity>
