@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @Entity
@@ -17,6 +19,7 @@ public class KetQuaTest {
     private Long idKetQua;
     private Long diemTest;
     private String thoiGianHoanThanh;
+    private Date timeRetest;
     @ManyToOne
     private BaiTest baiTest;
     @ManyToOne
@@ -32,6 +35,20 @@ public class KetQuaTest {
     public KetQuaTest(Long diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;
+        this.baiTest = baiTest;
+        this.hocVien = hocVien;
+    }
+
+    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, Date timeRetest) {
+        this.diemTest = diemTest;
+        this.thoiGianHoanThanh = thoiGianHoanThanh;
+        this.timeRetest = timeRetest;
+    }
+
+    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, Date timeRetest, BaiTest baiTest, HocVien hocVien) {
+        this.diemTest = diemTest;
+        this.thoiGianHoanThanh = thoiGianHoanThanh;
+        this.timeRetest = timeRetest;
         this.baiTest = baiTest;
         this.hocVien = hocVien;
     }

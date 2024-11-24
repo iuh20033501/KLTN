@@ -14,6 +14,7 @@ public class TienTrinh {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTienTrinh;
     private Long cauDung;
+    private  Long cauDaLam;
     @ManyToOne
     private HocVien hocVien;
     @ManyToOne
@@ -23,5 +24,17 @@ public class TienTrinh {
         this.cauDung = cauDung;
         this.hocVien = hocVien;
         this.baiTap = baiTap;
+    }
+
+    public TienTrinh(Long cauDung, Long cauLam, HocVien hocVien, BaiTap baiTap) {
+        this.cauDung = cauDung;
+        this.cauDaLam = cauLam;
+        this.hocVien = hocVien;
+        this.baiTap = baiTap;
+    }
+
+    public TienTrinh(Long cauDung, Long cauDaLam) {
+        this.cauDung = cauDung;
+        this.cauDaLam = cauDaLam;
     }
 }

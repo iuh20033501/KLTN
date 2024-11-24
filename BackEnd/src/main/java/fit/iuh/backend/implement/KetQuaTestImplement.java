@@ -6,6 +6,8 @@ import fit.iuh.backend.service.KetQuaTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class KetQuaTestImplement implements KetQuaTestService {
     @Autowired
@@ -20,4 +22,21 @@ public class KetQuaTestImplement implements KetQuaTestService {
     public KetQuaTest findbyId(Long id) {
         return KQTRepo.findById(id).get();
     }
+
+    @Override
+    public KetQuaTest findByBTandHV(Long idHocvien, Long idBaiTest) {
+        return KQTRepo.findByHocVienAndBaiTest(idBaiTest,idHocvien);
+    }
+
+    @Override
+    public List<KetQuaTest> findKetQuaTestByHV(Long idHocVien) {
+        return KQTRepo.findByHocVien(idHocVien);
+    }
+
+    @Override
+    public List<KetQuaTest> findKetQuaTestByBT(Long idBaiTest) {
+        return KQTRepo.findByBaiTest(idBaiTest);
+    }
+
+
 }

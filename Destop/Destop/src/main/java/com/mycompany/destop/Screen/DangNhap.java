@@ -232,6 +232,9 @@ public class DangNhap extends javax.swing.JFrame {
                     if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
 
                         JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+                         Menu menuFrame = new Menu(response.getAccessToken());
+                        menuFrame.setVisible(true);  // Make the Menu frame visible
+                        this.dispose();  // Close the current login frame
                     } else {
                         JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
                     }

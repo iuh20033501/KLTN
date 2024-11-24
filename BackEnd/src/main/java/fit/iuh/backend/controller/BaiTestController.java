@@ -55,15 +55,15 @@ public class BaiTestController {
     @Operation(
             summary = "thêm bài test",
             description = """ 
-            đối tuộng có loại test(enum), thoi gian lam bai, thoi gian ket thuc
-            truyen id Bai Test     
+            đối tuộng có loại test(enum), thoi gian lam bai(dạng Time), thoi gian kết thuc
+            truyen id Bai Lop     
     """
     )
     @PostMapping("/create/{idLop}")
     public BaiTest createBaiTest(@PathVariable Long idLop,@RequestBody BaiTest baiTest){
         LopHoc lop = lopHocService.findById(idLop).get();
         baiTest.setLopHoc(lop);
-        baiTest.setTrangThai(true);
+        baiTest.setTrangThai(false);
         return baiTestService.createBaiTest(baiTest);
     }
     @Operation(
@@ -175,26 +175,93 @@ public class BaiTestController {
         throw new ConfigDataResourceNotFoundException(null);
     }
     @Operation(
-            summary = "làm  bài test",
+            summary = "Làm bài test",
             description = """ 
-            **lưu ý cần chạy getListTrue cau hỏi theo id bài test đẻ biết có bao nhiêu câu hỏi trong bài dẻ tính điểm
-            truyền id bai test, học viên,tgian lam bai và danh sách cau trả lời học viên làm bài dã chọn  ra danh sách câu trả lời
-            
+    **Lưu ý:**
+    1. Cần chạy `getListTrue` theo ID bài test để biết có bao nhiêu câu hỏi trong bài, từ đó tính điểm.
+    2. Truyền vào các tham số:
+        - `idBaiTest`: ID của bài test.
+        - `idHocVien`: ID của học viên.
+        - `thoigianLamBai` (String): Thời gian hoàn thành bài test.
+        - số câu đúng (long): số câu đúng
+    3. Nếu bài test chưa được làm, tạo mới và set thời gian `timeReset`.
+    4. Nếu thời gian đã qua (so với `timeReset`), không cho phép cập nhật nữa, trả về `null`.Ngược lại sẽ update theo kq có sẵn
     """
     )
-    //
     @PostMapping("/lamBai")
     public KetQuaTest lamBaiTest(@RequestBody TinhDiemTestDTO tinhDiemDTO){
-        long soCauDung = 0L;
-        long diemSo;
-        List<CauTraLoi> list = tinhDiemDTO.getListCauTraLoi();
-        for(CauTraLoi l:list){
-            if(l.getKetQua().equals(true)) soCauDung++;
+        KetQuaTest kq = ketQuaTestService.findByBTandHV(tinhDiemDTO.getIdHocVien(), tinhDiemDTO.getIdBaiTest());
+        Date current = new Date();
+        Long soCauDung = tinhDiemDTO.getSoCauDung();
+        Long diemSo = soCauDung / soLuongCauHoi;
+
+        // Kiểm tra nếu chưa có kết quả thì tạo mới
+        if (kq == null){
+            BaiTest baiTest = baiTestService.findById(tinhDiemDTO.getIdBaiTest());
+            HocVien hocVien = hocVienService.findByIdHocVien(tinhDiemDTO.getIdHocVien())
+                    .orElseThrow(() -> new RuntimeException("HocVien not found"));
+
+            // Lấy thời gian làm bài và cộng thêm thời gian để tính reset
+            long thoiGianLamBai = baiTest.getThoiGianLamBai().getTime(); // Thời gian làm bài là kiểu Time
+            long timeRetest = current.getTime() + thoiGianLamBai; // Thêm thời gian làm bài vào thời gian hiện tại
+
+            return ketQuaTestService.crateKQT(new KetQuaTest(diemSo, tinhDiemDTO.getThoigianLamBai(), new java.sql.Date(timeRetest), baiTest, hocVien));
         }
-        BaiTest baiTest = baiTestService.findById(tinhDiemDTO.getIdBaiTest());
-        HocVien hocVien = hocVienService.findByIdHocVien(tinhDiemDTO.getIdHocVien()).orElseThrow(()->new RuntimeException("HocVien not found"));
-        diemSo =soCauDung/soLuongCauHoi;
-        return ketQuaTestService.crateKQT(new KetQuaTest(diemSo,tinhDiemDTO.getThoigianLamBai(),baiTest,hocVien));
+        // Nếu đã có kết quả, kiểm tra thời gian
+        else {
+            if (current.before(kq.getTimeRetest())) {
+                kq.setDiemTest(diemSo);
+                kq.setThoiGianHoanThanh(tinhDiemDTO.getThoigianLamBai());
+                return ketQuaTestService.crateKQT(kq);
+            } else {
+                // Nếu quá thời gian, trả về null
+                return null;
+            }
+        }
     }
 
+    @Operation(
+            summary = "get ket quả test theo id",
+            description = """ 
+            truyen idketquatest 
+    """
+    )
+    @GetMapping("/getKetQua/{idKetQuaTest}")
+    public KetQuaTest getKetQua (@PathVariable Long idKetQuaTest){
+        KetQuaTest ketQuaTest = ketQuaTestService.findbyId(idKetQuaTest);
+        return ketQuaTest;
+    }
+    @Operation(
+            summary = "getList ket quả test theo idTest",
+            description = """ 
+            truyen idBaiTest 
+    """
+    )
+    @GetMapping("/getKetQuaByTest/{idBaiTest}")
+    public List<KetQuaTest> getKetQuaByTest (@PathVariable Long idBaiTest){
+        List<KetQuaTest> list = ketQuaTestService.findKetQuaTestByBT(idBaiTest);
+        return list;
+    }
+    @Operation(
+            summary = "getList ket quả test theo idHocVien",
+            description = """ 
+            truyen idHocVien 
+    """
+    )
+    @GetMapping("/getKetQuaByHV/{idHocVien}")
+    public List<KetQuaTest> getKetQuaByHV (@PathVariable Long idHocVien){
+        List<KetQuaTest> list = ketQuaTestService.findKetQuaTestByHV(idHocVien);
+        return list;
+    }
+    @Operation(
+            summary = "get ket quả test theo id",
+            description = """ 
+            truyen idketquatest 
+    """
+    )
+    @GetMapping("/getKetQua/{idBaiTest}/{idHocVien}")
+    public KetQuaTest getKetQuaByHVAndBT (@PathVariable Long idBaiTest,@PathVariable Long idHocVien){
+        KetQuaTest ketQuaTest = ketQuaTestService.findByBTandHV(idHocVien,idBaiTest);
+        return ketQuaTest;
+    }
 }
