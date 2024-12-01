@@ -8,7 +8,7 @@ package com.mycompany.destop.Enum;
  *
  * @author Windows 10
  */
-public enum SkillEnum {
+public enum Skill {
     LISTEN(0),
     REAL(1),
     WRITE(2),
@@ -17,7 +17,7 @@ public enum SkillEnum {
     private final int valueSkill;
 
     // Constructor
-    SkillEnum(int valueSkill) {
+    Skill(int valueSkill) {
         this.valueSkill = valueSkill;
     }
 

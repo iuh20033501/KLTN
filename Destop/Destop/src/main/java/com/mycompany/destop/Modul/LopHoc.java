@@ -14,7 +14,7 @@ import java.util.Date;
  * @author Windows 10
  */
 public class LopHoc {
-     private  Long idLopHoc;
+    private  Long idLopHoc;
     private Long soHocVien;
     private  String tenLopHoc;
     private LopEnum trangThai;

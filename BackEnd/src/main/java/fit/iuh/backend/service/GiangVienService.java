@@ -1,6 +1,7 @@
 package fit.iuh.backend.service;
 
 import fit.iuh.backend.moudel.GiangVien;
+import fit.iuh.backend.moudel.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface GiangVienService {
     GiangVien createGiangVien (GiangVien giangVien);
     List<GiangVien> findAll();
     GiangVien findByName(String name);
+    List<User> finDangLamViec();
 }

@@ -1,5 +1,6 @@
 package fit.iuh.backend.moudel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class User {
     private String sdt;
     private String diaChi;
     private String email;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate ngaySinh;
     private boolean gioiTinh;
     @Column(length = 1000000000)

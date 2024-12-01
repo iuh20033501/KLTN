@@ -1,12 +1,12 @@
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Modul\KhoaHoc.java
+C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Screen\Menu.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Enum\LopEnum.java
-C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Screen\Menu_1.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\DTO\PhoneNumberDTO.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\DTO\TinhDiemTestDTO.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Enum\ChucVuEnum.java
+C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\org\netbeans\lib\awtextra\AbsoluteLayout.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Enum\TestEnum.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Modul\BaiTap.java
-C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Screen\TrangChu.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Modul\CauHoi.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Modul\HocVien.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Modul\TaiLieu.java
@@ -39,3 +39,4 @@ C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\desto
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\DTO\ResetPassDto.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Enum\SkillEnum.java
 C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Enum\ThanhToanEnum.java
+C:\Users\Windows 10\Desktop\KLTN\Destop\Destop\src\main\java\com\mycompany\destop\Service\AWSService.java

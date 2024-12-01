@@ -4,7 +4,7 @@
  */
 package com.mycompany.destop.Modul;
 
-import com.mycompany.destop.Enum.SkillEnum;
+import com.mycompany.destop.Enum.Skill;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,9 +25,9 @@ public class KhoaHoc {
     private String moTa;
     @Column(length = 1000000000)
     private String image;
-    @ElementCollection(targetClass = SkillEnum.class)
-    @Enumerated(EnumType.ORDINAL)
-    private ArrayList<SkillEnum> skillEnum;
+    @ElementCollection(targetClass = Skill.class)
+    @Enumerated(EnumType.STRING)
+    private ArrayList<Skill> skillEnum;
 
     public Long getIdKhoaHoc() {
         return idKhoaHoc;
@@ -93,15 +93,15 @@ public class KhoaHoc {
         this.image = image;
     }
 
-    public ArrayList<SkillEnum> getSkillEnum() {
+    public ArrayList<Skill> getSkillEnum() {
         return skillEnum;
     }
 
-    public void setSkillEnum(ArrayList<SkillEnum> skillEnum) {
+    public void setSkillEnum(ArrayList<Skill> skillEnum) {
         this.skillEnum = skillEnum;
     }
 
-    public KhoaHoc(String tenKhoaHoc, Long giaTien, String thoiGianDienRa, Boolean trangThai, Long soBuoi, String moTa, String image, ArrayList<SkillEnum> skillEnum) {
+    public KhoaHoc(String tenKhoaHoc, Long giaTien, String thoiGianDienRa, Boolean trangThai, Long soBuoi, String moTa, String image, ArrayList<Skill> skillEnum) {
         this.tenKhoaHoc = tenKhoaHoc;
         this.giaTien = giaTien;
         this.thoiGianDienRa = thoiGianDienRa;
@@ -115,7 +115,7 @@ public class KhoaHoc {
     public KhoaHoc() {
     }
 
-    public KhoaHoc(Long idKhoaHoc, String tenKhoaHoc, Long giaTien, String thoiGianDienRa, Boolean trangThai, Long soBuoi, String moTa, String image, ArrayList<SkillEnum> skillEnum) {
+    public KhoaHoc(Long idKhoaHoc, String tenKhoaHoc, Long giaTien, String thoiGianDienRa, Boolean trangThai, Long soBuoi, String moTa, String image, ArrayList<Skill> skillEnum) {
         this.idKhoaHoc = idKhoaHoc;
         this.tenKhoaHoc = tenKhoaHoc;
         this.giaTien = giaTien;

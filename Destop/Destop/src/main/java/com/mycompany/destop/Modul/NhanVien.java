@@ -21,6 +21,17 @@ public class NhanVien extends User{
         this.luongThang = luongThang;
     }
 
+    /**
+     *
+     * @param luongThang
+     * @param hoTen
+     * @param sdt
+     * @param diaChi
+     * @param email
+     * @param ngaySinh
+     * @param gioiTinh
+     * @param image
+     */
     public NhanVien(Long luongThang, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         super(hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
         this.luongThang = luongThang;
@@ -30,8 +41,18 @@ public class NhanVien extends User{
         super(idUser, hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
         this.luongThang = luongThang;
     }
-
+    public NhanVien( String hoTen, String sdt, String diaChi, String email, boolean gioiTinh, String image) {
+        super( hoTen, sdt, diaChi, email,  gioiTinh, image);
+//        this.luongThang = luongThang;
+    }
     public NhanVien() {
     }
+
+    @Override
+    public String toString() {
+        return "NhanVien{" + "luongThang=" + luongThang + '}';
+    }
+
+   
     
 }

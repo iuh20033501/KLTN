@@ -1,5 +1,6 @@
 package fit.iuh.backend.controller;
 
+import fit.iuh.backend.dto.UpdateUserDTO;
 import fit.iuh.backend.moudel.GiangVien;
 import fit.iuh.backend.moudel.NhanVien;
 import fit.iuh.backend.service.*;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,19 +30,32 @@ public class NhanVienController {
     private LopHocService lopHocService;
 
     @PutMapping("/update/{id}")
-    public NhanVien updateHocVien(@PathVariable Long id, @RequestBody GiangVien giangVien){
+    public NhanVien updateHocVien(@PathVariable Long id, @RequestBody NhanVien nhanVien){
         NhanVien f=nhanVienService.findById(id).orElseThrow(()->new RuntimeException("nhan vien not found "));
-        f.setEmail(giangVien.getEmail());
-        f.setDiaChi(giangVien.getDiaChi());
-        f.setImage(giangVien.getImage());
-        f.setSdt(giangVien.getSdt());
-        f.setGioiTinh(giangVien.isGioiTinh());
-        f.setHoTen(giangVien.getHoTen());
-        f.setNgaySinh(giangVien.getNgaySinh());
-        f.setLuongThang(giangVien.getLuong());
+        f.setEmail(nhanVien.getEmail());
+        f.setDiaChi(nhanVien.getDiaChi());
+        f.setImage(nhanVien.getImage());
+        f.setSdt(nhanVien.getSdt());
+        f.setGioiTinh(nhanVien.isGioiTinh());
+        f.setHoTen(nhanVien.getHoTen());
+        f.setNgaySinh(nhanVien.getNgaySinh());
+//        f.setLuongThang(giangVien.getLuong());
         return nhanVienService.createNhanVien(f);
     }
     //
+//    @PutMapping("/updateUser/{id}")
+//    public NhanVien updateHocVien(@PathVariable Long id, @RequestBody UpdateUserDTO dto){
+//        NhanVien f=nhanVienService.findById(id).orElseThrow(()->new RuntimeException("nhan vien not found "));
+//        f.setEmail(dto.getNhanVien().getEmail());
+//        f.setDiaChi(dto.getNhanVien().getDiaChi());
+//        f.setImage(dto.getNhanVien().getImage());
+//        f.setSdt(dto.getNhanVien().getSdt());
+//        f.setGioiTinh(dto.getNhanVien().isGioiTinh());
+//        f.setHoTen(dto.getNhanVien().getHoTen());
+//        f.setNgaySinh(LocalDate.parse(dto.getGson()));
+////        f.setLuongThang(giangVien.getLuong());
+//        return nhanVienService.createNhanVien(f);
+//    }
     @GetMapping("/findbyId/{id}")
     public NhanVien findById(@PathVariable Long id){
         return nhanVienService.findById(id).orElse(null);

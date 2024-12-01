@@ -43,7 +43,6 @@ public class HoaDonController {
         hoaDon.setNguoiLap(nhanVien);
         Date date = new Date();
         hoaDon.setNgayLap(date);
-        hoaDon.setTrangThai(true);
         Long tongTien = 0L;
         hoaDon.setThanhTien(tongTien);
         HoaDon hd= hoaDonService.createHoaDon(hoaDon);
@@ -77,8 +76,8 @@ public class HoaDonController {
     public HoaDon getHoaDonByID(@PathVariable Long idHD){
         return hoaDonService.findById(idHD).get();
     }
-    @GetMapping("/delete/{idHD}")
-    public HoaDon deleteHD(@PathVariable Long idHD){
-        return hoaDonService.deleteHoaDon(idHD);
-    }
+//    @GetMapping("/delete/{idHD}")
+//    public HoaDon deleteHD(@PathVariable Long idHD){
+//        return hoaDonService.deleteHoaDon(idHD);
+//    }
 }
