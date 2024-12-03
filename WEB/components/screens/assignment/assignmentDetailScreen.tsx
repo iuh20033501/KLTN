@@ -8,7 +8,6 @@ import { uploadFileToS3, deleteFileFromS3 } from '../client/s3Client';
 import { Audio } from 'expo-av';
 import AudioPlayer from '../audio/audioPlayer';
 import * as DocumentPicker from 'expo-document-picker';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
 interface Question {
