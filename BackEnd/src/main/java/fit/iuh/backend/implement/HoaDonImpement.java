@@ -40,12 +40,12 @@ public class HoaDonImpement implements HoaDonService {
         return hoaDonRepo.getByIdLop(idLop);
     }
 
-    @Override
-    public HoaDon deleteHoaDon(Long idHD) {
-        HoaDon hoaDon = hoaDonRepo.findById(idHD).orElseThrow(() -> new RuntimeException("Hoa Don not found"));
-        hoaDon.setTrangThai(false);
-        return hoaDonRepo.save(hoaDon);
-    }
+//    @Override
+//    public HoaDon deleteHoaDon(Long idHD) {
+//        HoaDon hoaDon = hoaDonRepo.findById(idHD).orElseThrow(() -> new RuntimeException("Hoa Don not found"));
+//        hoaDon.setTrangThai(false);
+//        return hoaDonRepo.save(hoaDon);
+//    }
 
     @Override
     public List<HoaDon> findAll() {

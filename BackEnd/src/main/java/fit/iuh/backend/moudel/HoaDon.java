@@ -19,18 +19,18 @@ public class HoaDon {
     @ManyToOne
     private NhanVien nguoiLap;
     private Long thanhTien;
-    private Boolean trangThai;
 
-    public HoaDon(Date ngayLap, Long thanhTien, Boolean trangThai) {
+
+    public HoaDon(Date ngayLap, Long thanhTien) {
         this.ngayLap = ngayLap;
         this.thanhTien = thanhTien;
-        this.trangThai = trangThai;
+
     }
 
-    public HoaDon(Date ngayLap, NhanVien nguoiLap, Long thanhTien, Boolean trangThai) {
+    public HoaDon(Date ngayLap, NhanVien nguoiLap, Long thanhTien) {
         this.ngayLap = ngayLap;
         this.nguoiLap = nguoiLap;
         this.thanhTien = thanhTien;
-        this.trangThai = trangThai;
+
     }
 }

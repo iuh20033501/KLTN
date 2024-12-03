@@ -158,7 +158,24 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ChangePassDTO changePassdto) {
         return ResponseEntity.ok(service.changePassword( dto.getId(), changePassdto));
     }
+    @PostMapping("/account/changePassDestop")
+    @Operation(
+            summary = "Đổi mật khẩu ben destop",
+            description = """ 
+            truyền changePassDTO chứa oldPass, newPass
+    """
+    )
+    public ResponseEntity<String> resetPasswordDestop(@AuthenticationPrincipal TaiKhoanDto dto, @RequestBody ChangePassDTO changePassdto) {
+        String kQua = service.changePassword(dto.getId(), changePassdto);
 
+        if (kQua.equals("passChangeSuccess")) {
+            // Trả về phản hồi HTTP 200 OK nếu đổi mật khẩu thành công
+            return ResponseEntity.ok(kQua);
+        } else {
+            // Trả về phản hồi HTTP 400 Bad Request nếu đổi mật khẩu thất bại
+            return ResponseEntity.badRequest().body(kQua);
+        }
+    }
 
 //    @PostMapping("/password/forgot")
 //    @Operation(summary = "Quên mật khẩu")

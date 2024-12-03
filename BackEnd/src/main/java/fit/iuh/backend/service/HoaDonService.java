@@ -14,6 +14,6 @@ public interface HoaDonService {
     List<HoaDon> finfByIdNhanVien(Long idNV);
     List<HoaDon> finfByIdHocVien(Long idHV);
     List<HoaDon> finfByIdLop(Long idLop);
-    HoaDon deleteHoaDon(Long idHD);
+//    HoaDon deleteHoaDon(Long idHD);
     List<HoaDon> findAll();
 }

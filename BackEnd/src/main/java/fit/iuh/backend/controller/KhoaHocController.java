@@ -4,6 +4,8 @@ import fit.iuh.backend.moudel.KhoaHoc;
 import fit.iuh.backend.moudel.LopHoc;
 import fit.iuh.backend.service.KhoaHocService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +20,20 @@ public class KhoaHocController {
 
     @PostMapping("/create")
     public KhoaHoc createLop ( @RequestBody KhoaHoc khoa){
-        khoa.setTrangThai(true);
+//        khoa.setTrangThai(true);
         return khoaHocService.createKhoaHoc(khoa);
     }
     //
-    @GetMapping("/getKhoa/{id}")
-    public KhoaHoc findByidKhoa (@PathVariable Long idKhoa){
-        Optional<KhoaHoc> k = khoaHocService.findById(idKhoa);
-        if (k.isPresent()){
-            return k.get();
+    @GetMapping("/findKhoa/{id}")
+    public ResponseEntity<KhoaHoc> findByidKhoa(@PathVariable("id") Long idKhoa) {
+        Optional<KhoaHoc> khoaHoc = khoaHocService.findById(idKhoa);
+        if (khoaHoc.isPresent()) {
+            return ResponseEntity.ok(khoaHoc.get());
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Trả về 404 nếu không tìm thấy
     }
     //
-    @GetMapping("/xoaKhoa/{id}")
+    @GetMapping("/xoaKhoa/{idKhoa}")
     public KhoaHoc deleteKhoa (@PathVariable Long idKhoa){
         KhoaHoc khoaHoc = khoaHocService.findById(idKhoa).orElseThrow(() -> new RuntimeException("Khoa hoc not found"));
         khoaHoc.setTrangThai(false);

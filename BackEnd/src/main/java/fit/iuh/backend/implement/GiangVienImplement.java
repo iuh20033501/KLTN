@@ -1,6 +1,9 @@
 package fit.iuh.backend.implement;
 
+import fit.iuh.backend.enumclass.ChucVu;
+import fit.iuh.backend.moudel.User;
 import fit.iuh.backend.repository.GiangVienRepo;
+import fit.iuh.backend.repository.TaiKhoanRepo;
 import fit.iuh.backend.service.GiangVienService;
 import fit.iuh.backend.moudel.GiangVien;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import java.util.Optional;
 public class GiangVienImplement implements GiangVienService {
     @Autowired
     private GiangVienRepo giangVienRepo;
+    @Autowired
+    private TaiKhoanRepo taiKhoanRepo;
 
     @Override
     public Optional<GiangVien> findById(Long id) {
@@ -31,5 +36,10 @@ public class GiangVienImplement implements GiangVienService {
     @Override
     public GiangVien findByName(String name) {
         return giangVienRepo.findByHoTen(name);
+    }
+
+    @Override
+    public List<User> finDangLamViec() {
+        return taiKhoanRepo.findUserByTaiKhoanEnableTrue(ChucVu.TEACHER);
     }
 }

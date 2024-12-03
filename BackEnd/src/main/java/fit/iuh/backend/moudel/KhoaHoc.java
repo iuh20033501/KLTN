@@ -25,6 +25,8 @@ public class  KhoaHoc {
     @Column(length = 1000000000)
     private String image;
     @ElementCollection(targetClass = Skill.class)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "khoa_hoc_skills", joinColumns = @JoinColumn(name = "khoa_hoc_id"))
+    @Column(name = "skill")
     private List<Skill> skill;
 }

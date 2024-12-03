@@ -5,6 +5,7 @@
 package com.mycompany.destop.Screen;
 
 import com.google.gson.Gson;
+import com.mycompany.destop.DTO.JwtResponse;
 import com.mycompany.destop.DTO.OTPRequestDTO;
 import com.mycompany.destop.DTO.OTPResponseDTO;
 import com.mycompany.destop.DTO.PhoneNumberDTO;
@@ -13,7 +14,6 @@ import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
 import com.mycompany.destop.Reponse.ApiResponse;
-import com.mycompany.destop.Reponse.JwtResponse;
 
 import com.mycompany.destop.Service.ApiClient;
 import java.io.BufferedReader;
@@ -24,7 +24,9 @@ import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
 
@@ -38,7 +40,7 @@ public class DangNhap extends javax.swing.JFrame {
      * Creates new form DangNhap
      */
     private ApiClient apiClient = new ApiClient();
-
+    
     public DangNhap() {
         initComponents();
 
@@ -110,11 +112,14 @@ public class DangNhap extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setText("Password:");
 
+        txtUserNawme.setText("admin1");
         txtUserNawme.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtUserNawmeActionPerformed(evt);
             }
         });
+
+        txtPassword.setText("123456");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -231,7 +236,10 @@ public class DangNhap extends javax.swing.JFrame {
                     // Kiểm tra quyền của người dùng
                     if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
 
-                        JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+//                        JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+                        Menu menuFrame = new Menu(response.getAccessToken());
+                        menuFrame.setVisible(true);  // Make the Menu frame visible
+                        this.dispose();  // Close the current login frame
                     } else {
                         JOptionPane.showMessageDialog(this, "Tài khoản có chức vụ không phù hợp");
                     }
@@ -247,6 +255,39 @@ public class DangNhap extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed
+    private boolean updateInfo(JTextField txtName, JCheckBox chkMale, JTextField txtEmail, JTextField txtPhone,
+                               com.toedter.calendar.JDateChooser dateChooser, JTextField txtAddress) {
+    // Kiểm tra trường rỗng
+    if (txtName.getText().trim().isEmpty() || txtEmail.getText().trim().isEmpty()
+            || txtPhone.getText().trim().isEmpty() || txtAddress.getText().trim().isEmpty()
+            || dateChooser.getDate() == null) {
+        JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+
+    // Kiểm tra định dạng email
+    String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+    if (!txtEmail.getText().matches(emailPattern)) {
+        JOptionPane.showMessageDialog(null, "Email không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+
+    // Kiểm tra định dạng số điện thoại
+    String phonePattern = "^\\d{10,11}$"; // Chấp nhận 10-11 chữ số
+    if (!txtPhone.getText().matches(phonePattern)) {
+        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! (Chỉ chấp nhận 10-11 chữ số)", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+
+    // Kiểm tra ngày sinh hợp lệ
+    if (dateChooser.getDate().after(new java.util.Date())) {
+        JOptionPane.showMessageDialog(null, "Ngày sinh không được lớn hơn ngày hiện tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+
+    return true;
+}
+    
 
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
@@ -281,7 +322,7 @@ public class DangNhap extends javax.swing.JFrame {
                                     String regex2 = "^.{6,}$";
                                     if (phoneNumber != null && !phoneNumber.isEmpty() && newPass.matches(regex2)) {
                                         String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), newPass);
-                                        JOptionPane.showMessageDialog(null, "Đăng nhập thành công!");
+//                                        JOptionPane.showMessageDialog(null, "Đăng nhập thành công!");
                                     } else {
                                         String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), taiKhoan.getMatKhau());
                                         JOptionPane.showMessageDialog(null, "Mật khẩu mới không được rỗng và có ít nhất 6 kí tự.");

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -18,16 +19,18 @@ public class BaiTest {
     private Long idTest;
     private Date ngayBD;
     private Date ngayKT;
-    private String thoiGianLamBai;
+    private Time thoiGianLamBai;
     @ManyToOne
     private LopHoc lopHoc;
     private LoaiTest loaiTest;
     private Boolean TrangThai;
 
-    public BaiTest(Date ngayBD, Date ngayKT, String thoiGianLamBai, LoaiTest loaiTest) {
+
+    public BaiTest(Date ngayBD, Date ngayKT, Time thoiGianLamBai, LoaiTest loaiTest) {
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.thoiGianLamBai = thoiGianLamBai;
         this.loaiTest = loaiTest;
     }
+
 }

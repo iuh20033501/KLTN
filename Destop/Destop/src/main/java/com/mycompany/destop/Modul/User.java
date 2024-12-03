@@ -5,6 +5,7 @@
 package com.mycompany.destop.Modul;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -44,6 +45,16 @@ public class User {
         this.image = image;
     }
 
+    public User(String hoTen, String sdt, String diaChi, String email, boolean gioiTinh, String image) {
+        this.hoTen = hoTen;
+        this.sdt = sdt;
+        this.diaChi = diaChi;
+        this.email = email;
+        this.gioiTinh = gioiTinh;
+        this.image = image;
+    }
+    
+
     public Long getIdUser() {
         return idUser;
     }
@@ -75,7 +86,7 @@ public class User {
     public String getImage() {
         return image;
     }
-
+    
     public void setIdUser(Long idUser) {
         this.idUser = idUser;
     }

@@ -227,18 +227,19 @@ public class BaiTapController {
             kiểm tra xem có tién trình chưa phải có tiến trình mới được update nếu khôgn pass update
             chạy khi câu tra lời  so cau đúng thì chạy hàm vào update tiến trình lên số câu đúng vưa tính điểm  
             
-            truyền id bai test, học viên.
+            truyền id bai test, học viên, số câu đúng, số câu đã làm .
             
     """
     )
-    @GetMapping("/updateTienTrinh/{idHocVien}/{idBaiTap}/{soCauDung}")
-    public ResponseEntity<TienTrinh> lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap,@PathVariable Long soCauDung){
+    @GetMapping("/updateTienTrinh/{idHocVien}/{idBaiTap}/{soCauDung}/{soCauDaLam}")
+    public ResponseEntity<TienTrinh> lamBaiTest(@PathVariable Long idHocVien,@PathVariable Long idBaiTap,@PathVariable Long soCauDung,@PathVariable Long soCauDaLam){
         System.out.println("idHocVien: " + idHocVien);
         System.out.println("idBaiTap: " + idBaiTap);
         TienTrinh tienTrinh = tienTrinhService.findByIdHvIdBTap(idHocVien,idBaiTap);
         if(tienTrinh !=null) {
 //            Long soCau = tienTrinh.getCauDung()+soCauDung;
             tienTrinh.setCauDung(soCauDung);
+            tienTrinh.setCauDaLam(soCauDaLam);
             return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(tienTrinh));
         }
         else return ResponseEntity.status(HttpStatus.CREATED).body(null);
@@ -260,7 +261,7 @@ public class BaiTapController {
         if (tienTrinh == null) {
             BaiTap baiTap = baiTapService.findById(idBaiTap);
             HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(() -> new RuntimeException("Hoc Vien not found"));
-            return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(new TienTrinh(0l, hocVien, baiTap)));
+            return ResponseEntity.status(HttpStatus.CREATED).body(tienTrinhService.createTT(new TienTrinh(0l, 0l,hocVien, baiTap)));
         }
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

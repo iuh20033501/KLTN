@@ -173,6 +173,11 @@ public class LopHocController {
         }
         return list;
     }
+//    @GetMapping("/getAll")
+//    public List<LopHoc> findAllLop (){
+//        List<LopHoc> list = lopHocService.findAll();
+//        return list;
+//    }
 
 
 }

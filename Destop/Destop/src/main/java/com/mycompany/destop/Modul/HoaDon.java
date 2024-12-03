@@ -17,7 +17,7 @@ public class HoaDon {
     @ManyToOne
     private NhanVien nguoiLap;
     private Long thanhTien;
-    private Boolean trangThai;
+//    private Boolean trangThai;
 
     public Long getIdHoaDon() {
         return idHoaDon;
@@ -51,41 +51,27 @@ public class HoaDon {
         this.thanhTien = thanhTien;
     }
 
-    public Boolean getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(Boolean trangThai) {
-        this.trangThai = trangThai;
-    }
 
     public HoaDon() {
     }
 
-    public HoaDon(Long idHoaDon, Date ngayLap, NhanVien nguoiLap, Long thanhTien, Boolean trangThai) {
+    public HoaDon(Long idHoaDon, Date ngayLap, NhanVien nguoiLap, Long thanhTien) {
         this.idHoaDon = idHoaDon;
         this.ngayLap = ngayLap;
         this.nguoiLap = nguoiLap;
         this.thanhTien = thanhTien;
-        this.trangThai = trangThai;
-    }
-
-    public HoaDon(Date ngayLap, Long thanhTien, Boolean trangThai) {
-        this.ngayLap = ngayLap;
-        this.thanhTien = thanhTien;
-        this.trangThai = trangThai;
     }
 
     public HoaDon(Date ngayLap, Long thanhTien) {
         this.ngayLap = ngayLap;
         this.thanhTien = thanhTien;
+ 
     }
 
-    public HoaDon(Date ngayLap, NhanVien nguoiLap, Long thanhTien, Boolean trangThai) {
+    public HoaDon(Date ngayLap, NhanVien nguoiLap, Long thanhTien) {
         this.ngayLap = ngayLap;
         this.nguoiLap = nguoiLap;
         this.thanhTien = thanhTien;
-        this.trangThai = trangThai;
     }
     
     

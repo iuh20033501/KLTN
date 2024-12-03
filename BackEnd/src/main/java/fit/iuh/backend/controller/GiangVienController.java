@@ -60,6 +60,10 @@ public class GiangVienController {
     public List<GiangVien> findAll(){
         return giangVienService.findAll();
     }
+    @GetMapping("/findAllLamViec")
+    public List<User> findAllLamViec(){
+        return giangVienService.finDangLamViec();
+    }
     
 
 }

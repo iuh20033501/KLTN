@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TinhDiemTestDTO {
-    private List<CauTraLoi> listCauTraLoi;
+    private Long soCauDung;
     private String thoigianLamBai;
     private Long idBaiTest;
     private Long idHocVien;

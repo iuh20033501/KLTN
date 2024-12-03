@@ -4,7 +4,7 @@
  */
 package com.mycompany.destop.Modul;
 
-import com.mycompany.destop.Enum.SkillEnum;
+import com.mycompany.destop.Enum.Skill;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,9 +17,9 @@ import java.util.ArrayList;
  */
 
 public class HocVien extends User{
-    @ElementCollection(targetClass = SkillEnum.class)
+    @ElementCollection(targetClass = Skill.class)
     @Enumerated(EnumType.ORDINAL)
-    private ArrayList<SkillEnum> kiNangCan;
+    private ArrayList<Skill> kiNangCan;
 
     // Constructor
     public HocVien() {
@@ -27,17 +27,17 @@ public class HocVien extends User{
     }
 
     // Getter cho kiNangCan
-    public ArrayList<SkillEnum> getKiNangCan() {
+    public ArrayList<Skill> getKiNangCan() {
         return kiNangCan;
     }
 
     // Setter cho kiNangCan
-    public void setKiNangCan(ArrayList<SkillEnum> kiNangCan) {
+    public void setKiNangCan(ArrayList<Skill> kiNangCan) {
         this.kiNangCan = kiNangCan;
     }
 
     // Phương thức thêm kỹ năng
-    public void addSkill(SkillEnum skill) {
+    public void addSkill(Skill skill) {
         kiNangCan.add(skill);
     }
 }

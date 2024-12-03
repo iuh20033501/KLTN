@@ -4,7 +4,7 @@
  */
 package com.mycompany.destop.DTO;
 
-import com.mycompany.destop.Enum.SkillEnum;
+import com.mycompany.destop.Enum.Skill;
 import com.sun.istack.NotNull;
 import java.awt.List;
 import java.time.LocalDate;
@@ -32,7 +32,7 @@ public class SignupDto {
     private String phone;
     private LocalDate birthday;
     private String dto;
-    private ArrayList<SkillEnum> ListKiNang;
+    private ArrayList<Skill> ListKiNang;
     private Long luong;
 
     public String getUsername() {
@@ -123,11 +123,11 @@ public class SignupDto {
         this.dto = dto;
     }
 
-    public ArrayList<SkillEnum> getListKiNang() {
+    public ArrayList<Skill> getListKiNang() {
         return ListKiNang;
     }
 
-    public void setListKiNang(ArrayList<SkillEnum> ListKiNang) {
+    public void setListKiNang(ArrayList<Skill> ListKiNang) {
         this.ListKiNang = ListKiNang;
     }
 
@@ -158,7 +158,7 @@ public class SignupDto {
 
 
 
-    public SignupDto(String username, String name, String email, String password, String address, String image,  boolean gender, String phone, LocalDate birthday, ArrayList<SkillEnum> listKiNang) {
+    public SignupDto(String username, String name, String email, String password, String address, String image,  boolean gender, String phone, LocalDate birthday, ArrayList<Skill> listKiNang) {
         this.username = username;
         this.name = name;
         this.email = email;

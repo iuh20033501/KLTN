@@ -4,7 +4,7 @@
  */
 package com.mycompany.destop.Modul;
 
-import com.mycompany.destop.Enum.SkillEnum;
+import com.mycompany.destop.Enum.Skill;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,16 +16,16 @@ import java.util.ArrayList;
  * @author Windows 10
  */
 public class GiangVien extends User{
-    @ElementCollection(targetClass = SkillEnum.class)
+    @ElementCollection(targetClass = Skill.class)
     @Enumerated(EnumType.ORDINAL)
-    private ArrayList<SkillEnum> chuyenMon;
+    private ArrayList<Skill> chuyenMon;
     private Long luong;
 
-    public ArrayList<SkillEnum> getChuyenMon() {
+    public ArrayList<Skill> getChuyenMon() {
         return chuyenMon;
     }
 
-    public void setChuyenMon(ArrayList<SkillEnum> chuyenMon) {
+    public void setChuyenMon(ArrayList<Skill> chuyenMon) {
         this.chuyenMon = chuyenMon;
     }
 
@@ -37,12 +37,12 @@ public class GiangVien extends User{
         this.luong = luong;
     }
 
-    public GiangVien(ArrayList<SkillEnum> chuyenMon, Long luong) {
+    public GiangVien(ArrayList<Skill> chuyenMon, Long luong) {
         this.chuyenMon = chuyenMon;
         this.luong = luong;
     }
 
-    public GiangVien(ArrayList<SkillEnum> chuyenMon, Long luong, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
+    public GiangVien(ArrayList<Skill> chuyenMon, Long luong, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         super(hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
         this.chuyenMon = chuyenMon;
         this.luong = luong;
