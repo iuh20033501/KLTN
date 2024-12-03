@@ -21,6 +21,7 @@ public class KhoaHocController {
     @PostMapping("/create")
     public KhoaHoc createLop ( @RequestBody KhoaHoc khoa){
 //        khoa.setTrangThai(true);
+        System.out.println("anh"+khoa.getSkill().toString());
         return khoaHocService.createKhoaHoc(khoa);
     }
     //

@@ -13,10 +13,12 @@ import com.mycompany.destop.Modul.TaiKhoanLogin;
 import com.mycompany.destop.Modul.ThanhToan;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -60,8 +62,9 @@ public class HoaDonService {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
         }
     }
-    public HoaDon getHoaDonByIdApi(String token,Long idHoaDon) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/getById/"+idHoaDon; // Đảm bảo URL này đúng
+
+    public HoaDon getHoaDonByIdApi(String token, Long idHoaDon) throws Exception {
+        String profileUrl = "http://localhost:8081/hoaDon/getById/" + idHoaDon; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -90,6 +93,49 @@ public class HoaDonService {
             }
         } else {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    }
+
+    public HoaDon createHoaDonApi(String token, Long idNhanVien, ArrayList<Long> listIdThanhToan) throws Exception {
+        String createHoaDonUrl = "http://localhost:8081/hoaDon/create/" + idNhanVien; // Đảm bảo URL này đúng
+        URL url = new URL(createHoaDonUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình POST request với JWT token trong header
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+        conn.setDoOutput(true); // Cho phép gửi dữ liệu
+
+        // Tạo đối tượng Gson để chuyển đổi danh sách ThanhToan sang JSON
+          Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+        String jsonInputString = gson.toJson(listIdThanhToan);
+
+        // Ghi dữ liệu JSON vào body của request
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Chuyển đổi chuỗi JSON phản hồi thành đối tượng HoaDon
+                Type hoaDonType = new TypeToken<HoaDon>() {
+                }.getType();
+                return gson.fromJson(response.toString(), hoaDonType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API tạo hóa đơn, mã phản hồi: " + responseCode);
         }
     }
 
@@ -140,6 +186,7 @@ public class HoaDonService {
             }
         }
     }
+
     public List<ThanhToan> FindThanhToanWaitByIdHocVien(String token, Long idHocVien) throws Exception {
         String apiUrl = "http://localhost:8081/thanhToan/findByIdHocVienWait/" + idHocVien;
         HttpURLConnection conn = null;
@@ -187,6 +234,7 @@ public class HoaDonService {
             }
         }
     }
+
     public List<ThanhToan> FindThanhToanByIdHoaDon(String token, Long idHoaDon) throws Exception {
         String apiUrl = "http://localhost:8081/thanhToan/findByIdHD/" + idHoaDon;
         HttpURLConnection conn = null;
@@ -328,51 +376,51 @@ public class HoaDonService {
             }
         }
     }
+
     public ThanhToan loadApiDeleteThanhToan(String token, Long id) throws Exception {
-    String apiUrl = "http://localhost:8081/thanhToan/delete/" + id;
-    HttpURLConnection conn = null;
+        String apiUrl = "http://localhost:8081/thanhToan/delete/" + id;
+        HttpURLConnection conn = null;
 
-    try {
-        // Mở kết nối đến API
-        URL url = new URL(apiUrl);
-        conn = (HttpURLConnection) url.openConnection();
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
 
-        // Cấu hình kết nối
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
-        conn.setRequestProperty("Accept", "application/json");
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
 
-        // Kiểm tra mã phản hồi từ server
-        int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            // Đọc dữ liệu JSON trả về
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    response.append(line.trim());
-                }
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
 
-                // Log phản hồi để kiểm tra
-                System.out.println("Phản hồi từ API: " + response);
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
 
-                // Chuyển đổi JSON trả về thành đối tượng ThanhToan
-               Gson gson = new GsonBuilder()
+                    // Chuyển đổi JSON trả về thành đối tượng ThanhToan
+                    Gson gson = new GsonBuilder()
                             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                             .create();
-                return gson.fromJson(response.toString(), ThanhToan.class);
+                    return gson.fromJson(response.toString(), ThanhToan.class);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Không tìm thấy thanh toán.");
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
             }
-        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-            throw new Exception("Không tìm thấy thanh toán.");
-        } else {
-            throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
-        }
-    } finally {
-        if (conn != null) {
-            conn.disconnect(); // Đóng kết nối
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
         }
     }
-}
-
 
 }

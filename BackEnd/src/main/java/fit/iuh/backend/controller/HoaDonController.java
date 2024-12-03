@@ -10,8 +10,10 @@ import fit.iuh.backend.service.NhanVienService;
 import fit.iuh.backend.service.ThanhToanService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,24 +38,41 @@ public class HoaDonController {
             tự động tạo hoa don ,tinh tien 
     """
     )
-    @PostMapping("/create/{idNhanVien}/{idHocVien}")
-    public HoaDon createNhanVien (@PathVariable Long idNhanVien,@PathVariable Long idHocVien ,@RequestBody List<ThanhToan> list) {
-        HoaDon hoaDon = new HoaDon();
-        NhanVien nhanVien = nhanVienService.findById(idNhanVien).orElseThrow(()->new RuntimeException("nhan vien not found "));
-        hoaDon.setNguoiLap(nhanVien);
-        Date date = new Date();
-        hoaDon.setNgayLap(date);
-        Long tongTien = 0L;
-        hoaDon.setThanhTien(tongTien);
-        HoaDon hd= hoaDonService.createHoaDon(hoaDon);
-        for(ThanhToan tt: list ){
-            thanhToanService.updateDoneThanhToanAndIdHoaDon(tt,hd.getIdHoaDon());
-            tongTien += tt.getLopHoc().getKhoaHoc().getGiaTien();
-        }
-        hd.setThanhTien(tongTien);
+    @PostMapping("/create/{idNhanVien}")
+    public ResponseEntity<HoaDon> createHoaDon(@PathVariable Long idNhanVien, @RequestBody ArrayList<Long> listIdThanhToan) {
+        // Tìm nhân viên theo ID
+        NhanVien nhanVien = nhanVienService.findById(idNhanVien)
+                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại với ID: " + idNhanVien));
 
-        return hoaDonService.createHoaDon(hd);
+        // Khởi tạo hóa đơn mới
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNguoiLap(nhanVien);
+        hoaDon.setNgayLap(new Date());
+        hoaDon.setThanhTien(0L); // Khởi tạo tổng tiền bằng 0
+
+        // Lưu hóa đơn để lấy ID
+        HoaDon hoaDonSaved = hoaDonService.createHoaDon(hoaDon);
+
+        // Tính tổng tiền và cập nhật các mục thanh toán
+        Long tongTien = 0L;
+        for (Long idTT : listIdThanhToan) {
+            ThanhToan tt= thanhToanService.findById(idTT).get();
+            if (tt != null && tt.getLopHoc() != null && tt.getLopHoc().getKhoaHoc() != null) {
+                Long giaTien = tt.getLopHoc().getKhoaHoc().getGiaTien();
+                tongTien += (giaTien != null ? giaTien : 0); // Tránh lỗi nếu giá tiền null
+                // Cập nhật trạng thái và ID hóa đơn cho mục thanh toán
+                thanhToanService.updateDoneThanhToanAndIdHoaDon(tt, hoaDonSaved.getIdHoaDon());
+            }
+        }
+
+        // Cập nhật tổng tiền vào hóa đơn
+        hoaDonSaved.setThanhTien(tongTien);
+        HoaDon finalHoaDon = hoaDonService.createHoaDon(hoaDonSaved); // Cập nhật lại hóa đơn
+
+        // Trả về kết quả
+        return ResponseEntity.ok(finalHoaDon);
     }
+
 
     @GetMapping("/getAll")
     public List<HoaDon> getAllHoaDon (){
@@ -76,8 +95,9 @@ public class HoaDonController {
     public HoaDon getHoaDonByID(@PathVariable Long idHD){
         return hoaDonService.findById(idHD).get();
     }
-//    @GetMapping("/delete/{idHD}")
-//    public HoaDon deleteHD(@PathVariable Long idHD){
-//        return hoaDonService.deleteHoaDon(idHD);
+//    @GetMapping("/createHDAndTT/{idNhanVien}/{idHocVien}")
+//    public HoaDon deleteHD(@PathVariable Long idHD,@RequestBody List<ThanhToan> listThanhToan){
+//
+//        return hoaDonService.(idHD);
 //    }
 }

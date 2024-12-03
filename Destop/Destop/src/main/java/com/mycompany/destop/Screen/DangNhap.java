@@ -319,13 +319,13 @@ public class DangNhap extends javax.swing.JFrame {
                                     JOptionPane.showMessageDialog(null, "Xác thực thành công!");
                                     String newPass = JOptionPane.showInputDialog(null, "Nhập mật khẩu mới:");
                                     System.out.println(newPass);
-                                    String regex2 = "^.{6,}$";
+                                    String regex2 = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
                                     if (phoneNumber != null && !phoneNumber.isEmpty() && newPass.matches(regex2)) {
                                         String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), newPass);
 //                                        JOptionPane.showMessageDialog(null, "Đăng nhập thành công!");
                                     } else {
                                         String token = apiClient.resetPasswordFromClient(reponseOTP.getAccessToken(), taiKhoan.getMatKhau());
-                                        JOptionPane.showMessageDialog(null, "Mật khẩu mới không được rỗng và có ít nhất 6 kí tự.");
+                                        JOptionPane.showMessageDialog(null, "Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số!");
                                     }
                                 } else {
                                     JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
@@ -337,7 +337,7 @@ public class DangNhap extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(null, "Không thể gửi mã OTP. Vui lòng thử lại sau.");
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Số điện thoại chưa được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
+                        JOptionPane.showMessageDialog(null, "Số điện thoại đã được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại để tiếp tục.");

@@ -154,7 +154,7 @@ public class KhoaHocService {
     public Boolean createKhoaHocFromClient(String token, KhoaHoc khoaHoc) throws Exception {
         String url = "http://localhost:8081/khoahoc/create"; // Đảm bảo URL này chính xác
         HttpURLConnection conn = null;
-
+        
         try {
             // Mở kết nối
             conn = (HttpURLConnection) new URL(url).openConnection();
@@ -168,7 +168,7 @@ public class KhoaHocService {
             // Tạo đối tượng KhoaHoc và chuyển đổi thành JSON
             Gson gson = new Gson();
             String jsonInput = gson.toJson(khoaHoc);
-
+            System.out.println(khoaHoc.toString());
             // Thêm token vào header (nếu cần xác thực)
             conn.setRequestProperty("Authorization", "Bearer " + token);
 
@@ -184,6 +184,7 @@ public class KhoaHocService {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
                     StringBuilder response = new StringBuilder();
                     String responseLine;
+                     System.out.println("Phản hồi từ API: " + response);
                     while ((responseLine = br.readLine()) != null) {
                         response.append(responseLine.trim());
                     }

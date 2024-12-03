@@ -16,13 +16,9 @@ import java.util.ArrayList;
  */
 
 public class SignupDto {
-     private String username;
-//    @NotNull(message = "Tên là bắt buộc")
-//    @Pattern(regexp = "^([A-ZÀÁẢẠÃĂẰẮẲẶẴÂẦẤẨẬẪĐEÈÉẺẸẼÊỀẾỂỆỄIÌÍỈỊĨOÒÓỎỌÕÔỒỐỔỘỖƠỜỚỞỢỠUÙÚỦỤŨƯỪỨỬỰỮYỲÝỶỴỸa-zàáảạãăằắẳặẵâầấẩậẫđeèéẻẹẽêềếểệễiìíỉịĩoòóỏọõôồốổộỗơờớởợỡuùúủụũưừứửựữyỳýỷỵỹ\\s?])+$", message = "Tên phải có 2 ký tự trở lên")
+    private String username;
     private String name;
     private String email;
-//    @NotNull(message = "password là bắt buộc")
-//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&+=])(?=\\S+$).{8,32}$", message = "Mật khẩu từ 8 - 32 ký tự gồm tối thiểu 1 chữ cái viết hoa, 1 chữ cái viết thường, 1 chữ số và 1 ký tự đặc biệt")
     private String password;
     private String address;
     private String image;
@@ -170,4 +166,21 @@ public class SignupDto {
         this.birthday = birthday;
         ListKiNang = listKiNang;
     }
+
+    public SignupDto(String username, String name, String email, String password, String address, String image, String coverImage, boolean gender, String phone, LocalDate birthday, String dto, ArrayList<Skill> ListKiNang, Long luong) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.image = image;
+        this.coverImage = coverImage;
+        this.gender = gender;
+        this.phone = phone;
+        this.birthday = birthday;
+        this.dto = dto;
+        this.ListKiNang = ListKiNang;
+        this.luong = luong;
+    }
+    
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,4 +30,5 @@ public class  KhoaHoc {
     @CollectionTable(name = "khoa_hoc_skills", joinColumns = @JoinColumn(name = "khoa_hoc_id"))
     @Column(name = "skill")
     private List<Skill> skill;
+
 }
