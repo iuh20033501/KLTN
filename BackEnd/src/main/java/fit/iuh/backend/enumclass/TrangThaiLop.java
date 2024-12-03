@@ -6,9 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TrangThaiLop {
-    READY (0),
-    DELETE(1),
-    FULL(2);
-
-    private final int ValueLop;
+    READY ,
+    DELETE,
+    FULL;
 }

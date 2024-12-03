@@ -1,5 +1,6 @@
 package fit.iuh.backend.controller;
 
+import fit.iuh.backend.dto.CreateLopDTO;
 import fit.iuh.backend.enumclass.TrangThaiLop;
 import fit.iuh.backend.moudel.*;
 import fit.iuh.backend.service.*;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,6 +79,46 @@ public class LopHocController {
         LopHoc createdLopHoc = lopHocService.createLopHoc(lopHoc);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // Trả về 201 khi tạo thành công
     }
+    @PostMapping("/createLopDestop/{idKhoa}/{idGV}")
+    public ResponseEntity<LopHoc> createLopDestop(
+            @RequestBody CreateLopDTO lopDTO,
+            @PathVariable Long idKhoa,
+            @PathVariable Long idGV) {
+        System.out.println("Payload nhận được: " + lopDTO.getNgayBD());
+        System.out.println("Payload nhận được: " + lopDTO.getNgayKT());
+        Optional<GiangVien> gvOptional = gvService.findById(idGV);
+        Optional<KhoaHoc> khoaOptional = khoaHocService.findById(idKhoa);
+
+        if (gvOptional.isEmpty() || khoaOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 nếu không tìm thấy giảng viên hoặc khóa học
+        }
+
+        GiangVien gv = gvOptional.get();
+        KhoaHoc khoa = khoaOptional.get();
+        LopHoc lop = lopDTO.getLop();
+
+        try {
+            // Định dạng chuỗi ngày tháng ISO 8601
+            SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            if (lopDTO.getNgayBD() != null) {
+                Date ngayBD = isoDateFormat.parse(lopDTO.getNgayBD());
+                lop.setNgayBD(ngayBD);
+            }
+            if (lopDTO.getNgayKT() != null) {
+                Date ngayKT = isoDateFormat.parse(lopDTO.getNgayKT());
+                lop.setNgayKT(ngayKT);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 nếu định dạng ngày không hợp lệ
+        }
+
+        lop.setKhoaHoc(khoa);
+        lop.setGiangVien(gv);
+
+        LopHoc createdLopHoc = lopHocService.createLopHoc(lop);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdLopHoc); // 201 khi tạo thành công
+    }
 
     @GetMapping("/getLop/{id}")
     public LopHoc findByidLop (@PathVariable Long id){
@@ -96,12 +139,23 @@ public class LopHocController {
 //        lop.setIdLopHoc(id);
 //        return lopHocService.createLopHoc(lop);
 //    }
-    @GetMapping("/delete/{id}")
-    public LopHoc updateLop(@PathVariable Long id){
-        LopHoc lop = lopHocService.findById(id).get();
-        lop.setTrangThai(TrangThaiLop.DELETE);
-        return lopHocService.createLopHoc(lop);
-    }
+@GetMapping("/delete/{id}")
+public ResponseEntity<LopHoc> deleteLop(@PathVariable Long id) {
+    // Tìm lớp học theo ID
+    LopHoc lop = lopHocService.findById(id)
+            .orElseThrow(() -> new RuntimeException("Lớp học không tồn tại"));
+
+    // Cập nhật trạng thái lớp học
+    lop.setTrangThai(TrangThaiLop.DELETE);
+
+    // Lưu lại đối tượng đã cập nhật
+    LopHoc updatedLop = lopHocService.createLopHoc(lop);
+
+    // Trả về phản hồi
+    return ResponseEntity.ok(updatedLop);
+}
+
+
     @Operation(
             summary = "kiem tra date lop",
             description = """ 

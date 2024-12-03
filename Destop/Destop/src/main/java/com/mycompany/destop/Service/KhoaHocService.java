@@ -106,7 +106,7 @@ public class KhoaHocService {
             }
         }
     }
-
+    
     public KhoaHoc deleteKhoaHocApi(String token, Long idKhoa) throws Exception {
         String apiUrl = "http://localhost:8081/khoahoc/xoaKhoa/" + idKhoa; // URL API với tham số ID
         HttpURLConnection conn = null;

@@ -22,7 +22,7 @@ public class LopHocImplement implements LopHocService {
 
     @Override
     public LopHoc createLopHoc(LopHoc lopHoc) {
-        lopHoc.setTrangThai(TrangThaiLop.READY);
+//        lopHoc.setTrangThai(TrangThaiLop.READY);
         return lopHocRepo.save(lopHoc);
     }
 

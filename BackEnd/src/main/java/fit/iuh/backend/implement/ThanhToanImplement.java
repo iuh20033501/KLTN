@@ -92,4 +92,9 @@ public class ThanhToanImplement implements ThanhToanService {
     public List<ThanhToan> findByIdHVAndHoaDonNUll(Long idHV) {
         return thanhToanRepo.findByIdHVAndHoaDonNUll(idHV);
     }
+
+    @Override
+    public List<ThanhToan> findByIdLopva2Enum(Long idLop, TrangThaiThanhToan trangThaiThanhToan, TrangThaiThanhToan trangThaiThanhToan2) {
+        return thanhToanRepo.findByIdLopAnd2TrangThai(idLop,trangThaiThanhToan,trangThaiThanhToan2);
+    }
 }

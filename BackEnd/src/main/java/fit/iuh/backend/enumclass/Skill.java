@@ -7,10 +7,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Skill {
-    LISTEN (0),
-    REAL(1),
-    WRITE(2),
-    SPEAK(3);
+    LISTEN ,
+    REAL,
+    WRITE,
+    SPEAK;
 
-    private final int ValueSkill;
+//    private final int ValueSkill;
 }
