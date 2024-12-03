@@ -35,6 +35,7 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
             });
             const filteredClasses = response.data.filter((lop: { trangThai: string; }) => lop.trangThai === 'FULL');
             setClasses(filteredClasses);
+            console.log(filteredClasses)
         } catch (error) {
             console.error('Failed to fetch classes:', error);
         } finally {
@@ -60,7 +61,6 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
 
     const renderClassCard = ({ item }: { item: ClassInfo }) => (
         <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('TeacherClassExamDetailScreen', {
-            idUser,role,
             idLopHoc: item.idLopHoc,
             tenLopHoc: item.tenLopHoc,
             tenKhoaHoc: item.khoaHoc.tenKhoaHoc,

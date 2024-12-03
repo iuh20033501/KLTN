@@ -202,7 +202,7 @@ public class BaiTestController {
                     .orElseThrow(() -> new RuntimeException("HocVien not found"));
 
             // Lấy thời gian làm bài và cộng thêm thời gian để tính reset
-            long thoiGianLamBai = baiTest.getThoiGianLamBai().getTime(); // Thời gian làm bài là kiểu Time
+            long thoiGianLamBai = baiTest.getThoiGianLamBai(); // Thời gian làm bài là kiểu Time
             long timeRetest = current.getTime() + thoiGianLamBai; // Thêm thời gian làm bài vào thời gian hiện tại
 
             return ketQuaTestService.crateKQT(new KetQuaTest(diemSo, tinhDiemDTO.getThoigianLamBai(), new java.sql.Date(timeRetest), baiTest, hocVien));

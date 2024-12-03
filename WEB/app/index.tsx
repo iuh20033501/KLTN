@@ -29,6 +29,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TeacherClassesExamScreen from '@/components/screens/exam/teacherClasssExamScreen';
 import TeacherClassExamDetailScreen from '@/components/screens/exam/teacherClassExamDetailScreen';
+import AddExamScreen from '@/components/screens/test/addExamScreen';
 type RootStackParamList = {
   HomeScreen: undefined;
   LoginScreen:undefined;
@@ -51,6 +52,7 @@ type RootStackParamList = {
   ElectroBill:undefined;
   TeacherClassesExamScreen:undefined;
   TeacherClassExamDetailScreen:undefined;
+  AddExamScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -77,6 +79,7 @@ export default function App() {
       <Stack.Screen name="BillScreen" component={BillScreen} />
       <Stack.Screen name="TeacherClassesExamScreen" component={TeacherClassesExamScreen} />
       <Stack.Screen name="TeacherClassExamDetailScreen" component={TeacherClassExamDetailScreen} />
+      <Stack.Screen name="AddExamScreen" component={AddExamScreen} />
 
       
       

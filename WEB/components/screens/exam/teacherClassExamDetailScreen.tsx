@@ -1,17 +1,118 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const TeacherClassExamDetailScreen = ({ navigation }: { navigation: any }) => {
+import http from '@/utils/http'; // Đường dẫn cần chính xác
+import AsyncStorage from '@react-native-async-storage/async-storage';
+type Exam = {
+    idTest: number;
+    bai_test: string;
+    ngayBD: string;
+    ngayKT: string;
+  };
+  
+  type ExamList = {
+    approvedExams: Exam[];
+    pendingExams: Exam[];
+  };
+const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; route: any }) => {
+    const { idLopHoc, tenLopHoc, role } = route.params;
     const [activeTab, setActiveTab] = useState('Bài thi');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [examList, setExamList] = useState<ExamList>({
+        approvedExams: [],
+        pendingExams: [],
+      });
+      useEffect(() => {
+        const fetchExams = async () => {
+            setIsLoading(true);
+            try {
+                const token = await AsyncStorage.getItem('accessToken');
+                if (!token) {
+                    console.error('Error: Access token not found');
+                    return;
+                }
+    
+                const response = await http.get(`/baitest/getBaiTestofLop/${idLopHoc}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                const data = response.data;
+    
+                // Tách bài thi dựa vào trạng thái
+                const approvedExams = data.filter((exam: any) => exam.trangThai === true);
+                const pendingExams = data.filter((exam: any) => exam.trangThai === false);
+    
+                console.log('Approved Exams:', approvedExams);
+                console.log('Pending Exams:', pendingExams);
+    
+                setExamList({ approvedExams, pendingExams });
+            } catch (error) {
+                console.error('Error fetching exams:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
+        fetchExams();
+    }, [idLopHoc]);
+    
 
     const renderTabContent = () => {
         switch (activeTab) {
             case 'Bài thi':
                 return (
                     <ScrollView style={styles.tabContent}>
-                        <Text style={styles.tabText}>Danh sách bài thi sẽ hiển thị ở đây.</Text>
-                    </ScrollView>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => navigation.navigate('AddExamScreen', { idLopHoc })}
+                    >
+                        <Icon name="plus" size={20} color="#fff" />
+                        <Text style={styles.addButtonText}>Thêm bài thi</Text>
+                    </TouchableOpacity>
+                
+                    <Text style={styles.sectionTitle}>Bài thi đã duyệt</Text>
+                    {examList.approvedExams.length > 0 ? (
+                        examList.approvedExams.map((exam: any) => (
+                            <View key={exam.idTest} style={styles.examItem}>
+                                <Text style={styles.examTitle}>
+                                    Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
+                                </Text>
+                                <Text style={styles.examInfo}>
+                                    Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}
+                                </Text>
+                                <Text style={styles.examInfo}>
+                                    Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}
+                                </Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.emptyText}>Không có bài thi đã duyệt.</Text>
+                    )}
+                
+                    <Text style={styles.sectionTitle}>Bài thi chưa duyệt</Text>
+                    {examList.pendingExams.length > 0 ? (
+                        examList.pendingExams.map((exam: any) => (
+                            <View key={exam.idTest} style={styles.examItem}>
+                                <Text style={styles.examTitle}>
+                                    Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
+                                </Text>
+                                <Text style={styles.examInfo}>
+                                    Thời gian làm bài: {exam.thoiGianLamBai.toString()} phút
+                                </Text>
+                                <Text style={styles.examInfo}>
+                                    Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}
+                                </Text>
+                                <Text style={styles.examInfo}>
+                                    Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}
+                                </Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.emptyText}>Không có bài thi chưa duyệt.</Text>
+                    )}
+                </ScrollView>
                 );
             case 'Điểm số':
                 return (
@@ -67,7 +168,7 @@ const TeacherClassExamDetailScreen = ({ navigation }: { navigation: any }) => {
                     </TouchableOpacity>
                 </View>
 
-                {renderTabContent()}
+                {isLoading ? <Text>Loading...</Text> : renderTabContent()}
             </View>
         </ImageBackground>
     );
@@ -140,6 +241,51 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#00405d',
+        marginVertical: 15,
+    },
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#28a745',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 20,
+        justifyContent: 'center',
+    },
+    addButtonText: {
+        marginLeft: 10,
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    examItem: {
+        padding: 15,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        backgroundColor: '#f9f9f9',
+        marginBottom: 15,
+    },
+    examTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 5,
+    },
+    examInfo: {
+        fontSize: 14,
+        color: '#555',
+        marginBottom: 3,
+    },
+    emptyText: {
+        fontSize: 14,
+        color: '#888',
+        textAlign: 'center',
+        marginTop: 10,
+    },
 });
-
 export default TeacherClassExamDetailScreen;
