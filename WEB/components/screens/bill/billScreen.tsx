@@ -182,11 +182,10 @@ const BillScreen = ({ navigation, route }: { navigation: any; route: any }) => {
                                 onPress={() => handleViewHDDT(item)}
                             >
                                 <Entypo name="magnifying-glass" size={20} color="black" />
-                                </TouchableOpacity>
-                          
+                            </TouchableOpacity>
                         </View>
                     )}
-                    ListEmptyComponent={<Text style={styles.noBillsText}>Không có hóa đơn nào.</Text>}
+                    ListEmptyComponent={null}  // Chỉ cần bỏ qua ListEmptyComponent
                 />
 
                 {selectedBill && (
@@ -385,8 +384,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 10,
-        width: '50%', 
-        alignSelf:'center'
+        width: '50%',
+        alignSelf: 'center'
 
     },
     closeButtonText: {

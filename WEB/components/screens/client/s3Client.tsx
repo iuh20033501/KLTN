@@ -1,13 +1,14 @@
+import { AWSConfig } from '@/config/AWSConfig';
 import AWS from 'aws-sdk';
 
 //Cấu hình AWS S3 sử dụng các biến môi trường
 const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
+    accessKeyId: AWSConfig.accessKeyId,
+    secretAccessKey: AWSConfig.secretAccessKey,
+    region: AWSConfig.region,
 });
 
-const bucketName = process.env.AWS_BUCKET_NAME || '';
+const bucketName = AWSConfig.bucketName;
 
 // Hàm upload file lên S3
 export const uploadFileToS3 = async (file: Blob, fileName: string): Promise<string | null> => {

@@ -64,7 +64,7 @@ public class HoaDonController {
     public List<HoaDon> getHoaDonByNhanVien(@PathVariable Long idNhanVien){
         return hoaDonService.finfByIdNhanVien(idNhanVien);
     }
-    @GetMapping("/getByIdNhanVien/{idHocVien}")
+    @GetMapping("/getByIdHocVien/{idHocVien}")
     public List<HoaDon> getHoaDonByHocVien(@PathVariable Long idHocVien){
         return hoaDonService.finfByIdHocVien(idHocVien);
     }
