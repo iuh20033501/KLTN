@@ -24,6 +24,11 @@ public class User {
     public User() {
     }
 
+    public User(Long idUser, String hoTen) {
+        this.idUser = idUser;
+        this.hoTen = hoTen;
+    }
+    
     public User(String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         this.hoTen = hoTen;
         this.sdt = sdt;

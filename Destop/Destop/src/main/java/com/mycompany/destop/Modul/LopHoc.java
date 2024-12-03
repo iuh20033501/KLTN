@@ -5,6 +5,7 @@
 package com.mycompany.destop.Modul;
 
 import com.mycompany.destop.Enum.LopEnum;
+import com.mycompany.destop.Enum.TrangThaiLop;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToOne;
 import java.util.Date;
@@ -17,8 +18,10 @@ public class LopHoc {
     private  Long idLopHoc;
     private Long soHocVien;
     private  String tenLopHoc;
-    private LopEnum trangThai;
+    private TrangThaiLop trangThai;
+//     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MMM dd, yyyy, hh:mm:ss a")
     private Date ngayBD;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MMM dd, yyyy, hh:mm:ss a")
     private Date ngayKT;
     @ManyToOne
     private GiangVien giangVien;
@@ -52,11 +55,11 @@ public class LopHoc {
         this.tenLopHoc = tenLopHoc;
     }
 
-    public LopEnum getTrangThai() {
+    public TrangThaiLop getTrangThai() {
         return trangThai;
     }
 
-    public void setTrangThai(LopEnum trangThai) {
+    public void setTrangThai(TrangThaiLop trangThai) {
         this.trangThai = trangThai;
     }
 
@@ -100,7 +103,7 @@ public class LopHoc {
         this.moTa = moTa;
     }
 
-    public LopHoc(Long soHocVien, String tenLopHoc, LopEnum trangThai, Date ngayBD, Date ngayKT, GiangVien giangVien, KhoaHoc khoaHoc, String moTa) {
+    public LopHoc(Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, Date ngayBD, Date ngayKT, GiangVien giangVien, KhoaHoc khoaHoc, String moTa) {
         this.soHocVien = soHocVien;
         this.tenLopHoc = tenLopHoc;
         this.trangThai = trangThai;
@@ -111,10 +114,34 @@ public class LopHoc {
         this.moTa = moTa;
     }
 
+    public LopHoc(Long idLopHoc, String tenLopHoc) {
+        this.idLopHoc = idLopHoc;
+        this.tenLopHoc = tenLopHoc;
+    }
+
+    public LopHoc(Long idLopHoc, Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, Date ngayBD, Date ngayKT, String moTa) {
+        this.idLopHoc = idLopHoc;
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.trangThai = trangThai;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+        this.moTa = moTa;
+    }
+
+    public LopHoc(Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, Date ngayBD, Date ngayKT, String moTa) {
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.trangThai = trangThai;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+        this.moTa = moTa;
+    }
+    
     public LopHoc() {
     }
 
-    public LopHoc(Long idLopHoc, Long soHocVien, String tenLopHoc, LopEnum trangThai, Date ngayBD, Date ngayKT, GiangVien giangVien, KhoaHoc khoaHoc, String moTa) {
+    public LopHoc(Long idLopHoc, Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, Date ngayBD, Date ngayKT, GiangVien giangVien, KhoaHoc khoaHoc, String moTa) {
         this.idLopHoc = idLopHoc;
         this.soHocVien = soHocVien;
         this.tenLopHoc = tenLopHoc;
@@ -125,6 +152,14 @@ public class LopHoc {
         this.khoaHoc = khoaHoc;
         this.moTa = moTa;
     }
+
+//    public void setNgayBD(String formattedNgayBD) {
+//        return this.ngayBD = formattedNgayBD;
+//    }
+//
+//    public void setNgayKT(String formattedNgayKT) {
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//    }
     
     
 }

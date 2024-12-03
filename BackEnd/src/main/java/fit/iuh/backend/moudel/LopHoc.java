@@ -29,6 +29,21 @@ public class LopHoc {
 //    private List<HocVienLopHoc> hocVienLopHocs;
     private  String moTa;
 
+    public LopHoc(Long idLopHoc, Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, String moTa) {
+        this.idLopHoc = idLopHoc;
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.trangThai = trangThai;
+        this.moTa = moTa;
+    }
+
+    public LopHoc(Long soHocVien, String tenLopHoc, TrangThaiLop trangThai, String moTa) {
+        this.soHocVien = soHocVien;
+        this.tenLopHoc = tenLopHoc;
+        this.trangThai = trangThai;
+        this.moTa = moTa;
+    }
+
     public LopHoc(Long soHocVien, String tenLopHoc, Date ngayBD, Date ngayKT) {
         this.soHocVien = soHocVien;
         this.tenLopHoc = tenLopHoc;
