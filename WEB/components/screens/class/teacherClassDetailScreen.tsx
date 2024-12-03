@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { deleteFileFromS3, uploadFileToS3 } from '../client/s3Client';
 import * as DocumentPicker from 'expo-document-picker';
 import { Linking } from 'react-native';
+import { AWSConfig } from '@/config/AWSConfig';
 
 interface MemberInfo {
     idHocVien: number;
@@ -106,7 +107,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             }
         }
     }, [sessions, activeTab]);
-
     const fetchMembers = async () => {
         setIsLoadingMembers(true);
         try {
@@ -270,7 +270,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
     const pickDocumentFile = async (sessionId: number) => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'], // Các loại tệp được chọn
+                type: ['application/pdf'],
                 copyToCacheDirectory: true,
             });
 
@@ -288,6 +288,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             console.error('Error picking document file:', error);
         }
     };
+    
     const confirmDocumentUpload = async (
         tenTaiLieu: string,
         linkLoad: string,
@@ -298,33 +299,24 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             if (!tenTaiLieu || !linkLoad || sessionId === undefined || sessionId === null) {
                 throw new Error("Missing required parameters for newDocument");
             }
-
             const newDocument = {
-                idTaiLieu: 0,
                 tenTaiLieu,
                 linkLoad,
                 trangThai,
                 sessionId,
                 isNew: true,
             };
-
-            console.log("Adding new document:", newDocument);
-
-            const updatedDocuments = [...documents, newDocument];
-            setDocuments(updatedDocuments);
-
-            await handleSubmitDocuments(updatedDocuments.filter((doc) => doc.sessionId === sessionId), sessionId);
-
-            setConfirmDocumentModalVisible(false);
-            setSelectedDocument(null);
+            await handleSubmitDocuments([newDocument], sessionId);
+            setConfirmDocumentModalVisible(false); 
+            setSelectedDocument(null); 
         } catch (error) {
             console.error("Error confirming document upload:", error);
             setMessageText("Lỗi: Không thể thêm tài liệu. Vui lòng thử lại.");
             setMessageModalVisible(true);
         }
     };
-
-
+    
+    
     const handleSubmitDocuments = async (documentsToUpload: any[], sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -333,32 +325,61 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
-
-            for (const document of documentsToUpload.filter((doc) => doc.isNew)) {
-                if (document.linkLoad) {
+    
+            // Lọc các tài liệu mới cần upload
+            const newDocuments = documentsToUpload.filter((doc) => doc.isNew);
+            // Xóa toàn bộ tài liệu hiện tại trong documents trước khi gọi fetch
+            setDocuments([]);
+    
+            for (const document of newDocuments) {
+                if (!document.linkLoad) continue;
+    
+                // Kiểm tra nếu tài liệu đã tồn tại trong documents hiện tại
+                const documentExists = documents.some(
+                    (doc) => doc.tenTaiLieu === document.tenTaiLieu && doc.linkLoad === document.linkLoad
+                );
+                if (documentExists) {
+                    console.log(`Document ${document.tenTaiLieu} already exists.`);
+                    continue;
+                }
+    
+                try {
+                    // Upload file lên S3
                     const fileBlob = await fetch(document.linkLoad).then((res) => res.blob());
-                    const uploadedLink = await uploadFileToS3(fileBlob, `documents/${document.tenTaiLieu}`);
-
+                    const s3Key = `documents/${document.tenTaiLieu}`;
+                    const uploadedLink = await uploadFileToS3(fileBlob, s3Key);
+    
                     if (!uploadedLink) {
                         console.error(`Failed to upload document: ${document.tenTaiLieu}`);
-                        throw new Error('Upload to S3 failed');
+                        continue;
                     }
-
+    
                     const documentData = {
                         tenTaiLieu: document.tenTaiLieu,
                         linkLoad: uploadedLink,
                         trangThai: document.trangThai,
                     };
-
-                    await http.post(`taiLieu/create/${sessionId}`, documentData, {
+    
+                    // Tạo tài liệu trên server
+                    const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
-                    document.isNew = false;
+    
+                    if (response.status === 200) {
+                        document.isNew = false;
+                        document.linkLoad = uploadedLink;
+                        setMessageText('Thêm tài liệu thành công.');
+                    } else {
+                        console.error('Failed to create document on the server');
+                    }
+    
+                } catch (uploadError) {
+                    console.error(`Error uploading or saving document: ${document.tenTaiLieu}`, uploadError);
                 }
             }
-
-            setMessageText('Thêm tài liệu thành công.');
+            await fetchDocuments(sessionId);
             setMessageModalVisible(true);
+    
         } catch (error) {
             console.error('Error while submitting documents:', error);
             setMessageText('Lỗi: Không thể thêm tài liệu. Vui lòng thử lại.');
@@ -367,10 +388,15 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
     };
 
     const handleDeleteDocument = async () => {
-        if (!selectedDocument2) return;
-
+        if (!selectedDocument2 || !selectedDocument2.idTaiLieu) {
+            console.error('Invalid idTaiLieu:', selectedDocument2?.idTaiLieu);
+            setMessageText('Lỗi: Không tìm thấy ID tài liệu. Vui lòng thử lại.');
+            setMessageModalVisible(true);
+            return;
+        }
+    
         const { idTaiLieu, sessionId, linkLoad } = selectedDocument2;
-
+    
         try {
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
@@ -378,22 +404,40 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
-
+    
             if (linkLoad) {
-                const fileName = linkLoad.split('/').pop();
-                if (fileName) {
-                    await deleteFileFromS3(`documents/${fileName}`);
+                const fileKey = linkLoad.split('.com/')[1]; // Tách key từ linkLoad
+                if (fileKey) {
+                    const deleteResult = await deleteFileFromS3(fileKey); // Xóa file trên S3
+                    if (!deleteResult) {
+                        console.error('Failed to delete file from S3');
+                        setMessageText('Lỗi: Không thể xóa tài liệu trên S3. Vui lòng thử lại.');
+                        setMessageModalVisible(true);
+                        return; // Dừng lại nếu xóa file trên S3 thất bại
+                    }
+                } else {
+                    console.error('Invalid file key extracted from linkLoad:', linkLoad);
+                    return;
                 }
             }
-
-            await http.post(`taiLieu/update/${sessionId}/${idTaiLieu}`, { trangThai: false }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            setDocuments((prevDocuments) =>
-                prevDocuments.filter((doc) => doc.idTaiLieu !== idTaiLieu)
+    
+            const response = await http.post(
+                `taiLieu/update/${sessionId}/${idTaiLieu}`,
+                { trangThai: false },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
             );
-            setMessageText('Xóa tài liệu thành công.');
+    
+            if (response.status === 200) {
+                // Cập nhật trực tiếp lại state documents sau khi xóa thành công
+                setDocuments((prevDocuments) =>
+                    prevDocuments.filter((doc) => doc.idTaiLieu !== idTaiLieu)
+                );
+                setMessageText('Xóa tài liệu thành công.');
+            } else {
+                console.error('Failed to update document status in the database.');
+            }
         } catch (error) {
             console.error('Error deleting document:', error);
             setMessageText('Lỗi: Không thể xóa tài liệu. Vui lòng thử lại.');
@@ -403,9 +447,16 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             setSelectedDocument(null);
         }
     };
-    const handleOpenDocument = (link: string) => {
+    const generateFileUrl = (key: string): string => {
+        const bucketName = AWSConfig.bucketName;
+        const region = AWSConfig.region;
+        return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+    };
+
+    const handleOpenDocument = (key: string) => {
         try {
-            window.open(link, '_blank'); // Mở link trực tiếp trên tab mới
+            const url = generateFileUrl(key); // Tạo URL đầy đủ từ Key
+            window.open(url, '_blank'); // Mở tài liệu trong tab mới
         } catch (error) {
             console.error('Error opening document:', error);
         }
@@ -551,7 +602,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                                                 <Icon name="file-document-outline" size={20} color="#00405d" />
                                                                 <Text
                                                                     style={styles.assignmentText}
-                                                                    onPress={() => handleOpenDocument(doc.linkLoad)}
+                                                                    onPress={() => handleOpenDocument(doc.linkLoad)} // Gọi hàm với Key
                                                                 >
                                                                     {doc.tenTaiLieu}
                                                                 </Text>

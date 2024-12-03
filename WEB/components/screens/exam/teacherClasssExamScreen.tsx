@@ -16,7 +16,7 @@ interface ClassInfo {
     };
 }
 
-export default function TeacherClassesScreen({ navigation, route }: { navigation: any; route: any }) {
+export default function TeacherClassesExamScreen({ navigation, route }: { navigation: any; route: any }) {
     const [classes, setClasses] = useState<ClassInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { idUser, role } = route.params;
@@ -59,7 +59,7 @@ export default function TeacherClassesScreen({ navigation, route }: { navigation
     };
 
     const renderClassCard = ({ item }: { item: ClassInfo }) => (
-        <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('TeacherClassDetailScreen', {
+        <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('TeacherClassExamDetailScreen', {
             idUser,role,
             idLopHoc: item.idLopHoc,
             tenLopHoc: item.tenLopHoc,

@@ -1,5 +1,5 @@
-import { AWSConfig } from '@/config/AWSConfig';
 import AWS from 'aws-sdk';
+import { AWSConfig } from '@/config/AWSConfig';
 
 //Cấu hình AWS S3 sử dụng các biến môi trường
 const s3 = new AWS.S3({

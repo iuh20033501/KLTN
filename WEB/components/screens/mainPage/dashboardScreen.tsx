@@ -1,5 +1,5 @@
 import http from '@/utils/http';
-import { AntDesign, EvilIcons, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, EvilIcons, FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-  
+
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -214,7 +214,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               <View style={styles.scheduleCard}>
                 <Text style={styles.scheduleNumber}>Đăng ký khóa học</Text>
                 <Text style={styles.scheduleTitle}>
-                  {classLength 
+                  {classLength
                     ? `Bạn đã tham gia ${classLength} khóa học`
                     : "Bạn chưa tham gia khóa học nào"}
                 </Text>
@@ -249,10 +249,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.featureRow}>
           {user.cvEnum === 'TEACHER' ? (
             <>
-              <TouchableOpacity style={styles.featureCard} 
-               onPress={() => {
-                navigation.navigate('TeacherScheduleScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
-              }}>
+              <TouchableOpacity style={styles.featureCard}
+                onPress={() => {
+                  navigation.navigate('TeacherScheduleScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                }}>
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch giảng dạy</Text>
               </TouchableOpacity>
@@ -267,15 +267,18 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Quản lý bài tập</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
-                <MaterialIcons name="feedback" size={24} color="black" />
-                <Text style={styles.featureText}>Phản hồi từ học viên</Text>
-              </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                onPress={() => {
-                navigation.navigate('TeacherDocumentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+                navigation.navigate('TeacherClassesExamScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
               }}>
-                
+                <MaterialCommunityIcons name="pencil-outline" size={24} color="black" />
+                <Text style={styles.featureText}>Quản lý bài thi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.featureCard}
+                onPress={() => {
+                  navigation.navigate('TeacherDocumentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+                }}>
+
                 <AntDesign name="profile" size={24} color="black" />
                 <Text style={styles.featureText}>Quản lý tài liệu</Text>
               </TouchableOpacity>
@@ -294,16 +297,16 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.featureText}>Xem điểm bài test</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
-              onPress={() => {
-                navigation.navigate('StudentClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen,role: user.cvEnum });
-              }}>
+                onPress={() => {
+                  navigation.navigate('StudentClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+                }}>
                 <AntDesign name="book" size={24} color="black" />
                 <Text style={styles.featureText}>Khóa học đã đăng ký</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
-               onPress={() => {
-                navigation.navigate('BillScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
-              }}>
+                onPress={() => {
+                  navigation.navigate('BillScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
+                }}>
                 <MaterialIcons name="attach-money" size={24} color="black" />
                 <Text style={styles.featureText}>Tra cứu công nợ</Text>
               </TouchableOpacity>
