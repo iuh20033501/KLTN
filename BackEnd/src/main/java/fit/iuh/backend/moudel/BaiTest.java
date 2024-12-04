@@ -20,7 +20,11 @@ public class BaiTest {
     private Date ngayBD;
     private Date ngayKT;
 <<<<<<< HEAD
+<<<<<<< HEAD
     private Time  thoiGianLamBai;
+=======
+    private Integer thoiGianLamBai;
+>>>>>>> 7c175befee12b83998a98cd8fd1cd567600cba2f
 =======
     private Integer thoiGianLamBai;
 >>>>>>> 7c175befee12b83998a98cd8fd1cd567600cba2f
