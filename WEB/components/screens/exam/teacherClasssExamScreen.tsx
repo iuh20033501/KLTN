@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,17 +13,18 @@ interface ClassInfo {
     trangThai: String;
     khoaHoc: {
         tenKhoaHoc: string;
-        image?: string; 
+        image?: string;
     };
 }
 
 export default function TeacherClassesExamScreen({ navigation, route }: { navigation: any; route: any }) {
     const [classes, setClasses] = useState<ClassInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const { idUser, role } = route.params;
+    const { idUser } = route.params;
 
     const fetchClasses = async () => {
         try {
+            setIsLoading(true);
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
                 console.error('No token found');
@@ -33,9 +35,8 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const filteredClasses = response.data.filter((lop: { trangThai: string; }) => lop.trangThai === 'FULL');
+            const filteredClasses = response.data.filter((lop: { trangThai: string }) => lop.trangThai === 'FULL');
             setClasses(filteredClasses);
-            console.log(filteredClasses)
         } catch (error) {
             console.error('Failed to fetch classes:', error);
         } finally {
@@ -44,9 +45,9 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
     };
 
     const getImageUri = (imageData: string | undefined) => {
-        if (!imageData) return require('../../../image/efy.png'); 
+        if (!imageData) return require('../../../image/efy.png'); // Default image
         if (imageData.startsWith("data:image")) return { uri: imageData };
-        
+
         const defaultMimeType = "image/png";
         let mimeType = defaultMimeType;
 
@@ -60,11 +61,16 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
     };
 
     const renderClassCard = ({ item }: { item: ClassInfo }) => (
-        <TouchableOpacity style={styles.card}   onPress={() => navigation.navigate('TeacherClassExamDetailScreen', {
-            idLopHoc: item.idLopHoc,
-            tenLopHoc: item.tenLopHoc,
-            tenKhoaHoc: item.khoaHoc.tenKhoaHoc,
-        })}>
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() =>
+                navigation.navigate('TeacherClassExamDetailScreen', {
+                    idLopHoc: item.idLopHoc,
+                    tenLopHoc: item.tenLopHoc,
+                    tenKhoaHoc: item.khoaHoc.tenKhoaHoc,
+                })
+            }
+        >
             <Image source={getImageUri(item.khoaHoc.image)} style={styles.classImage} />
             <View style={styles.cardHeader}>
                 <Text style={styles.classTitle}>{item.tenLopHoc}</Text>
@@ -73,9 +79,11 @@ export default function TeacherClassesExamScreen({ navigation, route }: { naviga
         </TouchableOpacity>
     );
 
-    useEffect(() => {
-        fetchClasses();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchClasses();
+        }, [])
+    );
 
     return (
         <ImageBackground source={require('../../../image/bglogin.png')} style={styles.background}>
@@ -138,7 +146,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     cardContainer: {
-        marginLeft:25,
+        marginLeft: 25,
         paddingBottom: 100,
     },
     card: {
@@ -172,4 +180,3 @@ const styles = StyleSheet.create({
         color: '#777',
     },
 });
-

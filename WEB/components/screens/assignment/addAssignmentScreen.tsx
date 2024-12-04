@@ -103,7 +103,7 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
         return true;
     };
 
-    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    const formatDate = (date: Date) => date.toISOString();
 
     const handleRemoveLastQuestion = () => {
         if (assignments.length > 1) {
@@ -286,13 +286,13 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                     <View style={styles.dateColumn}>
                         <Text style={styles.label}>Ngày Bắt Đầu</Text>
                         <TouchableOpacity style={styles.dateButton} onPress={() => setIsStartDatePickerOpen(true)}>
-                            <Text style={styles.dateText}>{startDate?.toLocaleDateString('vi-VN')}</Text>
+                            <Text style={styles.dateText}>{startDate?.toLocaleDateString('vi-VN')}  -  {startDate?.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.dateColumn}>
                         <Text style={styles.label}>Ngày Kết Thúc</Text>
                         <TouchableOpacity style={styles.dateButton} onPress={() => setIsEndDatePickerOpen(true)}>
-                            <Text style={styles.dateText}>{endDate?.toLocaleDateString('vi-VN')}</Text>
+                            <Text style={styles.dateText}>{endDate?.toLocaleDateString('vi-VN')}  -  {endDate?.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -425,7 +425,11 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                 onChange={(date) => handleStartDateChange(date as Date)}
                                 inline
                                 locale={vi}
-                                dateFormat="dd/MM/yyyy"
+                                showTimeSelect 
+                                timeFormat="HH:mm" 
+                                timeIntervals={15} 
+                                timeCaption="Thời gian" 
+                                dateFormat="dd/MM/yyyy HH:mm"
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsStartDatePickerOpen(false)}>
                                 <Text style={styles.closeButtonText}>Đóng</Text>
@@ -447,7 +451,11 @@ const AddAssignmentScreen = ({ navigation, route }: { navigation: any; route: an
                                 onChange={(date) => handleEndDateChange(date as Date)}
                                 inline
                                 locale={vi}
-                                dateFormat="dd/MM/yyyy"
+                                showTimeSelect // Thêm hiển thị chọn giờ
+                                timeFormat="HH:mm" // Định dạng giờ
+                                timeIntervals={15} // Khoảng cách giữa các giờ là 15 phút
+                                timeCaption="Thời gian" // Tiêu đề cho chọn giờ
+                                dateFormat="dd/MM/yyyy HH:mm" // Định dạng ngày giờ
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsEndDatePickerOpen(false)}>
                                 <Text style={styles.closeButtonText}>Đóng</Text>

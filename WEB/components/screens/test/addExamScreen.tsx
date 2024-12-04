@@ -99,7 +99,7 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
         return true;
     };
 
-    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    const formatDate = (date: Date) => date.toISOString();
 
     const handleRemoveLastQuestion = () => {
         if (assignments.length > 1) {
@@ -202,11 +202,11 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                     let audioUrl: string | null = null;
                     if (question.imageUri) {
                         const fileBlob = await fetch(question.imageUri).then(res => res.blob());
-                        imageUrl = await uploadFileToS3(fileBlob, `imgCauHoi/question-image-assignmentId-${idTest}-${Date.now()}`);
+                        imageUrl = await uploadFileToS3(fileBlob, `imgCauHoi/question-image-idTest-${idTest}-${Date.now()}`);
                     }
                     if (question.audioUri) {
                         const fileBlob = await fetch(question.audioUri).then(res => res.blob());
-                        audioUrl = await uploadFileToS3(fileBlob, `audioCauHoi/question-audio-assignmentId-${idTest}-${Date.now()}`);
+                        audioUrl = await uploadFileToS3(fileBlob, `audioCauHoi/question-audio-idTest-${idTest}-${Date.now()}`);
                     }
 
                     const questionData = {
@@ -235,10 +235,10 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                 })
             );
 
-            setMessageText('Thêm bài tập, câu hỏi và câu trả lời thành công.');
+            setMessageText('Thêm bài thi thành công.');
             setMessageModalVisible(true);
             setTimeout(() => {
-                navigation.navigate('TeacherClassExamDetailScreen', { idLopHoc });
+                navigation.navigate('TeacherClassExamDetailScreen', { idLopHoc },{ refresh: true });
             }, 1000);
         } catch (error) {
             console.error('Error while submitting assignments:', error);
@@ -252,12 +252,11 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
         setStartDate(date);
         setIsStartDatePickerOpen(false);
     };
-
+    
     const handleEndDateChange = (date: Date) => {
         setEndDate(date);
         setIsEndDatePickerOpen(false);
     };
-
     const handleCloseModal = () => {
         setMessageModalVisible(false);
     };
@@ -293,7 +292,7 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                         style={styles.input}
                         placeholder="Thời gian làm bài (phút)"
                         keyboardType="numeric"
-                        value={timeLimit !== null ? String(timeLimit) : ''} // Chuyển đổi `number` thành `string`, hoặc để chuỗi rỗng nếu `null`
+                        value={timeLimit !== null ? String(timeLimit) : ''} 
                         onChangeText={handleTimeLimitChange}
                     />
                 </View>
@@ -302,13 +301,16 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                     <View style={styles.dateColumn}>
                         <Text style={styles.label}>Ngày Bắt Đầu</Text>
                         <TouchableOpacity style={styles.dateButton} onPress={() => setIsStartDatePickerOpen(true)}>
-                            <Text style={styles.dateText}>{startDate?.toLocaleDateString('vi-VN')}</Text>
+                            <Text style={styles.dateText}>{startDate?.toLocaleDateString('vi-VN')}  -  {startDate?.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.dateColumn}>
                         <Text style={styles.label}>Ngày Kết Thúc</Text>
                         <TouchableOpacity style={styles.dateButton} onPress={() => setIsEndDatePickerOpen(true)}>
-                            <Text style={styles.dateText}>{endDate?.toLocaleDateString('vi-VN')}</Text>
+                            <Text style={styles.dateText}>{endDate?.toLocaleDateString('vi-VN')}  -  {endDate?.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -441,7 +443,11 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                                 onChange={(date) => handleStartDateChange(date as Date)}
                                 inline
                                 locale={vi}
-                                dateFormat="dd/MM/yyyy"
+                                showTimeSelect 
+                                timeFormat="HH:mm" 
+                                timeIntervals={15} 
+                                timeCaption="Thời gian" 
+                                dateFormat="dd/MM/yyyy HH:mm"
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsStartDatePickerOpen(false)}>
                                 <Text style={styles.closeButtonText}>Đóng</Text>
@@ -463,7 +469,11 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                                 onChange={(date) => handleEndDateChange(date as Date)}
                                 inline
                                 locale={vi}
-                                dateFormat="dd/MM/yyyy"
+                                showTimeSelect // Thêm hiển thị chọn giờ
+                                timeFormat="HH:mm" // Định dạng giờ
+                                timeIntervals={15} // Khoảng cách giữa các giờ là 15 phút
+                                timeCaption="Thời gian" // Tiêu đề cho chọn giờ
+                                dateFormat="dd/MM/yyyy HH:mm" // Định dạng ngày giờ
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsEndDatePickerOpen(false)}>
                                 <Text style={styles.closeButtonText}>Đóng</Text>
