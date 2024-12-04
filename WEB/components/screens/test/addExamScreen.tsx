@@ -214,6 +214,7 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                         loiGiai: question.loiGiai,
                         linkAnh: imageUrl || '',
                         linkAmThanh: audioUrl || '',
+                        trangThai: 1
                     };
                     const questionResponse = await http.post(`baitest/createCauHoi/${idTest}`, questionData, {
                         headers: { Authorization: `Bearer ${token}` },

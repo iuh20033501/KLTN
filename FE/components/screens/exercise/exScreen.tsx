@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator, Ima
 import Icon from 'react-native-vector-icons/Ionicons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Audio } from 'expo-av';
 import AudioPlayer from '../audio/audioPlayer';
 
 interface QuestionInfo {
@@ -31,7 +30,8 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
   const [isLoading, setIsLoading] = useState(true);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [showResultModal, setShowResultModal] = useState(false);
-  const [showExitModal, setShowExitModal] = useState(false); // Modal xác nhận thoát
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [cauDaLam, setCauDaLam] = useState(0);
 
   const { idBaiTap, tenBaiTap, idUser } = route.params;
 
@@ -80,7 +80,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
         console.error('No token found');
         return;
       }
-      const response = await http.get(`baitap/createTienTrinh/${idUser}/${idBaiTap}`, {
+      await http.get(`baitap/createTienTrinh/${idUser}/${idBaiTap}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -90,19 +90,21 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
     }
   };
 
-  const submitExercise = async () => {
+  const submitExercise = async (updatedCauDaLam: number) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (!token) {
         console.error('No token found');
         return;
       }
-      await http.get(`baitap/updateTienTrinh/${idUser}/${idBaiTap}/${correctAnswersCount}`, {
+
+      await http.get(`baitap/updateTienTrinh/${idUser}/${idBaiTap}/${correctAnswersCount}/${updatedCauDaLam}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setShowResultModal(true); // Hiển thị modal kết quả
+
+      setShowResultModal(true);
     } catch (error) {
       console.error('Failed to update exercise progress:', error);
     }
@@ -131,29 +133,32 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
     }
   };
 
-  const handleNextOrSubmit = () => {
+  const handleNextOrSubmit = async () => {
+    const updatedCauDaLam = cauDaLam + 1;
+    setCauDaLam(updatedCauDaLam);
+
     if (currentQuestion < questions.length - 1) {
       setSelectedOption(null);
       setIsCorrect(null);
       setShowExplanationModal(false);
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      submitExercise();
+      await submitExercise(updatedCauDaLam);
     }
   };
 
   const handleExit = () => {
-    setShowExitModal(true); 
+    setShowExitModal(true);
   };
 
   const handleExitConfirm = async () => {
-    await submitExercise(); 
+    await submitExercise(cauDaLam);
     setShowExitModal(false);
-    setShowResultModal(true); 
+    setShowResultModal(true);
   };
 
   const handleExitCancel = () => {
-    setShowExitModal(false); 
+    setShowExitModal(false);
   };
 
   if (isLoading) {
@@ -178,25 +183,19 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
       </View>
 
       <View style={styles.topBar}>
-        <Text style={styles.progressText}>{currentQuestion + 1}/{questions.length}</Text>
+        <Text style={styles.progressText}>
+          {currentQuestion + 1}/{questions.length}
+        </Text>
         <Text style={styles.scoreText}>Điểm: {score}</Text>
       </View>
 
       <Text style={styles.questionHeader}>Chọn câu trả lời đúng</Text>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
         <View style={styles.questionContainer}>
-          <Text style={styles.questionText}>
-            {questions[currentQuestion]?.noiDung}
-          </Text>
+          <Text style={styles.questionText}>{questions[currentQuestion]?.noiDung}</Text>
 
           {questions[currentQuestion]?.linkAnh && (
-            <Image
-              source={{ uri: questions[currentQuestion].linkAnh }}
-              style={styles.questionImage}
-            />
+            <Image source={{ uri: questions[currentQuestion].linkAnh }} style={styles.questionImage} />
           )}
 
           {questions[currentQuestion]?.linkAmThanh && (
@@ -212,8 +211,8 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
               selectedOption === option && isCorrect === true
                 ? styles.correctOption
                 : selectedOption === option && isCorrect === false
-                  ? styles.wrongOption
-                  : styles.defaultOption,
+                ? styles.wrongOption
+                : styles.defaultOption,
             ]}
             onPress={() => handleOptionPress(option)}
             disabled={selectedOption !== null}
@@ -231,11 +230,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
         )}
       </ScrollView>
 
-      <Modal
-        visible={showExplanationModal}
-        transparent={true}
-        animationType="slide"
-      >
+      <Modal visible={showExplanationModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Oops</Text>
@@ -245,26 +240,20 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
             <Text style={styles.explanationText}>
               Giải thích: {questions[currentQuestion]?.loiGiai}
             </Text>
-            <TouchableOpacity
-              onPress={() => setShowExplanationModal(false)}
-              style={styles.continueButton}
-            >
+            <TouchableOpacity onPress={() => setShowExplanationModal(false)} style={styles.continueButton}>
               <Text style={styles.continueButtonText}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      {/* Result Modal */}
-      <Modal
-        visible={showResultModal}
-        transparent={true}
-        animationType="slide"
-      >
+      <Modal visible={showResultModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Kết quả</Text>
-            <Text style={styles.resultText}>Điểm đạt được: {score} / {questions.length * 10}</Text>
+            <Text style={styles.resultText}>
+              Điểm đạt được: {score} / {questions.length * 10}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 setShowResultModal(false);
@@ -278,12 +267,7 @@ export default function ExerciseScreen({ navigation, route }: { navigation: any;
         </View>
       </Modal>
 
-      {/* Exit Confirmation Modal */}
-      <Modal
-        visible={showExitModal}
-        transparent={true}
-        animationType="slide"
-      >
+      <Modal visible={showExitModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Bạn có muốn kết thúc bài tập giữa chừng?</Text>
@@ -460,10 +444,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   questionImage: {
-    width: '100%', 
-    height: 200,   
+    width: '100%',
+    height: 200,
     borderRadius: 10,
     marginTop: 10,
-    resizeMode: 'contain', 
+    resizeMode: 'contain',
   },
 });

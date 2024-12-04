@@ -87,6 +87,13 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
 
         <TouchableOpacity style={styles.option}>
           <View style={styles.optionRow}>
+            <Feather name="file-text" size={24} color="purple" />
+            <Text style={styles.optionText}>Tài liệu học tập</Text>
+          </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.option}>
+          <View style={styles.optionRow}>
             <FontAwesome name="graduation-cap" size={24} color="red" />
             <Text style={styles.optionText}>Chứng nhận</Text>
           </View>
@@ -99,18 +106,7 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
-          <View style={styles.optionRow}>
-            <MaterialIcons name="volume-up" size={24} color="blue" />
-            <Text style={styles.optionText}>Kết quả phát âm</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <View style={styles.optionRow}>
-            <Feather name="file-text" size={24} color="purple" />
-            <Text style={styles.optionText}>Nội quy</Text>
-          </View>
-        </TouchableOpacity>
+      
       </View>
     </ScrollView>
   );
