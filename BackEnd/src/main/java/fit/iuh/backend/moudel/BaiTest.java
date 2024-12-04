@@ -19,7 +19,7 @@ public class BaiTest {
     private Long idTest;
     private Date ngayBD;
     private Date ngayKT;
-    private Integer  thoiGianLamBai;
+    private Integer thoiGianLamBai;
     @ManyToOne
     private LopHoc lopHoc;
     private LoaiTest loaiTest;
