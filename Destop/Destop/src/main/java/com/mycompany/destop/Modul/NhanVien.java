@@ -11,14 +11,14 @@ import java.time.LocalDate;
  * @author Windows 10
  */
 public class NhanVien extends User{
-    private Long luongThang;
+    private Long luong;
 
     public Long getLuongThang() {
-        return luongThang;
+        return luong;
     }
 
     public void setLuongThang(Long luongThang) {
-        this.luongThang = luongThang;
+        this.luong = luongThang;
     }
 
     /**
@@ -34,12 +34,12 @@ public class NhanVien extends User{
      */
     public NhanVien(Long luongThang, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         super(hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
-        this.luongThang = luongThang;
+        this.luong = luongThang;
     }
 
     public NhanVien(Long luongThang, Long idUser, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         super(idUser, hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
-        this.luongThang = luongThang;
+        this.luong= luongThang;
     }
     public NhanVien( String hoTen, String sdt, String diaChi, String email, boolean gioiTinh, String image) {
         super( hoTen, sdt, diaChi, email,  gioiTinh, image);
@@ -50,7 +50,7 @@ public class NhanVien extends User{
 
     @Override
     public String toString() {
-        return "NhanVien{" + "luongThang=" + luongThang + '}';
+        return "NhanVien{" + "luongThang=" + luong + '}';
     }
 
    

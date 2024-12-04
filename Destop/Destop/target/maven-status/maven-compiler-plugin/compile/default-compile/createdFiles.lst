@@ -58,6 +58,8 @@ com\mycompany\destop\Screen\Menu$34.class
 com\mycompany\destop\Modul\GiangVien.class
 com\mycompany\destop\Service\HoaDonService.class
 com\mycompany\destop\Screen\Menu$29.class
+com\mycompany\destop\Screen\Menu$50.class
+com\mycompany\destop\Service\LopHocService$2.class
 com\mycompany\destop\Modul\NhanVien.class
 com\mycompany\destop\Screen\Menu$2.class
 com\mycompany\destop\Screen\Menu$9.class
@@ -81,6 +83,7 @@ com\mycompany\destop\Screen\Menu$ButtonRenderer.class
 com\mycompany\destop\Screen\Menu$ButtonEditorKhoa.class
 com\mycompany\destop\Modul\KhoaHoc.class
 com\mycompany\destop\Modul\User.class
+com\mycompany\destop\Service\ApiClient$2.class
 com\mycompany\destop\Screen\DangNhap$3.class
 com\mycompany\destop\Screen\Menu$12.class
 com\mycompany\destop\Screen\Menu$32.class
@@ -90,6 +93,7 @@ com\mycompany\destop\Screen\Menu$47.class
 com\mycompany\destop\DTO\OTPResponseDTO.class
 com\mycompany\destop\Modul\KetQuaTest.class
 com\mycompany\destop\Modul\BaiTest.class
+com\mycompany\destop\Screen\Menu$48.class
 com\mycompany\destop\Modul\HoaDon.class
 com\mycompany\destop\Screen\Menu$41.class
 com\mycompany\destop\Screen\Menu$15.class
@@ -102,6 +106,7 @@ com\mycompany\destop\Service\HoaDonService$2.class
 com\mycompany\destop\DTO\SigninDTO.class
 com\mycompany\destop\Modul\ThanhToan.class
 com\mycompany\destop\Enum\ChucVuEnum.class
+com\mycompany\destop\Screen\Menu$49.class
 com\mycompany\destop\Screen\Menu$14.class
 com\mycompany\destop\Screen\Menu$6.class
 com\mycompany\destop\Screen\Menu$ButtonEditor.class

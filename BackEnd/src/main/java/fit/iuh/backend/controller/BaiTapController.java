@@ -191,7 +191,7 @@ public class BaiTapController {
             
     """
     )
-    @GetMapping("/getTienTrinh/{idHocVien}/{idBaiTap}")
+    @GetMapping("/getTienTrinhHVBT/{idHocVien}/{idBaiTap}")
     public TienTrinh getTienTrihByHVAndBT(@PathVariable Long idHocVien,@PathVariable Long idBaiTap){
         TienTrinh tt = tienTrinhService.findByIdHvIdBTap(idHocVien, idBaiTap);
         return  tt;

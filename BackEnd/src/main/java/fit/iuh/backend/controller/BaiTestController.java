@@ -63,7 +63,8 @@ public class BaiTestController {
     public BaiTest createBaiTest(@PathVariable Long idLop,@RequestBody BaiTest baiTest){
         LopHoc lop = lopHocService.findById(idLop).get();
         baiTest.setLopHoc(lop);
-        baiTest.setTrangThai(false);
+        baiTest.setTrangThai(true);
+        baiTest.setXetDuyet(false);
         return baiTestService.createBaiTest(baiTest);
     }
     @Operation(
@@ -73,6 +74,10 @@ public class BaiTestController {
     )
     @GetMapping("/getBaiTestofLopTrue/{idLop}")
     public List<BaiTest> findBTByLopTrue(@PathVariable Long idLop){
+        return baiTestService.finByIdLopTrue(idLop);
+    }
+    @GetMapping("/getBaiTestofXetDuetFalse/{idLop}")
+    public List<BaiTest> findBTByXetDuyetFalse(@PathVariable Long idLop){
         return baiTestService.finByIdLopTrue(idLop);
     }
     @Operation(
@@ -85,6 +90,43 @@ public class BaiTestController {
         return baiTestService.finByIdLop(idLop);
     }
 
+    @GetMapping("/getBaiTestofLopXetFalse/{idLop}")
+    public List<BaiTest> findBTByLopXetFalse(@PathVariable Long idLop){
+        return baiTestService.finByIdLopTrueXetDUyetFalse(idLop);
+    }
+
+    @GetMapping("/AceptBaiTestofLopXetFalse")
+    public Boolean aceptBTByLopXetFalse(@RequestBody List<Long> listLong) {
+        try {
+            for (Long id : listLong) {
+                BaiTest baiTest = baiTestService.findById(id);
+                if (baiTest != null) { // Kiểm tra nếu BaiTest tồn tại
+                    baiTest.setXetDuyet(true);
+                    baiTestService.createBaiTest(baiTest);
+                }
+            }
+            return true; // Thành công
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false; // Gặp lỗi
+        }
+    }
+    @GetMapping("/CancelBaiTestofLopXetFalse")
+    public Boolean cancelBTByLopXetFalse(@RequestBody List<Long> listLong) {
+        try {
+            for (Long id : listLong) {
+                BaiTest baiTest = baiTestService.findById(id);
+                if (baiTest != null) { // Kiểm tra nếu BaiTest tồn tại
+                    baiTest.setTrangThai(false);
+                    baiTestService.createBaiTest(baiTest);
+                }
+            }
+            return true; // Thành công
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false; // Gặp lỗi
+        }
+    }
     @GetMapping("/deleteBaiTest/{id}")
     public BaiTest deleteBT(@PathVariable Long id){
         BaiTest bt = baiTestService.findById(id);

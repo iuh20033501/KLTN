@@ -38,4 +38,10 @@ public class BaiTestImplement implements BaiTestService {
     public List<BaiTest> findAll(BaiTest bt) {
         return baiTestRepo.findAll();
     }
+
+    @Override
+    public List<BaiTest> finByIdLopTrueXetDUyetFalse(Long idLop) {
+        return baiTestRepo.getListBTestByIdLopandTrangThaitrue(idLop);
+    }
+
 }

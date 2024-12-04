@@ -9,10 +9,13 @@ import com.mycompany.destop.DTO.JwtResponse;
 import com.mycompany.destop.DTO.OTPRequestDTO;
 import com.mycompany.destop.DTO.OTPResponseDTO;
 import com.mycompany.destop.DTO.PhoneNumberDTO;
+import com.mycompany.destop.DTO.ProfileDto;
 import com.mycompany.destop.DTO.ResetPassDto;
 import com.mycompany.destop.DTO.SigninDTO;
+import com.mycompany.destop.DTO.SignupDto;
 import com.mycompany.destop.DTO.UpdateUserDTO;
 import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Modul.GiangVien;
 import com.mycompany.destop.Modul.KhoaHoc;
 import com.mycompany.destop.Modul.NhanVien;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
@@ -105,6 +108,50 @@ public class ApiClient {
             }
         } else {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    }
+
+    public ProfileDto signupApi(String token, SignupDto signupDto, int role) throws Exception {
+        // URL của API
+        String signupUrl = "http://localhost:8081/auth/account/signup/" + role;
+        URL url = new URL(signupUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình POST request với JWT token trong header
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+        conn.setDoOutput(true);
+
+        // Tạo đối tượng Gson để chuyển đổi SignupDto sang JSON
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+        String jsonInputString = gson.toJson(signupDto);
+
+        // Ghi dữ liệu JSON vào body của request
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        // Kiểm tra mã phản hồi từ server
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Chuyển đổi chuỗi JSON phản hồi thành đối tượng ProfileDto
+                Type profileDtoType = new TypeToken<ProfileDto>() {
+                }.getType();
+                return gson.fromJson(response.toString(), profileDtoType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API đăng ký, mã phản hồi: " + responseCode);
         }
     }
 
@@ -226,6 +273,147 @@ public class ApiClient {
         }
     }
 
+    public TaiKhoanLogin callDeleteTaiKhoanApi(String token, Long id) throws Exception {
+        String apiUrl = "http://localhost:8081/auth/deleteById/" + id; // URL API
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+
+        // Xử lý phản hồi từ server
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với LocalDateAdapter
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành đối tượng TaiKhoanLogin
+                return gson.fromJson(response.toString(), TaiKhoanLogin.class);
+            }
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Không tìm thấy tài khoản với ID: " + id);
+        } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new Exception("Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra token.");
+        } else {
+            throw new Exception("Không thể gọi API xóa tài khoản. Mã phản hồi: " + responseCode);
+        }
+    }
+     public NhanVien findNhanVienById(String token, Long id) throws Exception {
+        String apiUrl = "http://localhost:8081/nhanVien/findbyId/" + id; // URL API
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+
+        // Xử lý phản hồi từ server
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với LocalDateAdapter
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành đối tượng TaiKhoanLogin
+                return gson.fromJson(response.toString(), NhanVien.class);
+            }
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Không tìm thấy tài khoản với ID: " + id);
+        } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new Exception("Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra token.");
+        } else {
+            throw new Exception("Không thể gọi API xóa tài khoản. Mã phản hồi: " + responseCode);
+        }
+    }
+     public GiangVien findGiangVienById(String token, Long id) throws Exception {
+        String apiUrl = "http://localhost:8081/giangVien/findbyId/" + id; // URL API
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+
+        // Xử lý phản hồi từ server
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với LocalDateAdapter
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành đối tượng TaiKhoanLogin
+                return gson.fromJson(response.toString(), GiangVien.class);
+            }
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Không tìm thấy tài khoản với ID: " + id);
+        } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new Exception("Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra token.");
+        } else {
+            throw new Exception("Không thể gọi API xóa tài khoản. Mã phản hồi: " + responseCode);
+        }
+    }
+
+    public TaiKhoanLogin getTaiKhoanByUserName(String username) throws Exception {
+        String profileUrl = "http://localhost:8081/auth/noauth/findByByUserName/" + username; // Đảm bảo URL đúng
+        HttpURLConnection conn = (HttpURLConnection) new URL(profileUrl).openConnection();
+
+        // Thiết lập GET request
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
+
+        // Kiểm tra mã phản hồi
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            // Đọc phản hồi
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Chuyển đổi JSON thành đối tượng TaiKhoanLogin
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+                return gson.fromJson(response.toString(), TaiKhoanLogin.class);
+            }
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Không tìm thấy tài khoản với số điện thoại: " + username);
+        } else {
+            throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+        }
+    }
+
     public OTPResponseDTO verifyOTPFromClient(OTPRequestDTO otpRequestDTO) throws Exception {
         String url = "http://localhost:8081/auth/noauth/validate"; // Đảm bảo URL này chính xác
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
@@ -340,7 +528,8 @@ public class ApiClient {
             return false; // Gặp lỗi khi gọi API
         }
     }
-     public List<User> getAllGiangVienLamViec(String token) throws Exception {
+
+    public List<User> getAllGiangVienLamViec(String token) throws Exception {
         String profileUrl = "http://localhost:8081/giangVien/findAllLamViec"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

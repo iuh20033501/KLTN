@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mycompany.destop.DTO.CreateLopDTO;
 import com.mycompany.destop.DTO.SigninDTO;
+import com.mycompany.destop.Modul.BaiTest;
 import com.mycompany.destop.Modul.KhoaHoc;
 import com.mycompany.destop.Modul.LopHoc;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
@@ -254,6 +255,146 @@ public class LopHocService {
         }
     }
 
+    public List<BaiTest> loadBaiTestByIdLopxetTuyenFalse(String token, Long idLop) throws Exception {
+        String apiUrl = "http://localhost:8081/baitest/getBaiTestofLopXetFalse/" + idLop; // URL API với tham số ID
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực trong header
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Chuyển đổi JSON thành đối tượng KhoaHoc
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // Xử lý LocalDate nếu cần
+                            .create();
+                    Type listType = new TypeToken<List<BaiTest>>() {
+                    }.getType();
+                    return gson.fromJson(response.toString(), listType);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                // Trường hợp không tìm thấy khóa học
+                throw new Exception("Không tìm thấy khóa học với ID: " + idLop);
+            } else {
+                throw new Exception("Không thể gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+
+    public Boolean aceptBaiTestByIdLopxetTuyenFalse(String token, List<Long> list) throws Exception {
+        String apiUrl = "http://localhost:8081/baitest/AceptBaiTestofLopXetFalse"; // URL API
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("POST"); // Dùng POST để gửi dữ liệu
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token trong header
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8"); // Loại dữ liệu JSON
+            conn.setDoOutput(true); // Cho phép ghi dữ liệu vào body request
+
+            // Chuyển danh sách `list` thành JSON và gửi vào body
+            Gson gson = new Gson();
+            String jsonList = gson.toJson(list);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonList.getBytes("UTF-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Chuyển đổi JSON thành kiểu Boolean
+                    return gson.fromJson(response.toString(), Boolean.class);
+                }
+            } else {
+                throw new Exception("Không thể gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+
+    public Boolean CancelBaiTestofLopXetFalse(String token, List<Long> list) throws Exception {
+        String apiUrl = "http://localhost:8081/baitest/CancelBaiTestofLopXetFalse"; // URL API
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("POST"); // Dùng POST để gửi dữ liệu
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token trong header
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8"); // Loại dữ liệu JSON
+            conn.setDoOutput(true); // Cho phép ghi dữ liệu vào body request
+
+            // Chuyển danh sách `list` thành JSON và gửi vào body
+            Gson gson = new Gson();
+            String jsonList = gson.toJson(list);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonList.getBytes("UTF-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Chuyển đổi JSON thành kiểu Boolean
+                    return gson.fromJson(response.toString(), Boolean.class);
+                }
+            } else {
+                throw new Exception("Không thể gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+
     public LopHoc deleteLopHoc(String token, Long id) throws Exception {
         String apiUrl = "http://localhost:8081/lopHoc/delete/" + id; // URL endpoint của API xóa lớp học
         HttpURLConnection conn = null;
@@ -283,7 +424,7 @@ public class LopHocService {
                     System.out.println("Phản hồi từ API: " + response);
 
                     // Chuyển đổi JSON trả về thành đối tượng LopHoc
-                   Gson gson = new GsonBuilder()
+                    Gson gson = new GsonBuilder()
                             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // Xử lý LocalDate nếu cần
                             .create();
                     return gson.fromJson(response.toString(), LopHoc.class);

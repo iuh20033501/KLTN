@@ -12,6 +12,7 @@ import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.moudel.User;
 import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -67,9 +68,22 @@ public class AuthController {
 
 
     @PostMapping("/noauth/signin")
+    public ResponseEntity<?> signin(@RequestBody JwtRequest dto) {
+        TaiKhoanLogin taiKhoan = tkService.findByTenDangNhap(dto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập không tồn tại: " + dto.getUsername()));
 
-    public ResponseEntity<JwtResponse> signin(@RequestBody JwtRequest dto) {
-        return ResponseEntity.ok(service.signin(dto));
+        if (!taiKhoan.getEnable()) {
+            return ResponseEntity.badRequest()
+                    .body("Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên để kích hoạt lại.");
+        }
+
+        try {
+            JwtResponse jwtResponse = service.signin(dto);
+            return ResponseEntity.ok(jwtResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Tên đăng nhập hoặc mật khẩu không đúng.");
+        }
     }
 
     @PostMapping("/noauth/refresh")
@@ -193,6 +207,20 @@ public class AuthController {
         return tkService.findBySDT(sdt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản với số điện thoại: " + sdt));
 
+    }
+    @GetMapping("/deleteById/{id}")
+    public TaiKhoanLogin deleteById(@PathVariable Long id){
+       TaiKhoanLogin tKhoan=  tkService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản với số id: " + id));
+       tKhoan.setEnable(false);
+        return tkService.createTaiKhoan(tKhoan);
+    }
+    @GetMapping("/noauth/findByByUserName/{userName}")
+    public TaiKhoanLogin findByUserName(@PathVariable String userName){
+        TaiKhoanLogin tKhoan=  tkService.findByTenDangNhap(userName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản với số tên đăng nhập: " + userName));
+
+        return tKhoan;
     }
     @Operation(
             summary = "láy all khoa học",

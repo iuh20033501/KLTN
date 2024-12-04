@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 //@Table(name = "nhan_vien")
 public class NhanVien extends User{
-    private Long luongThang;
+    private Long luong;
 
     public NhanVien(Long idUser, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image) {
         super(idUser, hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
@@ -22,6 +22,6 @@ public class NhanVien extends User{
 
     public NhanVien(Long idUser, String hoTen, String sdt, String diaChi, String email, LocalDate ngaySinh, boolean gioiTinh, String image, Long luongThang) {
         super(idUser, hoTen, sdt, diaChi, email, ngaySinh, gioiTinh, image);
-        this.luongThang = luongThang;
+        this.luong = luongThang;
     }
 }

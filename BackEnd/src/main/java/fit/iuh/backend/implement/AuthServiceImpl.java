@@ -94,6 +94,7 @@ public class AuthServiceImpl implements AuthService {
             p.setDiaChi(dto.getAddress());
             p.setChuyenMon(dto.getListKiNang());
             p.setImage(dto.getImage());
+            p.setLuong(dto.getLuong());
             GiangVien c = giangVienService.createGiangVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.TEACHER);
             TaiKhoanLogin us = repository.save(u);
@@ -117,9 +118,12 @@ public class AuthServiceImpl implements AuthService {
             p.setSdt(dto.getPhone());
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
-            p.setLuongThang(dto.getLuong());
+//            p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
-            User c = nhanVienService.createNhanVien(p);
+            p.setLuong(dto.getLuong());
+            NhanVien c = nhanVienService.createNhanVien(p);
+//            System.out.println(c.getLuong().toString());
+//            System.out.println(p.getLuong().toString());
             TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.ADMIN);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(dto.getUsername(), dto.getPassword()));
@@ -142,9 +146,10 @@ public class AuthServiceImpl implements AuthService {
             p.setSdt(dto.getPhone());
             p.setEmail(dto.getEmail());
             p.setDiaChi(dto.getAddress());
-            p.setLuongThang(dto.getLuong());
+//            p.setLuongThang(dto.getLuong());
             p.setImage(dto.getImage());
-            User c = nhanVienService.createNhanVien(p);
+            p.setLuong(dto.getLuong());
+            NhanVien c = nhanVienService.createNhanVien(p);
             TaiKhoanLogin u = new TaiKhoanLogin(opUser.get().getId(),dto.getUsername(),passwordEncoder.encode(dto.getPassword()),true,c, ChucVu.QUANLY);
             TaiKhoanLogin us = repository.save(u);
             JwtResponse r = signin(new JwtRequest(u.getTenDangNhap(), dto.getPassword()));

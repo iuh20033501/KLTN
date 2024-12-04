@@ -19,14 +19,19 @@ public class BaiTest {
     private Long idTest;
     private Date ngayBD;
     private Date ngayKT;
-    private Integer  thoiGianLamBai;
+<<<<<<< HEAD
+    private Time  thoiGianLamBai;
+=======
+    private Integer thoiGianLamBai;
+>>>>>>> 7c175befee12b83998a98cd8fd1cd567600cba2f
     @ManyToOne
     private LopHoc lopHoc;
     private LoaiTest loaiTest;
     private Boolean TrangThai;
+    private Boolean xetDuyet;
 
 
-    public BaiTest(Date ngayBD, Date ngayKT, Integer  thoiGianLamBai, LoaiTest loaiTest) {
+    public BaiTest(Date ngayBD, Date ngayKT, Time  thoiGianLamBai, LoaiTest loaiTest) {
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.thoiGianLamBai = thoiGianLamBai;

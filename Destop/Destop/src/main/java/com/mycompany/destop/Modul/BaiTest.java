@@ -21,6 +21,15 @@ public class BaiTest {
     private LopHoc lopHoc;
     private TestEnum loaiTest;
     private Boolean TrangThai;
+    private Boolean xetDuyet;
+
+    public Boolean getXetDuyet() {
+        return xetDuyet;
+    }
+
+    public void setXetDuyet(Boolean xetDuyet) {
+        this.xetDuyet = xetDuyet;
+    }
 
     public Long getIdTest() {
         return idTest;

@@ -39,7 +39,7 @@ public class TaiKhoanImplement implements TaiKhoanService {
 
     @Override
     public Optional<TaiKhoanLogin> findById(Long id) {
-        return Optional.empty();
+        return taiKhoanRepo.findById(id);
     }
 
     @Override

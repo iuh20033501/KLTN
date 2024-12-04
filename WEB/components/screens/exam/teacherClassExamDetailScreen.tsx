@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http'; // Đường dẫn cần chính xác
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,12 +8,12 @@ type Exam = {
     bai_test: string;
     ngayBD: string;
     ngayKT: string;
-  };
-  
-  type ExamList = {
+};
+
+type ExamList = {
     approvedExams: Exam[];
     pendingExams: Exam[];
-  };
+};
 const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; route: any }) => {
     const { idLopHoc, tenLopHoc, role } = route.params;
     const [activeTab, setActiveTab] = useState('Bài thi');
@@ -21,8 +21,8 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
     const [examList, setExamList] = useState<ExamList>({
         approvedExams: [],
         pendingExams: [],
-      });
-      useEffect(() => {
+    });
+    useEffect(() => {
         const fetchExams = async () => {
             setIsLoading(true);
             try {
@@ -31,22 +31,22 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                     console.error('Error: Access token not found');
                     return;
                 }
-    
+
                 const response = await http.get(`/baitest/getBaiTestofLop/${idLopHoc}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-    
+
                 const data = response.data;
-    
+
                 // Tách bài thi dựa vào trạng thái
                 const approvedExams = data.filter((exam: any) => exam.trangThai === true);
                 const pendingExams = data.filter((exam: any) => exam.trangThai === false);
-    
+
                 console.log('Approved Exams:', approvedExams);
                 console.log('Pending Exams:', pendingExams);
-    
+
                 setExamList({ approvedExams, pendingExams });
             } catch (error) {
                 console.error('Error fetching exams:', error);
@@ -54,65 +54,113 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                 setIsLoading(false);
             }
         };
-    
+
         fetchExams();
     }, [idLopHoc]);
-    
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [examToDelete, setExamToDelete] = useState<number | null>(null);
+
+    const openDeleteModal = (id: number) => {
+        setExamToDelete(id);
+        setDeleteModalVisible(true);
+    };
+
+    const handleDeleteExam = async () => {
+        if (examToDelete === null) return;
+
+        try {
+            const token = await AsyncStorage.getItem('accessToken');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+
+            await http.get(`/baitest/deleteBaiTest/${examToDelete}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setExamList((prev) => ({
+                ...prev,
+                pendingExams: prev.pendingExams.filter((exam) => exam.idTest !== examToDelete),
+            }));
+            setDeleteModalVisible(false);
+            setExamToDelete(null);
+        } catch (error) {
+            console.error('Failed to delete exam:', error);
+        }
+    };
+
 
     const renderTabContent = () => {
         switch (activeTab) {
             case 'Bài thi':
                 return (
                     <ScrollView style={styles.tabContent}>
-                    <TouchableOpacity
-                        style={styles.addButton}
-                        onPress={() => navigation.navigate('AddExamScreen', { idLopHoc })}
-                    >
-                        <Icon name="plus" size={20} color="#fff" />
-                        <Text style={styles.addButtonText}>Thêm bài thi</Text>
-                    </TouchableOpacity>
-                
-                    <Text style={styles.sectionTitle}>Bài thi đã duyệt</Text>
-                    {examList.approvedExams.length > 0 ? (
-                        examList.approvedExams.map((exam: any) => (
-                            <View key={exam.idTest} style={styles.examItem}>
-                                <Text style={styles.examTitle}>
-                                    Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
-                                </Text>
-                                <Text style={styles.examInfo}>
-                                    Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}
-                                </Text>
-                                <Text style={styles.examInfo}>
-                                    Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}
-                                </Text>
-                            </View>
-                        ))
-                    ) : (
-                        <Text style={styles.emptyText}>Không có bài thi đã duyệt.</Text>
-                    )}
-                
-                    <Text style={styles.sectionTitle}>Bài thi chưa duyệt</Text>
-                    {examList.pendingExams.length > 0 ? (
-                        examList.pendingExams.map((exam: any) => (
-                            <View key={exam.idTest} style={styles.examItem}>
-                                <Text style={styles.examTitle}>
-                                    Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
-                                </Text>
-                                <Text style={styles.examInfo}>
-                                    Thời gian làm bài: {exam.thoiGianLamBai.toString()} phút
-                                </Text>
-                                <Text style={styles.examInfo}>
-                                    Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}
-                                </Text>
-                                <Text style={styles.examInfo}>
-                                    Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}
-                                </Text>
-                            </View>
-                        ))
-                    ) : (
-                        <Text style={styles.emptyText}>Không có bài thi chưa duyệt.</Text>
-                    )}
-                </ScrollView>
+                        <TouchableOpacity
+                            style={styles.addButton}
+                            onPress={() => navigation.navigate('AddExamScreen', { idLopHoc })}
+                        >
+                            <Icon name="plus" size={20} color="#fff" />
+                            <Text style={styles.addButtonText}>Thêm bài thi</Text>
+                        </TouchableOpacity>
+
+                        <Text style={styles.sectionTitle}>Bài thi đã duyệt</Text>
+                        {examList.approvedExams.length > 0 ? (
+                            examList.approvedExams.map((exam: any) => (
+                                <TouchableOpacity
+                                    key={exam.idTest}
+                                    style={styles.examItem}
+                                    onPress={() => navigation.navigate('ExamDetailScreen', { idTest: exam.idTest, trangThai: exam.trangThai })}
+                                >
+                                    <Text style={styles.examTitle}>
+                                        Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
+                                    </Text>
+                                    <Text style={styles.examInfo}>
+                                        Thời gian làm bài: {exam.thoiGianLamBai.toString()} phút
+                                    </Text>
+                                    <Text style={styles.examInfo}>
+                                        Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}  -  {new Date(exam.ngayBD).toLocaleString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                    </Text>
+                                    <Text style={styles.examInfo}>
+                                        Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}  -  {new Date(exam.ngayKT).toLocaleString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>Không có bài thi đã duyệt.</Text>
+                        )}
+
+                        <Text style={styles.sectionTitle}>Bài thi chưa duyệt</Text>
+                        {examList.pendingExams.length > 0 ? (
+                            examList.pendingExams.map((exam: any) => (
+                                <View key={exam.idTest} style={styles.examItem}>
+                                    <TouchableOpacity
+                                        style={styles.examDetails}
+                                        onPress={() => navigation.navigate('ExamDetailScreen', { idTest: exam.idTest })}
+                                    >
+                                        <Text style={styles.examTitle}>
+                                            Loại bài thi: {exam.loaiTest === "CK" ? "Bài Cuối Kì" : exam.loaiTest === "GK" ? "Bài Giữa Kì" : exam.loaiTest}
+                                        </Text>
+                                        <Text style={styles.examInfo}>
+                                            Thời gian làm bài: {exam.thoiGianLamBai.toString()} phút
+                                        </Text>
+                                        <Text style={styles.examInfo}>
+                                            Ngày bắt đầu: {new Date(exam.ngayBD).toLocaleDateString("vi-VN")}  -  {new Date(exam.ngayBD).toLocaleString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                        </Text>
+                                        <Text style={styles.examInfo}>
+                                            Ngày kết thúc: {new Date(exam.ngayKT).toLocaleDateString("vi-VN")}  -  {new Date(exam.ngayKT).toLocaleString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.deleteIcon} onPress={() => openDeleteModal(exam.idTest)}>
+                                        <Icon name="delete" size={24} color="red" />
+                                    </TouchableOpacity>
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>Không có bài thi chưa duyệt.</Text>
+                        )}
+                    </ScrollView>
                 );
             case 'Điểm số':
                 return (
@@ -170,6 +218,21 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
 
                 {isLoading ? <Text>Loading...</Text> : renderTabContent()}
             </View>
+            <Modal visible={isDeleteModalVisible} transparent={true} animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalText}>Bạn có chắc chắn muốn xóa bài thi này không?</Text>
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.modalButtonCancel}>
+                                <Text style={styles.modalButtonText}>Hủy</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleDeleteExam} style={styles.modalButtonDelete}>
+                                <Text style={styles.modalButtonText}>Xóa</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </ImageBackground>
     );
 };
@@ -286,6 +349,67 @@ const styles = StyleSheet.create({
         color: '#888',
         textAlign: 'center',
         marginTop: 10,
+    },
+    deleteIcon: {
+        position: 'absolute',
+        right: 10,
+        top: 10,
+    },
+    examDetails: {
+        flex: 1, 
+        padding: 10,
+        justifyContent: 'center', 
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    
+    modalContainer: {
+        width: '20%',
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+    },
+    
+    modalButtonCancel: {
+        width:120,
+        backgroundColor: '#00405d',
+        padding: 10,
+        borderRadius: 5,
+    },
+    
+    modalButtonDelete: {
+        width:120,
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 5,
+    },
+    
+    modalButtonText: {
+        textAlign:'center',
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
 export default TeacherClassExamDetailScreen;

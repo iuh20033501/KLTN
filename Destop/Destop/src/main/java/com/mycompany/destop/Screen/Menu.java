@@ -7,6 +7,7 @@ package com.mycompany.destop.Screen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.text.BaseColor;
 import com.mycompany.destop.DTO.ChangePassDTO;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.DTO.UpdateUserDTO;
@@ -26,11 +27,16 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 import com.mycompany.destop.DTO.OTPRequestDTO;
 import com.mycompany.destop.DTO.OTPResponseDTO;
 import com.mycompany.destop.DTO.PhoneNumberDTO;
+import com.mycompany.destop.DTO.ProfileDto;
 import com.mycompany.destop.DTO.SignupDto;
 import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Modul.BaiTest;
+import com.mycompany.destop.Screen.DangNhap;
 
 import com.mycompany.destop.Service.AWSService;
 import com.mycompany.destop.Service.ApiClient;
@@ -86,6 +92,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -106,6 +114,17 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.hibernate.boot.model.source.internal.hbm.Helper;
+import software.amazon.awssdk.profiles.Profile;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.plot.PlotOrientation;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.ImgTemplate;
+//import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  *
@@ -488,7 +507,7 @@ public class Menu extends javax.swing.JFrame {
                     tk.getUser().getSdt(),
                     tk.getUser().getEmail(),
                     tk.getUser().getDiaChi(),
-                    tk.getUser().isGioiTinh(),
+                    tk.getUser().isGioiTinh() ? "Nam" : "Nữ",
                     tk.getUser().getNgaySinh().toString(),
                     tk.getRole(),
                     tk.getEnable(),
@@ -550,16 +569,26 @@ public class Menu extends javax.swing.JFrame {
         private void performAction() {
             int row = table.getSelectedRow(); // Lấy dòng hiện tại
             Object id = table.getValueAt(row, 0); // Lấy giá trị cột ID
+            Object soDienThoai = table.getValueAt(row, 3);
 
             if ("info".equals(action)) {
-                // Xử lý nút "Xem Thông tin"
-                JOptionPane.showMessageDialog(button, "Xem thông tin tài khoản ID: " + id);
+                try {
+                    // Xử lý nút "Xem Thông tin"
+                    showCatalogTaiKhoan(apiClient.getTaiKhoanBySDT(soDienThoai.toString()));
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else if ("delete".equals(action)) {
                 // Xử lý nút "Delete"
                 int confirm = JOptionPane.showConfirmDialog(button, "Bạn có chắc muốn xóa tài khoản ID: " + id + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    // Gọi API để xóa tài khoản (thêm hàm deleteAccount nếu cần)
+                    try {
+                        apiClient.callDeleteTaiKhoanApi(accessTokenLogin, Long.parseLong(id.toString()));
+                    } catch (Exception ex) {
+                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     JOptionPane.showMessageDialog(button, "Đã xóa tài khoản ID: " + id);
+                    loadTableTaiKhoan();
                 }
             }
         }
@@ -814,18 +843,6 @@ public class Menu extends javax.swing.JFrame {
         }
     }
 
-//    class ButtonRenderer extends JButton implements TableCellRenderer {
-//
-//        public ButtonRenderer() {
-//            setOpaque(true);
-//        }
-//
-//        @Override
-//        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//            setText(value != null ? value.toString() : "Xem");
-//            return this;
-//        }
-//    }
     /**
      *
      */
@@ -1233,7 +1250,7 @@ public class Menu extends javax.swing.JFrame {
         // Tạo JDialog
         JDialog dialog = new JDialog();
         dialog.setTitle("Thông tin tài khoản");
-        dialog.setSize(500, 600);
+        dialog.setSize(500, 730);
         dialog.setLayout(new BorderLayout(10, 10)); // Sử dụng BorderLayout
         dialog.setLocationRelativeTo(null);
 
@@ -1251,6 +1268,7 @@ public class Menu extends javax.swing.JFrame {
         JTextField txtUsername = new JTextField();
         if (taiKhoan != null && taiKhoan.getTenDangNhap() != null) {
             txtUsername.setText(taiKhoan.getTenDangNhap());
+            txtUsername.setEnabled(false);
         }
         gbc.gridx = 1;
         gbc.weightx = 0.8;  // 80% chiều rộng dòng
@@ -1264,6 +1282,7 @@ public class Menu extends javax.swing.JFrame {
         JTextField txtName = new JTextField();
         if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getHoTen() != null) {
             txtName.setText(taiKhoan.getUser().getHoTen());
+            txtName.setEnabled(false);
         }
         gbc.gridx = 1;
         txtName.setColumns(20);
@@ -1276,6 +1295,7 @@ public class Menu extends javax.swing.JFrame {
         JTextField txtEmail = new JTextField();
         if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getEmail() != null) {
             txtEmail.setText(taiKhoan.getUser().getEmail());
+            txtEmail.setEnabled(false);
         }
         gbc.gridx = 1;
         mainPanel.add(txtEmail, gbc);
@@ -1287,6 +1307,7 @@ public class Menu extends javax.swing.JFrame {
         JTextField txtAddress = new JTextField();
         if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getDiaChi() != null) {
             txtAddress.setText(taiKhoan.getUser().getDiaChi());
+            txtAddress.setEnabled(false);
         }
         gbc.gridx = 1;
         mainPanel.add(txtAddress, gbc);
@@ -1298,6 +1319,7 @@ public class Menu extends javax.swing.JFrame {
         JCheckBox chkMale = new JCheckBox("Nam");
         if (taiKhoan != null && taiKhoan.getUser() != null) {
             chkMale.setSelected(taiKhoan.getUser().isGioiTinh());
+            chkMale.setEnabled(false);
         }
         gbc.gridx = 1;
         mainPanel.add(chkMale, gbc);
@@ -1309,6 +1331,7 @@ public class Menu extends javax.swing.JFrame {
         JTextField txtPhone = new JTextField();
         if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getSdt() != null) {
             txtPhone.setText(taiKhoan.getUser().getSdt());
+            txtPhone.setEnabled(false);
         }
         gbc.gridx = 1;
         mainPanel.add(txtPhone, gbc);
@@ -1320,6 +1343,7 @@ public class Menu extends javax.swing.JFrame {
         com.toedter.calendar.JDateChooser dateChooser = new com.toedter.calendar.JDateChooser();
         if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getNgaySinh() != null) {
             dateChooser.setDate(java.sql.Date.valueOf(taiKhoan.getUser().getNgaySinh()));
+            dateChooser.setEnabled(false);
         }
         gbc.gridx = 1;
         mainPanel.add(dateChooser, gbc);
@@ -1329,9 +1353,26 @@ public class Menu extends javax.swing.JFrame {
         gbc.gridy++;
         mainPanel.add(new JLabel("Lương:"), gbc);
         JTextField txtLuong = new JTextField();
-//        if (taiKhoan != null) {
-//            txtLuong.setText(String.valueOf(taiKhoan.getLuong()));
-//        }
+//        if (txtLuong !=null && taiKhoan.getUser()!= null && taiKhoan.getUser().getNgaySinh() != null )
+        if (taiKhoan != null) {
+            NhanVien nhanVien = null;
+            GiangVien giangVien = null;
+            try {
+                // Kiểm tra vai trò (role) của người dùng
+                if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.QUANLY)) {
+                    nhanVien = apiClient.findNhanVienById(accessTokenLogin, taiKhoan.getUser().getIdUser());
+                    txtLuong.setText(nhanVien.getLuongThang().toString());
+                } else if (taiKhoan.getRole().equals(ChucVuEnum.TEACHER)) {
+                    giangVien = apiClient.findGiangVienById(accessTokenLogin, taiKhoan.getUser().getIdUser());
+                    txtLuong.setText(giangVien.getLuong().toString());
+                } else if (nhanVien == null && giangVien == null) {
+                    txtLuong.setText("0");
+                    txtLuong.setEnabled(false);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         gbc.gridx = 1;
         mainPanel.add(txtLuong, gbc);
 
@@ -1339,9 +1380,17 @@ public class Menu extends javax.swing.JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
         mainPanel.add(new JLabel("Vai trò:"), gbc);
-        JComboBox<String> cbVaiTro = new JComboBox<>(new String[]{"GiangVien", "NhanVien", "Admin"});
+        String[] roles;
         if (taiKhoan != null) {
-            String vaiTro = taiKhoan.getRole().toString(); // Trả về chuỗi, ví dụ: "TEACHER", "QUANLY", "ADMIN"
+            roles = new String[]{"GiangVien", "NhanVien", "Admin", "HocVien"};  // Thêm "HocVien" nếu taiKhoan != null
+        } else {
+            roles = new String[]{"GiangVien", "NhanVien", "Admin"};  // Nếu taiKhoan == null, không có "HocVien"
+        }
+        JComboBox<String> cbVaiTro = new JComboBox<>(roles);
+        if (taiKhoan != null) {
+            String vaiTro = taiKhoan.getRole().toString();
+            cbVaiTro.setEnabled(false);
+            // Trả về chuỗi, ví dụ: "TEACHER", "QUANLY", "ADMIN"
             switch (vaiTro) {
                 case "TEACHER" ->
                     cbVaiTro.setSelectedItem("GiangVien");
@@ -1349,27 +1398,64 @@ public class Menu extends javax.swing.JFrame {
                     cbVaiTro.setSelectedItem("NhanVien");
                 case "ADMIN" ->
                     cbVaiTro.setSelectedItem("Admin");
+                case "STUDENT" ->
+                    cbVaiTro.setSelectedItem("HocVien");
             }
         }
+
         gbc.gridx = 1;
         mainPanel.add(cbVaiTro, gbc);
-
+        // Hình ảnh
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Hình ảnh:"), gbc);
+        JButton btnUploadImage = new JButton("Tải ảnh");
+        gbc.gridx = 1;
+        mainPanel.add(btnUploadImage, gbc);
+        if (taiKhoan == null) {
+            btnUploadImage.setEnabled(false);
+        }
         // Hiển thị ảnh
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
-        JLabel lblDisplayImage = new JLabel("", JLabel.CENTER); // Căn giữa nội dung
+        JLabel lblDisplayImage = new JLabel("", JLabel.CENTER);
         lblDisplayImage.setPreferredSize(new Dimension(100, 100));
         lblDisplayImage.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getImage() != null) {
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon(taiKhoan.getUser().getImage()).getImage()
-                    .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
-            lblDisplayImage.setIcon(imageIcon);
-        }
         mainPanel.add(lblDisplayImage, gbc);
 
-        dialog.add(mainPanel, BorderLayout.CENTER);
+// Kiểm tra và hiển thị ảnh
+        if (taiKhoan != null && taiKhoan.getUser() != null && taiKhoan.getUser().getImage() != null) {
+            String imagePath = taiKhoan.getUser().getImage(); // Đường dẫn ảnh từ cơ sở dữ liệu
+            File imageFile = new File(imagePath);
 
+            // Kiểm tra file ảnh có tồn tại không
+            if (imageFile.exists()) {
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(imageFile.getAbsolutePath()).getImage()
+                        .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+                lblDisplayImage.setIcon(imageIcon);
+            } else {
+                lblDisplayImage.setText("Không tìm thấy ảnh");
+            }
+        } else {
+            lblDisplayImage.setText("Chưa có ảnh");
+        }
+        mainPanel.add(lblDisplayImage, gbc);
+        dialog.add(mainPanel, BorderLayout.CENTER);
+        //xư lý load ảnh
+        btnUploadImage.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(dialog);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(file.getAbsolutePath()).getImage()
+                        .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+                imageIcon.setDescription(file.getAbsolutePath());
+                lblDisplayImage.setText("");
+                lblDisplayImage.setIcon(imageIcon);
+
+            }
+        });
         // Panel cho các nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton btnSave = new JButton("Lưu");
@@ -1377,12 +1463,21 @@ public class Menu extends javax.swing.JFrame {
         btnSave.setBackground(new Color(0, 204, 0));
         btnSave.setForeground(Color.WHITE);
 
+        JButton btnUpdateLuong = new JButton("Cập nhật lương");
+        btnUpdateLuong.setPreferredSize(new Dimension(100, 35));
+        btnUpdateLuong.setBackground(new Color(0, 204, 0));
+        btnUpdateLuong.setForeground(Color.WHITE);
+
         JButton btnCancel = new JButton("Hủy");
         btnCancel.setPreferredSize(new Dimension(100, 35));
         btnCancel.setBackground(new Color(204, 0, 0));
         btnCancel.setForeground(Color.WHITE);
-
-        buttonPanel.add(btnSave);
+        if (taiKhoan == null) {
+            buttonPanel.add(btnSave);
+        } else if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.ADMIN)) {
+//            btnSave.setText("Cập nhật lương");
+            buttonPanel.add(btnUpdateLuong);
+        }
         buttonPanel.add(btnCancel);
 
         dialog.add(buttonPanel, BorderLayout.SOUTH);
@@ -1391,103 +1486,222 @@ public class Menu extends javax.swing.JFrame {
         dialog.setVisible(true);
 
         // Xử lý sự kiện lưu và hủy
-        btnSave.addActionListener(e -> {
-            try {
-                // Kiểm tra các điều kiện
-                String username = txtUsername.getText();
-                String email = txtEmail.getText();
-                String phone = txtPhone.getText();
-                String salary = txtLuong.getText();
-                Date selectedDate = dateChooser.getDate();
+        btnSave.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lấy giá trị từ các trường nhập liệu
+                String username = txtUsername.getText().trim();
+                String name = txtName.getText().trim();
+                String email = txtEmail.getText().trim();
+                String phone = txtPhone.getText().trim();
+                String address = txtAddress.getText().trim();
+                boolean isMale = chkMale.isSelected();
                 Date currentDate = new java.util.Date();
-                if (!username.matches(".*[a-zA-Z].*")) { // Tên đăng nhập phải chứa ít nhất một chữ cái
+                Date selectedDate = dateChooser.getDate();
+                String salaryStr = txtLuong.getText().trim();
+
+                // Kiểm tra các điều kiện
+                if (!isValidUsername(username)) {
                     JOptionPane.showMessageDialog(dialog, "Tên đăng nhập phải chứa ít nhất một chữ cái.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (!email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$")) { // Email phải có dạng @gmail.com
+                if (!isValidEmail(email)) {
                     JOptionPane.showMessageDialog(dialog, "Email phải có dạng @gmail.com.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (!phone.matches("^0\\d{9}$")) { // SDT phải bắt đầu bằng 0 và có 10 chữ số
+                if (!isValidPhone(phone)) {
                     JOptionPane.showMessageDialog(dialog, "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (selectedDate != null && !selectedDate.before(currentDate)) { // Kiểm tra ngày sinh phải là quá khứ
+                if (!isValidDateOfBirth(selectedDate, currentDate)) {
                     JOptionPane.showMessageDialog(dialog, "Ngày sinh phải là một ngày trong quá khứ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                String selectedRole = (String) cbVaiTro.getSelectedItem();
-                Long vaiTroValue = switch (selectedRole) {
-                    case "GiangVien" ->
-                        1L;
-                    case "NhanVien" ->
-                        2L;
-                    case "Admin" ->
-                        3L;
-                    default ->
-                        null; // Giá trị mặc định nếu không khớp
-                };
 
-                if (vaiTroValue == null) {
+                String selectedRole = (String) cbVaiTro.getSelectedItem();
+                int vaiTroValue = getRoleValue(selectedRole);
+
+                if (vaiTroValue == -1) {
                     JOptionPane.showMessageDialog(dialog, "Vai trò không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                try {
-                    Double.parseDouble(salary); // Kiểm tra lương là số
-                } catch (NumberFormatException ex) {
+                if (!isValidSalary(salaryStr)) {
                     JOptionPane.showMessageDialog(dialog, "Lương phải là một số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-//                Long phoneNumber = Long.parseLong(phone);
-                // Gọi phương thức cập nhật thông tin tài khoản
-                TaiKhoanLogin taiKhoanFind = apiClient.getTaiKhoanBySDT(phone);
-                if (taiKhoan != null) {
-                    PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phone);
-                    String OTP = apiClient.sendOTP(phoneNumberDTO);
-                    System.out.println(OTP);
-                    String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phone + ":");
+
+                try {
+                    String oldImageUrl = getOldImageUrl();
+                    String newImageUrl = uploadImageIfNeeded();
+
+                    // Kiểm tra nếu taiKhoan == null thì gửi OTP
+                    if (taiKhoan == null) {
+                        handleOTPVerification(phone, username, name, email, address, newImageUrl, isMale, selectedDate, salaryStr, vaiTroValue);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Số điện thoại đã được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
+                    }
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Lỗi khi tạo tài khoản", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            // Phương thức kiểm tra username
+            private boolean isValidUsername(String username) {
+                return username.matches(".*[a-zA-Z].*");
+            }
+
+// Phương thức kiểm tra email
+            private boolean isValidEmail(String email) {
+                return email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$");
+            }
+
+// Phương thức kiểm tra số điện thoại
+            private boolean isValidPhone(String phone) {
+                return phone.matches("^0\\d{9}$");
+            }
+
+// Phương thức kiểm tra ngày sinh
+            private boolean isValidDateOfBirth(Date selectedDate, Date currentDate) {
+                return selectedDate != null && selectedDate.before(currentDate);
+            }
+
+// Phương thức lấy giá trị vai trò
+            private int getRoleValue(String selectedRole) {
+                return switch (selectedRole) {
+                    case "GiangVien" ->
+                        2;
+                    case "NhanVien" ->
+                        3;
+                    case "Admin" ->
+                        4;
+                    case "HocVien" ->
+                        0;
+                    default ->
+                        -1; // Giá trị mặc định nếu không khớp
+                };
+            }
+
+// Phương thức kiểm tra lương
+            private boolean isValidSalary(String salaryStr) {
+                try {
+                    Long.parseLong(salaryStr);
+                    return true;
+                } catch (NumberFormatException ex) {
+                    return false;
+                }
+            }
+
+// Lấy URL ảnh cũ nếu có
+            private String getOldImageUrl() {
+                return (taiKhoan != null) ? taiKhoan.getUser().getImage() : null;
+            }
+
+// Phương thức upload ảnh nếu có
+            private String uploadImageIfNeeded() throws IOException {
+                String oldImageUrl = getOldImageUrl();
+                String newImageUrl = oldImageUrl; // Mặc định là ảnh cũ
+                if (lblDisplayImage.getIcon() != null) {
+                    ImageIcon icon = (ImageIcon) lblDisplayImage.getIcon();
+                    String localFilePath = icon.getDescription();
+                    if (localFilePath == null || localFilePath.trim().isEmpty()) {
+                        throw new IOException("Đường dẫn ảnh không hợp lệ!");
+                    }
+
+                    // Thêm ngày tháng vào tên file để tránh trùng lặp
+                    String timeStamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+                    String fileName = "images/" + timeStamp + ".jpg";
+                    newImageUrl = awsService.uploadImage(localFilePath, fileName);
+                }
+
+                // Nếu có ảnh cũ, xóa ảnh cũ trên AWS (chỉ khi ảnh mới được upload thành công)
+                if (oldImageUrl != null && !oldImageUrl.isEmpty() && !oldImageUrl.equals(newImageUrl)) {
+                    awsService.deleteImage(oldImageUrl);
+                }
+
+                return newImageUrl;
+            }
+
+// Phương thức xử lý OTP
+            private void handleOTPVerification(String phone, String username, String name, String email, String address, String newImageUrl,
+                    boolean isMale, Date selectedDate, String salaryStr, int vaiTroValue) {
+                PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phone);
+                String OTP;
+                try {
+                    OTP = apiClient.sendOTP(phoneNumberDTO);
+
                     if (OTP != null) {
-                        if (otpInput != null && !otpInput.isEmpty()) {
+                        int maxRetryAttempts = 5;
+                        int attemptCount = 0;
 
-                            if (otpInput.equals(OTP)) {
-                                System.out.println("thanhcong");
-                                OTPResponseDTO reponseOTP = apiClient.verifyOTPFromClient(new OTPRequestDTO(phone, otpInput));
-                                JOptionPane.showMessageDialog(null, "Xác thực thành công!");
-                                //
-
-                                //
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
+                        while (attemptCount < maxRetryAttempts) {
+                            String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phone + ":");
+                            if (otpInput == null) {
+                                // Thoát khỏi vòng lặp
+                                break;
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Mã OTP không thể bỏ trống. Vui lòng nhập mã OTP.");
+                            if (!otpInput.isEmpty()) {
+                                if (otpInput.equals(OTP)) {
+                                    OTPResponseDTO responseOTP = apiClient.verifyOTPFromClient(new OTPRequestDTO(phone, otpInput));
+                                    SignupDto signup = new SignupDto(username, name, email, "1111", address, newImageUrl, isMale, phone,
+                                            selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Long.parseLong(salaryStr));
+                                    ProfileDto profile = apiClient.signupApi(accessTokenLogin, signup, vaiTroValue);
+                                    JOptionPane.showMessageDialog(null, "Tạo tài khoản thành công!");
+                                    dialog.dispose();
+                                    loadTableTaiKhoan();
+                                    break;
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Mã OTP không đúng. Vui lòng kiểm tra lại mã và thử lại.");
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Mã OTP không thể bỏ trống. Vui lòng nhập mã OTP.");
+                            }
+                            attemptCount++;
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Không thể gửi mã OTP. Vui lòng thử lại sau.");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Số điện thoại đã được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (Exception ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+        btnUpdateLuong.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String salaryStr = txtLuong.getText().trim();
+                if (!isValidSalary(salaryStr)) {
+                    JOptionPane.showMessageDialog(dialog, "Lương phải là một số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.QUANLY)) {
+
+                } else if (taiKhoan.getRole().equals(ChucVuEnum.TEACHER)) {
+
+                }
+            }
+
+            private boolean isValidSalary(String salaryStr) {
+                try {
+                    Long.parseLong(salaryStr);
+                    return true;
+                } catch (NumberFormatException ex) {
+                    return false;
+                }
             }
         });
-
         btnCancel.addActionListener(e -> dialog.dispose());
     }
 
-    private boolean updateTaiKhoanInfo(SignupDto signupDTO) {
-        // Thực hiện cập nhật thông tin tài khoản từ các trường
+    private boolean updateTaiKhoanInfo(SignupDto signupDTO, int role) {
 
-        // Cập nhật hình ảnh nếu có
-//        String image = lblDisplayImage.getIcon() != null ? ((ImageIcon) lblDisplayImage.getIcon()).getDescription() : null;
-        // Gọi dịch vụ để lưu thông tin tài khoản
-        // Nếu bạn có một phương thức để cập nhật thông tin tài khoản, gọi nó ở đây
-        // Ví dụ: TaiKhoanService.updateTaiKhoan(new TaiKhoan(username, name, email, password, address, image, gender, phone, birthday, luong));
         return true; // Trả về true nếu cập nhật thành công
     }
 
@@ -1888,7 +2102,7 @@ public class Menu extends javax.swing.JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         exportToPDF(hoaDon, listTT);
-                        JOptionPane.showMessageDialog(dialogListThanhToan, "Đã xuất PDF thành công!");
+//                        JOptionPane.showMessageDialog(dialogListThanhToan, "Đã xuất PDF thành công!");
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(dialogListThanhToan, "Có lỗi khi xuất PDF.");
                         ex.printStackTrace();
@@ -1911,33 +2125,176 @@ public class Menu extends javax.swing.JFrame {
         }
     }
 
-// Phương thức xuất ra file PDF
+    public void showCatalogTableTest(Long idLop) {
+        try {
+            // Lấy thông tin hóa đơn từ dịch vụ
+//            HoaDon hoaDon = hoaDonService.getHoaDonByIdApi(accessTokenLogin, idLop);
+            ArrayList<BaiTest> listBaiTest = (ArrayList<BaiTest>) lopHocService.loadBaiTestByIdLopxetTuyenFalse(accessTokenLogin, idLop);
+
+            if (listBaiTest == null) {
+                JOptionPane.showMessageDialog(null, "Không có bài Test nào cần duyệt");
+                return;
+            }
+
+            // Tạo JDialog
+            JDialog dialogListThanhToan = new JDialog();
+            dialogListThanhToan.setTitle("Thông tin bài test cần duyệt");
+            dialogListThanhToan.setSize(800, 500);
+            dialogListThanhToan.setLocationRelativeTo(null); // Đặt dialog giữa màn hình
+
+            // Tạo bảng hiển thị thông tin
+            String[] columnNames = {"Chọn", "ID Bai Test", "Ngày bắt đầu", "Ngày kết thúc", "Loai Test"};
+            Object[][] data = new Object[listBaiTest.size()][5];
+
+            for (int i = 0; i < listBaiTest.size(); i++) {
+                BaiTest baiTest = listBaiTest.get(i);
+                data[i][0] = false; // Cột checkbox mặc định là chưa chọn
+                data[i][1] = baiTest.getIdTest();
+                data[i][2] = baiTest.getNgayBD();
+                data[i][3] = baiTest.getNgayKT();
+                data[i][4] = baiTest.getLoaiTest(); // Hiển thị số tiền
+            }
+
+            DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+                @Override
+                public Class<?> getColumnClass(int column) {
+                    return column == 0 ? Boolean.class : String.class; // Cột 0 là checkbox
+                }
+            };
+            JTable table = new JTable(tableModel);
+            JScrollPane scrollPane = new JScrollPane(table);
+
+            // Panel chứa các nút chức năng
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new FlowLayout());
+
+            JButton btnCancel = new JButton("Hủy");
+            btnCancel.addActionListener(e -> dialogListThanhToan.dispose());
+
+            JButton btnAccept = new JButton("Chấp nhận");
+            btnAccept.addActionListener(e -> {
+                ArrayList<Long> selectedIds = new ArrayList<>();
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    Boolean isSelected = (Boolean) tableModel.getValueAt(i, 0);
+                    if (isSelected != null && isSelected) {
+                        Long idTT = Long.valueOf(tableModel.getValueAt(i, 1).toString());
+                        selectedIds.add(idTT);
+                    }
+                }
+                try {
+                    Boolean kqua = lopHocService.aceptBaiTestByIdLopxetTuyenFalse(accessTokenLogin, selectedIds);
+                    dialogListThanhToan.dispose();
+//                JOptionPane.showMessageDialog(dialogListThanhToan, "Danh sách ID đã chọn: " + selectedIds);
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            JButton btnCancelTest = new JButton("Từ chối");
+            btnCancelTest.addActionListener(e -> {
+                ArrayList<Long> selectedIds = new ArrayList<>();
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    Boolean isSelected = (Boolean) tableModel.getValueAt(i, 0);
+                    if (isSelected != null && isSelected) {
+                        Long idTT = Long.valueOf(tableModel.getValueAt(i, 1).toString());
+                        selectedIds.add(idTT);
+                    }
+                }
+                try {
+                    Boolean kqua = lopHocService.aceptBaiTestByIdLopxetTuyenFalse(accessTokenLogin, selectedIds);
+                    dialogListThanhToan.dispose();
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+
+            buttonPanel.add(btnCancel);
+            buttonPanel.add(btnAccept);
+            buttonPanel.add(btnCancelTest);
+
+            // Thêm các thành phần vào JDialog
+            dialogListThanhToan.setLayout(new BorderLayout());
+            dialogListThanhToan.add(scrollPane, BorderLayout.CENTER);
+            dialogListThanhToan.add(buttonPanel, BorderLayout.SOUTH);
+
+            dialogListThanhToan.setVisible(true); // Hiển thị dialog
+        } catch (Exception ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin hóa đơn.");
+        }
+    }
+
+
+
     public void exportToPDF(HoaDon hoaDon, ArrayList<ThanhToan> listTT) throws DocumentException, IOException {
+        // Định dạng ngày tháng
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
         // Tạo tài liệu PDF
         Document document = new Document();
         String fileName = "hoa_don_" + hoaDon.getIdHoaDon() + ".pdf";
         PdfWriter.getInstance(document, new FileOutputStream(fileName));
         document.open();
 
-        // Thêm thông tin vào PDF
-        document.add(new Paragraph("Ma Hoa Don: " + hoaDon.getIdHoaDon()));
-        document.add(new Paragraph("Ten Nguoi Lap: " + hoaDon.getNguoiLap().getHoTen()));
-        document.add(new Paragraph("Ngay Lap: " + hoaDon.getNgayLap()));
-        document.add(new Paragraph("Thanh Tien: " + hoaDon.getThanhTien()));
-        document.add(new Paragraph(" "));
-        // Thêm bảng danh sách thanh toán
-        PdfPTable table = new PdfPTable(3); // Bảng có 3 cột: ID, Học viên, Lớp học
-        table.addCell("ID");
-        table.addCell("Học viên");
-        table.addCell("Lớp học");
+        // Thêm tiêu đề
+        Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.BLUE);
+        Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
 
+        document.add(new Paragraph(" ")); // Dòng trống
+
+        // Thêm thông tin hóa đơn
+        Font infoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+        document.add(new Paragraph("Mã Hóa Đơn: " + hoaDon.getIdHoaDon(), infoFont));
+        document.add(new Paragraph("Tên Người Lập: " + hoaDon.getNguoiLap().getHoTen(), infoFont));
+        document.add(new Paragraph("Ngày Lập: " + dateFormat.format(hoaDon.getNgayLap()), infoFont));
+        document.add(new Paragraph("Thành Tiền: " + hoaDon.getThanhTien() + " VND", infoFont));
+        document.add(new Paragraph(" ")); // Dòng trống
+
+        // Thêm bảng danh sách thanh toán
+        PdfPTable table = new PdfPTable(3); // Bảng có 3 cột
+        table.setWidthPercentage(100); // Chiếm 100% chiều rộng trang
+        table.setSpacingBefore(10f);
+        table.setSpacingAfter(10f);
+
+        // Thêm tiêu đề bảng
+        Font tableHeaderFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.WHITE);
+        PdfPCell headerCell;
+
+        headerCell = new PdfPCell(new Phrase("ID", tableHeaderFont));
+        headerCell.setBackgroundColor(BaseColor.DARK_GRAY);
+        headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(headerCell);
+
+        headerCell = new PdfPCell(new Phrase("Học Viên", tableHeaderFont));
+        headerCell.setBackgroundColor(BaseColor.DARK_GRAY);
+        headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(headerCell);
+
+        headerCell = new PdfPCell(new Phrase("Lớp Học", tableHeaderFont));
+        headerCell.setBackgroundColor(BaseColor.DARK_GRAY);
+        headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(headerCell);
+
+        // Thêm dữ liệu vào bảng
+        Font tableDataFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
         for (ThanhToan thanhToan : listTT) {
-            table.addCell(String.valueOf(thanhToan.getIdTT()));
-            table.addCell(thanhToan.getNguoiThanhToan().getHoTen());
-            table.addCell(thanhToan.getLopHoc().getTenLopHoc());
+            PdfPCell dataCell;
+
+            dataCell = new PdfPCell(new Phrase(String.valueOf(thanhToan.getIdTT()), tableDataFont));
+            dataCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(dataCell);
+
+            dataCell = new PdfPCell(new Phrase(thanhToan.getNguoiThanhToan().getHoTen(), tableDataFont));
+            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(dataCell);
+
+            dataCell = new PdfPCell(new Phrase(thanhToan.getLopHoc().getTenLopHoc(), tableDataFont));
+            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(dataCell);
         }
 
-        // Thêm bảng vào tài liệu PDF
+        // Thêm bảng vào tài liệu
         document.add(table);
 
         // Đóng tài liệu PDF
@@ -2064,6 +2421,12 @@ public class Menu extends javax.swing.JFrame {
         btnSaveLop.setForeground(Color.WHITE); // Màu chữ trắng
         btnSaveLop.setFont(new Font("Arial", Font.BOLD, 14)); // Kiểu chữ
 
+        JButton btnLoadTest = new JButton("Xét duyệt bài test");
+        btnLoadTest.setPreferredSize(new Dimension(120, 40)); // Kích thước nút
+        btnLoadTest.setBackground(new Color(0, 153, 0)); // Màu nền xanh lá
+        btnLoadTest.setForeground(Color.WHITE); // Màu chữ trắng
+        btnLoadTest.setFont(new Font("Arial", Font.BOLD, 14)); // Kiểu chữ
+
 // Nút Hủy
         JButton btnCancel = new JButton("Hủy");
         btnCancel.setPreferredSize(new Dimension(120, 40)); // Kích thước nút
@@ -2072,6 +2435,7 @@ public class Menu extends javax.swing.JFrame {
         btnCancel.setFont(new Font("Arial", Font.BOLD, 14)); // Kiểu chữ
 
         buttonPanel.add(btnSaveLop);
+        buttonPanel.add(btnLoadTest);
         buttonPanel.add(btnCancel);
 
         dialogLop.add(buttonPanel, BorderLayout.SOUTH);
@@ -2089,6 +2453,9 @@ public class Menu extends javax.swing.JFrame {
                     ex.printStackTrace();
                 }
             }
+        });
+        btnSaveLop.addActionListener(e -> {
+            showCatalogTableTest(lop.getIdLopHoc());
         });
 
         // Xử lý nút hủy
@@ -2457,6 +2824,90 @@ public class Menu extends javax.swing.JFrame {
         dialog.setVisible(true);
     }
 
+    private Map<Integer, Double> thongKeDoanhThuTheoThanMap(ArrayList<HoaDon> listHoaDon) {
+        Map<Integer, Double> doanhThuTheoThang = new TreeMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM");
+
+        for (HoaDon hoaDon : listHoaDon) {
+            int month = Integer.parseInt(sdf.format(hoaDon.getNgayLap())); // Lấy tháng từ ngày lập
+            doanhThuTheoThang.put(month, doanhThuTheoThang.getOrDefault(month, 0.0) + hoaDon.getThanhTien());
+        }
+
+        return doanhThuTheoThang;
+    }
+
+    private void veSoDoTheoThang(JPanel jPnSoDo, Map<Integer, Double> doanhThuTheoThang) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Thêm dữ liệu vào dataset
+        for (Map.Entry<Integer, Double> entry : doanhThuTheoThang.entrySet()) {
+            dataset.addValue(entry.getValue(), "Doanh Thu", "Tháng " + entry.getKey());
+        }
+
+        // Tạo biểu đồ
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Doanh Thu Theo Tháng", // Tiêu đề
+                "Tháng", // Trục X
+                "Doanh Thu (VNĐ)", // Trục Y
+                dataset, // Dữ liệu
+                PlotOrientation.VERTICAL,
+                false, // Hiển thị chú thích
+                true, // Hiển thị tooltips
+                false // Không tạo URL
+        );
+
+        // Hiển thị biểu đồ vào JPanel
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(jPnSoDo.getSize());
+        jPnSoDo.removeAll(); // Xóa nội dung cũ
+        jPnSoDo.setLayout(new BorderLayout());
+        jPnSoDo.add(chartPanel, BorderLayout.CENTER);
+        jPnSoDo.revalidate(); // Làm mới giao diện
+        jPnSoDo.repaint();
+    }
+
+    private Map<Integer, Double> thongKeDoanhThuTheoNam(ArrayList<HoaDon> listHoaDon) {
+        Map<Integer, Double> doanhThuTheoNam = new TreeMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+
+        for (HoaDon hoaDon : listHoaDon) {
+            int year = Integer.parseInt(sdf.format(hoaDon.getNgayLap())); // Lấy năm từ ngày lập
+            doanhThuTheoNam.put(year, doanhThuTheoNam.getOrDefault(year, 0.0) + hoaDon.getThanhTien());
+        }
+
+        return doanhThuTheoNam;
+    }
+
+    private void veSoDoTheoNam(JPanel jPnSoDo, Map<Integer, Double> doanhThuTheoNam) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Thêm dữ liệu vào dataset
+        for (Map.Entry<Integer, Double> entry : doanhThuTheoNam.entrySet()) {
+            dataset.addValue(entry.getValue(), "Doanh Thu", "Năm " + entry.getKey());
+        }
+
+        // Tạo biểu đồ
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Doanh Thu Theo Năm", // Tiêu đề
+                "Năm", // Trục X
+                "Doanh Thu (VNĐ)", // Trục Y
+                dataset, // Dữ liệu
+                PlotOrientation.VERTICAL,
+                false, // Hiển thị chú thích
+                true, // Hiển thị tooltips
+                false // Không tạo URL
+        );
+
+        // Hiển thị biểu đồ vào JPanel
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(jPnSoDo.getSize());
+        jPnSoDo.removeAll(); // Xóa nội dung cũ
+        jPnSoDo.setLayout(new BorderLayout());
+        jPnSoDo.add(chartPanel, BorderLayout.CENTER);
+        jPnSoDo.revalidate(); // Làm mới giao diện
+        jPnSoDo.repaint();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -2552,13 +3003,14 @@ public class Menu extends javax.swing.JFrame {
         cardThongKe = new javax.swing.JPanel();
         jLabelTextThongKe = new javax.swing.JLabel();
         jBtDoanhSo = new javax.swing.JButton();
-        jComDoanhSo = new javax.swing.JComboBox<>();
         jBtDiemSo = new javax.swing.JButton();
-        jComDiemSo = new javax.swing.JComboBox<>();
         jBtSoHocVien = new javax.swing.JButton();
-        jComSoHocVien = new javax.swing.JComboBox<>();
         jButDiemTest = new javax.swing.JButton();
-        jComDiemTest = new javax.swing.JComboBox<>();
+        jPnSoDo = new javax.swing.JPanel();
+        jComDoanhSo = new javax.swing.JComboBox<>();
+        jComSoHocVien = new javax.swing.JComboBox<>();
+        jComBaiTap = new javax.swing.JComboBox<>();
+        jComBaiTest = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1115, 730));
@@ -3135,20 +3587,21 @@ public class Menu extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cardTrangChuLayout.createSequentialGroup()
-                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 695, Short.MAX_VALUE)
+                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanelGioiTinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanelAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(cardTrangChuLayout.createSequentialGroup()
-                                .addComponent(jPanelName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanelName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelTrangChu))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanelNgaySinh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(cardTrangChuLayout.createSequentialGroup()
-                                .addComponent(jLabelTrangChu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabelImg, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(113, 113, 113)
-                                .addComponent(jLabelInfo))))
+                                .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(cardTrangChuLayout.createSequentialGroup()
+                                        .addComponent(jLabelImg, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabelInfo))
+                                    .addComponent(jPanelNgaySinh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, cardTrangChuLayout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3162,12 +3615,17 @@ public class Menu extends javax.swing.JFrame {
         cardTrangChuLayout.setVerticalGroup(
             cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardTrangChuLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
                 .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelImg, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelTrangChu, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(cardTrangChuLayout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelTrangChu, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(94, 94, 94))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cardTrangChuLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabelImg, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanelName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanelNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -3507,16 +3965,15 @@ public class Menu extends javax.swing.JFrame {
         jLabelTextThongKe.setText("Thống Kê");
 
         jBtDoanhSo.setText("Doanh Số");
-
-        jComDoanhSo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo năm", "Theo tháng", " ", " " }));
+        jBtDoanhSo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jBtDoanhSoMouseClicked(evt);
+            }
+        });
 
         jBtDiemSo.setText("Điểm bài tập");
 
-        jComDiemSo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa", " " }));
-
         jBtSoHocVien.setText("Số học viên");
-
-        jComSoHocVien.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo lớp", "Theo khóa", " " }));
 
         jButDiemTest.setText("Điểm bài Test");
         jButDiemTest.addActionListener(new java.awt.event.ActionListener() {
@@ -3525,12 +3982,24 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
-        jComDiemTest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa", " " }));
-        jComDiemTest.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComDiemTestActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPnSoDoLayout = new javax.swing.GroupLayout(jPnSoDo);
+        jPnSoDo.setLayout(jPnSoDoLayout);
+        jPnSoDoLayout.setHorizontalGroup(
+            jPnSoDoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPnSoDoLayout.setVerticalGroup(
+            jPnSoDoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 439, Short.MAX_VALUE)
+        );
+
+        jComDoanhSo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Tháng", "Theo Năm" }));
+
+        jComSoHocVien.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+
+        jComBaiTap.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+
+        jComBaiTest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
 
         javax.swing.GroupLayout cardThongKeLayout = new javax.swing.GroupLayout(cardThongKe);
         cardThongKe.setLayout(cardThongKeLayout);
@@ -3538,48 +4007,55 @@ public class Menu extends javax.swing.JFrame {
             cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabelTextThongKe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(cardThongKeLayout.createSequentialGroup()
-                .addGap(98, 98, 98)
-                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jBtSoHocVien, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jBtDoanhSo, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComDoanhSo, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComSoHocVien, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
+                .addContainerGap(101, Short.MAX_VALUE)
                 .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(cardThongKeLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jBtDiemSo, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComDiemSo, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(cardThongKeLayout.createSequentialGroup()
-                        .addComponent(jButDiemTest, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComDiemTest, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(130, 130, 130))
+                    .addComponent(jBtDoanhSo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComDoanhSo, 0, 139, Short.MAX_VALUE))
+                .addGap(68, 68, 68)
+                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jBtSoHocVien, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+                    .addComponent(jComSoHocVien, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(97, 97, 97)
+                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jBtDiemSo, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                    .addComponent(jComBaiTap, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(84, 84, 84)
+                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButDiemTest, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                    .addComponent(jComBaiTest, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(34, 34, 34))
+            .addGroup(cardThongKeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPnSoDo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         cardThongKeLayout.setVerticalGroup(
             cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardThongKeLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
                 .addComponent(jLabelTextThongKe, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(71, 71, 71)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jComDoanhSo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jBtDoanhSo, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE))
-                    .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jBtDiemSo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComDiemSo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(96, 96, 96)
-                .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButDiemTest, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jComDiemTest, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComSoHocVien, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jBtSoHocVien, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(120, 120, 120))
+                    .addGroup(cardThongKeLayout.createSequentialGroup()
+                        .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jBtDoanhSo, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                            .addComponent(jBtSoHocVien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(6, 6, 6)
+                        .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComDoanhSo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComSoHocVien, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(9, 9, 9))
+                    .addGroup(cardThongKeLayout.createSequentialGroup()
+                        .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButDiemTest, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                            .addComponent(jBtDiemSo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComBaiTap, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComBaiTest, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)))
+                .addComponent(jPnSoDo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jplMain.add(cardThongKe, "card3");
@@ -3610,8 +4086,8 @@ public class Menu extends javax.swing.JFrame {
 
     private void lblOpenMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblOpenMenuMouseClicked
         openMenu();
-        jButtonChangeInfo.setEnabled(false);
-        jBtDoanhSo.setEnabled(false);
+//        jButtonChangeInfo.setEnabled(false);
+//        jBtDoanhSo.setEnabled(false);
         jBtSoHocVien.setEnabled(false);
     }//GEN-LAST:event_lblOpenMenuMouseClicked
 
@@ -3691,10 +4167,6 @@ public class Menu extends javax.swing.JFrame {
     private void jButDiemTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButDiemTestActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButDiemTestActionPerformed
-
-    private void jComDiemTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComDiemTestActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComDiemTestActionPerformed
 
     private void jBntTimHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBntTimHoaDonActionPerformed
         // TODO add your handling code here:
@@ -3836,6 +4308,31 @@ public class Menu extends javax.swing.JFrame {
         showCatalogTaiKhoan(null);
     }//GEN-LAST:event_jBtThemTKMouseClicked
 
+    private void jBtDoanhSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtDoanhSoMouseClicked
+        // TODO add your handling code here:
+        ArrayList<HoaDon> listHoaDon = null;
+        String selectedOption = jComDoanhSo.getSelectedItem().toString();
+        if ("Theo Tháng".equals(selectedOption)) {
+            // Tính toán dữ liệu thống kê theo tháng
+            listHoaDon = null;
+            Map<Integer, Double> doanhThuTheoThang = thongKeDoanhThuTheoThanMap(listHoaDon);
+
+            // Vẽ sơ đồ theo tháng
+            veSoDoTheoThang(jPnSoDo, doanhThuTheoThang);
+        } else if ("Theo Năm".equals(selectedOption)) {
+            try {
+                // Tính toán dữ liệu thống kê theo năm
+                listHoaDon = (ArrayList<HoaDon>) hoaDonService.getAllHoaDonApi(accessTokenLogin);
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Map<Integer, Double> doanhThuTheoNam = thongKeDoanhThuTheoNam(listHoaDon);
+
+            // Vẽ sơ đồ theo năm
+            veSoDoTheoNam(jPnSoDo, doanhThuTheoNam);
+        }
+    }//GEN-LAST:event_jBtDoanhSoMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -3899,8 +4396,8 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonChangPass;
     private javax.swing.JButton jButtonChangeInfo;
-    private javax.swing.JComboBox<String> jComDiemSo;
-    private javax.swing.JComboBox<String> jComDiemTest;
+    private javax.swing.JComboBox<String> jComBaiTap;
+    private javax.swing.JComboBox<String> jComBaiTest;
     private javax.swing.JComboBox<String> jComDoanhSo;
     private javax.swing.JComboBox<String> jComHoaDon;
     private javax.swing.JComboBox<String> jComSearchTK;
@@ -3945,6 +4442,7 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelName;
     private javax.swing.JPanel jPanelNgaySinh;
     private javax.swing.JPanel jPanelSoDienThoai;
+    private javax.swing.JPanel jPnSoDo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
