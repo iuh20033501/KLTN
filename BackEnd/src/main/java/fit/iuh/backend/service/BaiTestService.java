@@ -14,5 +14,5 @@ public interface BaiTestService {
     BaiTest createBaiTest (BaiTest bt);
     List<BaiTest> finByIdLopTrue(Long idLop);
     List<BaiTest> findAll(BaiTest bt) ;
-
+    List<BaiTest> finByIdLopTrueXetDUyetFalse(Long idLop);
 }
