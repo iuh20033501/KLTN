@@ -30,7 +30,7 @@ public class KhoaHocImplement implements KhoaHocService {
     }
 
     @Override
-    public List<KhoaHoc> getListKhoaYear(int year) {
+    public List<KhoaHoc> getListKhoaYear(String year) {
         return khoaHocRepo.findKhoaHocByYear(year);
     }
 

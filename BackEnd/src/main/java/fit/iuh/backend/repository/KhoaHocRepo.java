@@ -12,8 +12,8 @@ import java.util.List;
 
 @Repository
 public interface KhoaHocRepo extends JpaRepository<KhoaHoc,Long> {
-    @Query("select khoa from KhoaHoc khoa where YEAR(khoa.thoiGianDienRa) = :nam")
-    List<KhoaHoc> findKhoaHocByYear(@Param("nam") int nam);
+    @Query("select khoa from KhoaHoc khoa where substring(khoa.thoiGianDienRa, 1, 4) = :nam")
+    List<KhoaHoc> findKhoaHocByYear(@Param("nam") String nam);
     @Query("SELECT khoa FROM KhoaHoc khoa WHERE khoa.tenKhoaHoc LIKE %:name%")
     List<KhoaHoc> getListLikeTen(@Param("name") String name);
     @Query("SELECT khoa FROM KhoaHoc khoa WHERE khoa.trangThai= true")

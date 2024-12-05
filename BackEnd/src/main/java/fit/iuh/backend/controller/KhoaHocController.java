@@ -54,7 +54,7 @@ public class KhoaHocController {
         return  khoaHocService.getListKhoaLikeName(name);
     }
     @GetMapping("/getListInYear/{year}")
-    public List<KhoaHoc> findInYear(@PathVariable("year") int year){
+    public List<KhoaHoc> findInYear(@PathVariable("year") String year){
         return  khoaHocService.getListKhoaYear(year);
     }
 

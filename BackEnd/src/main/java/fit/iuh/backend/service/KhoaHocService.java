@@ -11,7 +11,7 @@ public interface KhoaHocService {
     Optional<KhoaHoc> findById(Long id);
     KhoaHoc createKhoaHoc(KhoaHoc khoaHoc);
     List<KhoaHoc> getAll();
-    List<KhoaHoc> getListKhoaYear(int year);
+    List<KhoaHoc> getListKhoaYear(String year);
     List<KhoaHoc> getListKhoaLikeName(String name);
     List<KhoaHoc> getListKhoaActiveTrue();
 }
