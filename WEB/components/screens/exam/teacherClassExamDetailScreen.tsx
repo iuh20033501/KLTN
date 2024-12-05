@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import http from '@/utils/http'; // Đường dẫn cần chính xác
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 type Exam = {
     idTest: number;
     bai_test: string;
@@ -22,7 +23,8 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
         approvedExams: [],
         pendingExams: [],
     });
-    useEffect(() => {
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [examToDelete, setExamToDelete] = useState<number | null>(null);
         const fetchExams = async () => {
             setIsLoading(true);
             try {
@@ -38,7 +40,7 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                     },
                 });
 
-                const data = response.data;
+                const data = response.data.filter((exam: any) => exam.trangThai === true);
                 const approvedExams = data.filter((exam: any) => exam.xetDuyet === true);
                 const pendingExams = data.filter((exam: any) => exam.xetDuyet === false);
                 console.log('Approved Exams:', approvedExams);
@@ -52,10 +54,12 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
             }
         };
 
-        fetchExams();
-    }, [idLopHoc]);
-    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [examToDelete, setExamToDelete] = useState<number | null>(null);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchExams();
+        }, [idLopHoc])
+    );
+
 
     const openDeleteModal = (id: number) => {
         setExamToDelete(id);
@@ -159,18 +163,6 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                         )}
                     </ScrollView>
                 );
-            case 'Điểm số':
-                return (
-                    <ScrollView style={styles.tabContent}>
-                        <Text style={styles.tabText}>Danh sách điểm số sẽ hiển thị ở đây.</Text>
-                    </ScrollView>
-                );
-            case 'Thông tin lớp học':
-                return (
-                    <ScrollView style={styles.tabContent}>
-                        <Text style={styles.tabText}>Thông tin lớp học sẽ hiển thị ở đây.</Text>
-                    </ScrollView>
-                );
             default:
                 return null;
         }
@@ -184,32 +176,13 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                         <Text style={styles.backButtonText}>Quay về</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.title}>Chi tiết Lớp Học</Text>
+                <Text style={styles.title}>{tenLopHoc}</Text>
 
                 <View style={styles.tabContainer}>
                     <TouchableOpacity
                         style={[styles.tabButton, activeTab === 'Bài thi' && styles.activeTab]}
                         onPress={() => setActiveTab('Bài thi')}
-                    >
-                        <Text style={[styles.tabButtonText, activeTab === 'Bài thi' && styles.activeTabText]}>
-                            Bài thi
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tabButton, activeTab === 'Điểm số' && styles.activeTab]}
-                        onPress={() => setActiveTab('Điểm số')}
-                    >
-                        <Text style={[styles.tabButtonText, activeTab === 'Điểm số' && styles.activeTabText]}>
-                            Điểm số
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tabButton, activeTab === 'Thông tin lớp học' && styles.activeTab]}
-                        onPress={() => setActiveTab('Thông tin lớp học')}
-                    >
-                        <Text style={[styles.tabButtonText, activeTab === 'Thông tin lớp học' && styles.activeTabText]}>
-                            Thông tin lớp học
-                        </Text>
+                    >   
                     </TouchableOpacity>
                 </View>
 

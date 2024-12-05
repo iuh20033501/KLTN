@@ -316,7 +316,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         }
     };
     
-    
     const handleSubmitDocuments = async (documentsToUpload: any[], sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -325,16 +324,11 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
-    
-            // Lọc các tài liệu mới cần upload
             const newDocuments = documentsToUpload.filter((doc) => doc.isNew);
-            // Xóa toàn bộ tài liệu hiện tại trong documents trước khi gọi fetch
             setDocuments([]);
     
             for (const document of newDocuments) {
                 if (!document.linkLoad) continue;
-    
-                // Kiểm tra nếu tài liệu đã tồn tại trong documents hiện tại
                 const documentExists = documents.some(
                     (doc) => doc.tenTaiLieu === document.tenTaiLieu && doc.linkLoad === document.linkLoad
                 );
@@ -342,29 +336,22 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     console.log(`Document ${document.tenTaiLieu} already exists.`);
                     continue;
                 }
-    
                 try {
-                    // Upload file lên S3
                     const fileBlob = await fetch(document.linkLoad).then((res) => res.blob());
                     const s3Key = `documents/${document.tenTaiLieu}`;
                     const uploadedLink = await uploadFileToS3(fileBlob, s3Key);
-    
                     if (!uploadedLink) {
                         console.error(`Failed to upload document: ${document.tenTaiLieu}`);
                         continue;
                     }
-    
                     const documentData = {
                         tenTaiLieu: document.tenTaiLieu,
                         linkLoad: uploadedLink,
                         trangThai: document.trangThai,
                     };
-    
-                    // Tạo tài liệu trên server
-                    const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
+                        const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
-    
                     if (response.status === 200) {
                         document.isNew = false;
                         document.linkLoad = uploadedLink;
@@ -394,9 +381,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             setMessageModalVisible(true);
             return;
         }
-    
         const { idTaiLieu, sessionId, linkLoad } = selectedDocument2;
-    
         try {
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
@@ -404,23 +389,21 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
-    
             if (linkLoad) {
-                const fileKey = linkLoad.split('.com/')[1]; // Tách key từ linkLoad
+                const fileKey = linkLoad.split('.com/')[1]; 
                 if (fileKey) {
-                    const deleteResult = await deleteFileFromS3(fileKey); // Xóa file trên S3
+                    const deleteResult = await deleteFileFromS3(fileKey); 
                     if (!deleteResult) {
                         console.error('Failed to delete file from S3');
                         setMessageText('Lỗi: Không thể xóa tài liệu trên S3. Vui lòng thử lại.');
                         setMessageModalVisible(true);
-                        return; // Dừng lại nếu xóa file trên S3 thất bại
+                        return; 
                     }
                 } else {
                     console.error('Invalid file key extracted from linkLoad:', linkLoad);
                     return;
                 }
             }
-    
             const response = await http.post(
                 `taiLieu/update/${sessionId}/${idTaiLieu}`,
                 { trangThai: false },
@@ -428,9 +411,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-    
             if (response.status === 200) {
-                // Cập nhật trực tiếp lại state documents sau khi xóa thành công
                 setDocuments((prevDocuments) =>
                     prevDocuments.filter((doc) => doc.idTaiLieu !== idTaiLieu)
                 );
@@ -455,8 +436,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
 
     const handleOpenDocument = (key: string) => {
         try {
-            const url = generateFileUrl(key); // Tạo URL đầy đủ từ Key
-            window.open(url, '_blank'); // Mở tài liệu trong tab mới
+            const url = generateFileUrl(key); 
+            window.open(url, '_blank'); 
         } catch (error) {
             console.error('Error opening document:', error);
         }
@@ -532,12 +513,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                 <Text>Không có thành viên nào trong lớp.</Text>
                             )
                         )}
-                    </ScrollView>
-                );
-            case 'Grades':
-                return (
-                    <ScrollView style={styles.contentContainer}>
-                        <Text style={styles.sectionTitle}>Điểm Số</Text>
                     </ScrollView>
                 );
             case 'ClassInfo':
@@ -651,9 +626,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.tabButton, activeTab === 'Members' && styles.activeTab]} onPress={() => setActiveTab('Members')}>
                         <Text style={[styles.tabText, activeTab === 'Members' && styles.activeTabText]}>Danh sách thành viên</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.tabButton, activeTab === 'Grades' && styles.activeTab]} onPress={() => setActiveTab('Grades')}>
-                        <Text style={[styles.tabText, activeTab === 'Grades' && styles.activeTabText]}>Điểm số</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.tabButton, activeTab === 'ClassInfo' && styles.activeTab]} onPress={() => setActiveTab('ClassInfo')}>
                         <Text style={[styles.tabText, activeTab === 'ClassInfo' && styles.activeTabText]}>Thông tin lớp học</Text>
