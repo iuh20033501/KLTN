@@ -1,2 +1,4 @@
 /Destop/target/
 
+WEB/config/AWSConfig.ts
+WEB/.env

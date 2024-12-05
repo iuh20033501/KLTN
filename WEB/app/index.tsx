@@ -31,6 +31,10 @@ import TeacherClassesExamScreen from '@/components/screens/exam/teacherClasssExa
 import TeacherClassExamDetailScreen from '@/components/screens/exam/teacherClassExamDetailScreen';
 import AddExamScreen from '@/components/screens/test/addExamScreen';
 import ExamDetailScreen from '@/components/screens/test/examDetailScreen';
+import ResultTeacherScreen from '@/components/screens/result/resultTeacherScreen';
+import ResultTeacherDetailScreen from '@/components/screens/result/resultTeacherDetailScreen';
+import ResultStudentScreen from '@/components/screens/result/resultStudentScreen';
+import ResultStudentDetailScreen from '@/components/screens/result/resultStudentDetailScreen';
 type RootStackParamList = {
   HomeScreen: undefined;
   LoginScreen:undefined;
@@ -55,6 +59,10 @@ type RootStackParamList = {
   TeacherClassExamDetailScreen:undefined;
   AddExamScreen:undefined;
   ExamDetailScreen:undefined;
+  ResultTeacherScreen:undefined;
+  ResultTeacherDetailScreen:undefined;
+  ResultStudentScreen: undefined;
+  ResultStudentDetailScreen:undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
@@ -83,9 +91,10 @@ export default function App() {
       <Stack.Screen name="TeacherClassExamDetailScreen" component={TeacherClassExamDetailScreen} />
       <Stack.Screen name="AddExamScreen" component={AddExamScreen} />
       <Stack.Screen name="ExamDetailScreen" component={ExamDetailScreen} />
-
-      
-      
+      <Stack.Screen name="ResultTeacherScreen" component={ResultTeacherScreen} />
+      <Stack.Screen name="ResultTeacherDetailScreen" component={ResultTeacherDetailScreen} />
+      <Stack.Screen name="ResultStudentScreen" component={ResultStudentScreen} />
+      <Stack.Screen name="ResultStudentDetailScreen" component={ResultStudentDetailScreen} />
     </Stack.Navigator>
   </NavigationContainer>
   
