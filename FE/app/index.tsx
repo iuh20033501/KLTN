@@ -153,11 +153,6 @@ export default function Router() {
         <Stack.Screen name="StudentExamClassesScreen" component={StudentExamClassesScreen} />
         <Stack.Screen name="StudentExamScreen" component={StudentExamScreen} />
         <Stack.Screen name="ExamScreen" component={ExamScreen} />
-
-        
-
-        
-
       </Stack.Navigator>
     </NavigationContainer>
    

@@ -78,7 +78,13 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ScoreBoardScreen')}>
+        <TouchableOpacity style={styles.option}  onPress={() => {
+            if (userInfo) {
+              navigation.navigate('ScoreBoardScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+            } else {
+              console.error("Thông tin người dùng chưa sẵn sàng");
+            }
+          }}>
           <View style={styles.optionRow}>
             <FontAwesome name="list-alt" size={24} color="green" />
             <Text style={styles.optionText}>Bảng điểm</Text>
