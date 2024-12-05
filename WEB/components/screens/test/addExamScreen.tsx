@@ -187,6 +187,8 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                 ngayBD: startDate ? formatDate(startDate) : null,
                 ngayKT: endDate ? formatDate(endDate) : null,
                 thoiGianLamBai: timeLimit,
+                xetDuyet: 0,
+                trangThai: 1,
             };
 
             const response = await http.post(`baitest/create/${idLopHoc}`, assignmentData, {
@@ -215,6 +217,7 @@ const AddExamScreen = ({ navigation, route }: { navigation: any; route: any }) =
                         linkAnh: imageUrl || '',
                         linkAmThanh: audioUrl || '',
                         trangThai: 1
+
                     };
                     const questionResponse = await http.post(`baitest/createCauHoi/${idTest}`, questionData, {
                         headers: { Authorization: `Bearer ${token}` },

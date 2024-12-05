@@ -39,11 +39,8 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                 });
 
                 const data = response.data;
-
-                // Tách bài thi dựa vào trạng thái
-                const approvedExams = data.filter((exam: any) => exam.trangThai === true);
-                const pendingExams = data.filter((exam: any) => exam.trangThai === false);
-
+                const approvedExams = data.filter((exam: any) => exam.xetDuyet === true);
+                const pendingExams = data.filter((exam: any) => exam.xetDuyet === false);
                 console.log('Approved Exams:', approvedExams);
                 console.log('Pending Exams:', pendingExams);
 
@@ -75,7 +72,7 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                 return;
             }
 
-            await http.get(`/baitest/deleteBaiTest/${examToDelete}`, {
+            await http.get(`baitest/deleteBaiTest/${examToDelete}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -233,6 +230,7 @@ const TeacherClassExamDetailScreen = ({ navigation, route }: { navigation: any; 
                     </View>
                 </View>
             </Modal>
+            
         </ImageBackground>
     );
 };

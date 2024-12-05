@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import http from '@/utils/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ExerciseInfo {
   idBaiTap: number;
@@ -14,6 +15,7 @@ interface ExerciseInfo {
   ngayKT: string;
   cauDaLam?: number;
   totalQuestions?: number;
+  diem?: number;
 }
 
 interface DocumentInfo {
@@ -65,6 +67,7 @@ export default function ExerciseListScreen({ navigation, route }: { navigation: 
               ...exercise,
               cauDaLam: progressResponse.data.cauDaLam || 0,
               totalQuestions: questionsResponse.data.length,
+              diem: progressResponse.data.cauDung * 10 || 0,
             };
           }
           return null;
@@ -112,17 +115,27 @@ export default function ExerciseListScreen({ navigation, route }: { navigation: 
     }
   }, [activeTab]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchExercises(); 
+    }, [])
+  );
   const renderExerciseCard = ({ item }: { item: ExerciseInfo }) => (
     <TouchableOpacity
       onPress={() =>
-        navigation.navigate('ExerciseScreen', { idBaiTap: item.idBaiTap, tenBaiTap: item.tenBaiTap, idUser })
+        navigation.navigate('ExerciseScreen', { 
+          idBaiTap: item.idBaiTap, 
+          tenBaiTap: item.tenBaiTap, 
+          idUser,
+        })
       }
     >
       <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.buttonGradient}>
         <Text style={styles.exerciseText}>{item.tenBaiTap}</Text>
-        {item.cauDaLam === item.totalQuestions && (
-          <Text style={styles.completedText}>Đã hoàn thành bài tập</Text>
-        )}
+        <Text style={styles.progressText}>
+          {item.cauDaLam}/{item.totalQuestions} câu hỏi
+        </Text>
+        <Text style={styles.scoreText}>Điểm: {item.diem  || 0}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -253,10 +266,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  completedText: {
+  progressText: {
     fontSize: 14,
-    color: '#00ff00',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  scoreText: {
+    fontSize: 14,
+    color: '#ffff00',
     textAlign: 'center',
     marginTop: 5,
   },

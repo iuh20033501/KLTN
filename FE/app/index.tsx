@@ -31,6 +31,9 @@ import ResetPassword from "@/components/screens/resetPassword/resetPassword";
 import StudentClassesScreen from "@/components/screens/exercise/studentClassesScreen";
 import LessonListScreen from "@/components/screens/exercise/lessionScreen";
 import ExerciseListScreen from "@/components/screens/exercise/exerciseListScreen";
+import StudentExamClassesScreen from "@/components/screens/exam/studentExamClassesScreen";
+import StudentExamScreen from "@/components/screens/exam/studentExamScreen";
+import ExamScreen from "@/components/screens/exam/examScreen";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -54,6 +57,9 @@ type RootStackParamList = {
   ResetPassword:undefined;
   StudentClassesScreen:undefined;
   ExerciseListScreen:undefined;
+  StudentExamClassesScreen:undefined;
+  StudentExamScreen:undefined;
+  ExamScreen:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -144,7 +150,11 @@ export default function Router() {
         <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
+        <Stack.Screen name="StudentExamClassesScreen" component={StudentExamClassesScreen} />
+        <Stack.Screen name="StudentExamScreen" component={StudentExamScreen} />
+        <Stack.Screen name="ExamScreen" component={ExamScreen} />
 
+        
 
         
 

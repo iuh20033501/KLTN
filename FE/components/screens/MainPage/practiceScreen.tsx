@@ -70,7 +70,14 @@ export default function PracticeScreen({navigation}: {navigation: any}) {
                 <ImageBackground source={questIMG2} style={[styles.card, { backgroundColor: '#FFE9AF' }]}>
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>Bài kiểm tra của tôi</Text>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#FCA034' }]}>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#FCA034' }]}
+                        onPress={() => {
+                            if (userInfo) {
+                              navigation.navigate('StudentExamClassesScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+                            } else {
+                              console.error("Thông tin người dùng chưa sẵn sàng");
+                            }
+                          }}>
                             <Text style={styles.buttonText}>Xem ngay</Text>
                         </TouchableOpacity>
                     </View>
