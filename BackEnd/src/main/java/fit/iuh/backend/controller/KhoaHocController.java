@@ -45,12 +45,12 @@ public class KhoaHocController {
         return  khoaHocService.getAll();
     }
 
-    @GetMapping("/getListActiveTrue")
-    public List<KhoaHoc> findActiveTrue(){
-        return  khoaHocService.getListKhoaActiveTrue();
+    @GetMapping("/getListActiveTrueLikeName/{name}")
+    public List<KhoaHoc> findActiveTrueLikeName(@PathVariable("name") String name){
+        return  khoaHocService.getListKhoaActiveTrueLikeName(name);
     }
     @GetMapping("/getListLikeName/{name}")
-    public List<KhoaHoc> findActiveTrue(@PathVariable("name") String name){
+    public List<KhoaHoc> findActiveLikeName(@PathVariable("name") String name){
         return  khoaHocService.getListKhoaLikeName(name);
     }
     @GetMapping("/getListInYear/{year}")

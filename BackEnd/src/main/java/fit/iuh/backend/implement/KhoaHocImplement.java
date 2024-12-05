@@ -40,7 +40,7 @@ public class KhoaHocImplement implements KhoaHocService {
     }
 
     @Override
-    public List<KhoaHoc> getListKhoaActiveTrue() {
-        return khoaHocRepo.getListActiveTrue();
+    public List<KhoaHoc> getListKhoaActiveTrueLikeName(String name) {
+        return khoaHocRepo.getListActiveTrue(name);
     }
 }

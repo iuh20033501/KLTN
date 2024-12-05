@@ -13,5 +13,5 @@ public interface KhoaHocService {
     List<KhoaHoc> getAll();
     List<KhoaHoc> getListKhoaYear(String year);
     List<KhoaHoc> getListKhoaLikeName(String name);
-    List<KhoaHoc> getListKhoaActiveTrue();
+    List<KhoaHoc> getListKhoaActiveTrueLikeName(String name);
 }

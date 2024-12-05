@@ -215,6 +215,12 @@ public class AuthController {
        tKhoan.setEnable(false);
         return tkService.createTaiKhoan(tKhoan);
     }
+    @GetMapping("/findById/{id}")
+    public TaiKhoanLogin findById(@PathVariable Long id){
+        TaiKhoanLogin tKhoan=  tkService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản với số id: " + id));
+        return tKhoan;
+    }
     @GetMapping("/noauth/findByByUserName/{userName}")
     public TaiKhoanLogin findByUserName(@PathVariable String userName){
         TaiKhoanLogin tKhoan=  tkService.findByTenDangNhap(userName)
@@ -238,8 +244,8 @@ public class AuthController {
         return tkService.getListLikeName(name);
     }
 
-    @GetMapping("/findTKhoanActive")
-    public List<TaiKhoanLogin> getAllTKhoanActiveTrue(){
-        return tkService.getListTKActive();
+    @GetMapping("/findTKhoanActiveLikeName/{name}")
+    public List<TaiKhoanLogin> getAllTKhoanActiveTrue(@PathVariable String name){
+        return tkService.getListTKActive(name);
     }
 }

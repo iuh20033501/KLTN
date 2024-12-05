@@ -131,7 +131,8 @@ public class BaiTestController {
     public BaiTest deleteBT(@PathVariable Long id){
         BaiTest bt = baiTestService.findById(id);
         bt.setTrangThai(false);
-        return bt;
+       BaiTest btestFilnal = baiTestService.createBaiTest(bt);
+        return  btestFilnal;
     }
 
     @Operation(

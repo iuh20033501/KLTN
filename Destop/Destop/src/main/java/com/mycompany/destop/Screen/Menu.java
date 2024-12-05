@@ -3090,7 +3090,7 @@ public class Menu extends javax.swing.JFrame {
             if (textComBo.equals("Còn Hoạt Động")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<KhoaHoc>) lopHocService.getAllLopHocByIdKhoaApi(accessTokenLogin, Long.parseLong(textTim));
+                    listDS = (ArrayList<KhoaHoc>) khoaHocService.getAllKhoaHocActiveTrue(accessTokenLogin, textTim);
                     LoadTableFindKhoa(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3099,7 +3099,7 @@ public class Menu extends javax.swing.JFrame {
             } else if (textComBo.equals("Tên Khóa")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
+                    listDS = (ArrayList<KhoaHoc>) khoaHocService.getAllKhoaHocLikeName(accessTokenLogin, textTim);
                     LoadTableFindKhoa(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3108,7 +3108,7 @@ public class Menu extends javax.swing.JFrame {
             } else if (textComBo.equals("Theo Năm")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
+                    listDS = (ArrayList<KhoaHoc>) khoaHocService.getAllKhoaHocInYear(accessTokenLogin, textTim);
                     LoadTableFindKhoa(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3134,7 +3134,7 @@ public class Menu extends javax.swing.JFrame {
         String textComBo = jComSearchTK.getSelectedItem().toString();
         ArrayList<TaiKhoanLogin> listDS = null;
         if (textTim == " " || textTim.isEmpty()) {
-            LoadTableKhoa();
+            loadTableTaiKhoan();
         } else {
             if (containsAccents(textTim)) {
                 // Thông báo cho người dùng nếu có dấu
@@ -3143,8 +3143,8 @@ public class Menu extends javax.swing.JFrame {
             }
             if (textComBo.equals("Còn hoạt động")) {
                 try {
-                    System.out.println(textTim);
-//                    listDS = (ArrayList<KhoaHoc>) lopHocService.getAllLopHocByIdKhoaApi(accessTokenLogin, Long.parseLong(textTim));
+                    System.out.println(textTim); 
+                    listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.getAllTKhoanAcTiveLikeNameApi(accessTokenLogin,textTim);
                     loadTableFindTaiKhoan(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3153,7 +3153,7 @@ public class Menu extends javax.swing.JFrame {
             } else if (textComBo.equals("Tên")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
+                    listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.getAllTKhoanLikeNameApi(accessTokenLogin, textTim);
                     loadTableFindTaiKhoan(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3162,7 +3162,7 @@ public class Menu extends javax.swing.JFrame {
             } else if (textComBo.equals("Chức vụ")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
+                    listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.getAllTKhoanAcTiveLikeNameApi(accessTokenLogin, textTim);
                     loadTableFindTaiKhoan(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -3171,7 +3171,7 @@ public class Menu extends javax.swing.JFrame {
             } else if (textComBo.equals("ID")) {
                 try {
                     System.out.println(textTim);
-//                    TaiKhoanLogin tkhoan = apiClient.(accessTokenLogin, Long.parseLong(textTim));
+                    TaiKhoanLogin tkhoan = taiKhoanService.callFindByIdtaiKhoanApi(accessTokenLogin, Long.parseLong(textTim));
                     listDS = new ArrayList<TaiKhoanLogin>();
 //                    listDS.add(lop);
                     loadTableFindTaiKhoan(listDS);
@@ -3188,41 +3188,32 @@ public class Menu extends javax.swing.JFrame {
         String textComBo = jComHoaDon.getSelectedItem().toString();
         ArrayList<HoaDon> listDS = null;
         if (textTim == " " || textTim.isEmpty()) {
-            LoadTableKhoa();
+            LoadTableHoaDon();
         } else {
             if (containsAccents(textTim)) {
                 // Thông báo cho người dùng nếu có dấu
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập chuỗi không có dấu.");
                 return; // Dừng lại và không thực hiện tìm kiếm
             }
-            if (textComBo.equals("Còn hoạt động")) {
+            if (textComBo.equals("Tên người lập")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<KhoaHoc>) lopHocService.getAllLopHocByIdKhoaApi(accessTokenLogin, Long.parseLong(textTim));
+                    listDS = (ArrayList<HoaDon>) hoaDonService.getAllHoaDonLikeNameApi(accessTokenLogin, textTim);
                     LoadTableFindHoaDon(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-            } else if (textComBo.equals("Tên")) {
+            } else if (textComBo.equals("Năm Lập")) {
                 try {
                     System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
+                    listDS = (ArrayList<HoaDon>) hoaDonService.getAllHoaDonInYearApi(accessTokenLogin, Integer.parseInt(textTim));
                     LoadTableFindHoaDon(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-            } else if (textComBo.equals("Chức vụ")) {
-                try {
-                    System.out.println(textTim);
-//                    listDS = (ArrayList<LopHoc>) lopHocService.getAllLopHocLikeNameApi(accessTokenLogin, textTim);
-                    LoadTableFindHoaDon(listDS);
-                } catch (Exception ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            } else if (textComBo.equals("ID")) {
+            }  else if (textComBo.equals("ID")) {
                 try {
                     System.out.println(textTim);
                     HoaDon hoaDOn = hoaDonService.getHoaDonByIdApi(accessTokenLogin, Long.parseLong(textTim));

@@ -28,7 +28,7 @@ public interface TaiKhoanRepo extends JpaRepository <TaiKhoanLogin,Long>{
 //       List<TaiKhoanLogin> findTKhoanByTaiKhoanEnable(@Param("TrangThai") String chucVu);
        @Query("SELECT tk FROM TaiKhoanLogin tk WHERE tk.tenDangNhap LIKE %:name% ")
        List<TaiKhoanLogin> findTKhoanLikeName(@Param("name") String name);
-       @Query("SELECT tk FROM TaiKhoanLogin tk WHERE tk.enable= true ")
-       List<TaiKhoanLogin> findTKhoanTrue();
+       @Query("SELECT tk FROM TaiKhoanLogin tk WHERE tk.enable= true and tk.tenDangNhap LIKE %:name%")
+       List<TaiKhoanLogin> findTKhoanTrue(String name);
 
 }
