@@ -7,6 +7,7 @@ import fit.iuh.backend.service.ThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -96,5 +97,16 @@ public class ThanhToanImplement implements ThanhToanService {
     @Override
     public List<ThanhToan> findByIdLopva2Enum(Long idLop, TrangThaiThanhToan trangThaiThanhToan, TrangThaiThanhToan trangThaiThanhToan2) {
         return thanhToanRepo.findByIdLopAnd2TrangThai(idLop,trangThaiThanhToan,trangThaiThanhToan2);
+    }
+
+    @Override
+    public List<ThanhToan> getThanhToanByLopHocThisYear() {
+        int namHienTai = LocalDate.now().getYear(); // Lấy năm hiện tại
+        return thanhToanRepo.findByLopHocThisYear(namHienTai, TrangThaiThanhToan.DONE);
+    }
+
+    @Override
+    public List<ThanhToan> getAllThanhToanTrue() {
+        return thanhToanRepo.getAllThạhToanDone(TrangThaiThanhToan.DONE);
     }
 }

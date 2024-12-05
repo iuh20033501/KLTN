@@ -28,4 +28,19 @@ public class KhoaHocImplement implements KhoaHocService {
     public List<KhoaHoc> getAll() {
         return khoaHocRepo.findAll();
     }
+
+    @Override
+    public List<KhoaHoc> getListKhoaYear(int year) {
+        return khoaHocRepo.findKhoaHocByYear(year);
+    }
+
+    @Override
+    public List<KhoaHoc> getListKhoaLikeName(String name) {
+        return khoaHocRepo.getListLikeTen(name);
+    }
+
+    @Override
+    public List<KhoaHoc> getListKhoaActiveTrue() {
+        return khoaHocRepo.getListActiveTrue();
+    }
 }

@@ -51,4 +51,19 @@ public class HoaDonImpement implements HoaDonService {
     public List<HoaDon> findAll() {
         return hoaDonRepo.findAll();
     }
+
+    @Override
+    public List<Object[]> tongTienHoaDonTheoNam() {
+        return hoaDonRepo.tongTienHoaDonTheoNam();
+    }
+
+    @Override
+    public List<HoaDon> getHoaDonByYear(int nam) {
+        return hoaDonRepo.findHoaDonByYear(nam);
+    }
+
+    @Override
+    public List<HoaDon> getHoaDonLikeNameNV(String name) {
+        return hoaDonRepo.getListLikeTen(name);
+    }
 }

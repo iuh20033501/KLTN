@@ -40,4 +40,22 @@ public class LopHocImplement implements LopHocService {
     public List<LopHoc> findByKhoa(Long idKhoa) {
         return lopHocRepo.getListLopByKhoaHoc(idKhoa);
     }
+
+    @Override
+    public List<LopHoc> findLikeNameGiangVien(String nameGV) {
+        return lopHocRepo.getListLopLikenameGiaoVien(nameGV);
+    }
+
+    @Override
+    public List<LopHoc> findLikeNameKhoa(String nameKhoa) {
+        return lopHocRepo.getListLopLikenameKhoaHoc(nameKhoa);
+    }
+
+
+    @Override
+    public List<LopHoc> findLikeName(String name) {
+        return lopHocRepo.getListLikeTen(name);
+    }
+
+
 }

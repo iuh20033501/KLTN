@@ -227,20 +227,20 @@ public ResponseEntity<LopHoc> deleteLop(@PathVariable Long id) {
         }
         return list;
     }
-//    @GetMapping("/getBaiTestByLop/{id}")
-//    public List<BaiTest> findByHocVIEN (@PathVariable Long id){
-//        List<BaiTest> list = .findByidLop(id);
-//        List<HocVien> list = new ArrayList<>();
-//        for (HocVienLopHoc hvlh : listHVLH) {
-//            list.add(hvlh.getKey().getHocVien());
-//        }
-//        return list;
-//    }
-////    @GetMapping("/getAll")
-//    public List<LopHoc> findAllLop (){
-//        List<LopHoc> list = lopHocService.findAll();
-//        return list;
-//    }
+
+    @GetMapping("/getLikeNameLop/{name}")
+    public List<LopHoc> findLikeNameLop (@PathVariable String name){
+        return lopHocService.findLikeName(name);
+    }
+    @GetMapping("/getLikeNameGV/{name}")
+    public List<LopHoc> findLikeNameGV (@PathVariable String name){
+        return lopHocService.findLikeNameGiangVien(name);
+    }
+    @GetMapping("/getLikeNameKhoa/{name}")
+    public List<LopHoc> findLikeNameKhoa (@PathVariable String name){
+        return lopHocService.findLikeNameKhoa(name);
+    }
+
 
 
 }

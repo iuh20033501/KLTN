@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -189,6 +190,10 @@ public class ThanhToanController {
     public List<ThanhToan> findAll (){
         return  thanhToanService.findAll();
     }
+    @GetMapping("/getAllThanhToanDone")
+    public List<ThanhToan> getAllThanhToanDone (){
+        return  thanhToanService.getAllThanhToanTrue();
+    }
     @GetMapping("/findById/{id}")
     public ThanhToan findById (@PathVariable Long id){
         ThanhToan tt = thanhToanService.findById(id).orElseThrow(() -> new RuntimeException("Thanh toan not found"));
@@ -203,6 +208,11 @@ public class ThanhToanController {
     public List<ThanhToan> findByIdHoaDon (@PathVariable Long idHD){
         List<ThanhToan> list = thanhToanService.findByIdHoaDon(idHD);
         return list;
+    }
+    @GetMapping("/getAllThisYear")
+    public List<ThanhToan> getAllHoaDonThisYear (){
+//        int namHienTai = LocalDate.now().getYear(); // Lấy năm hiện tại
+        return  thanhToanService.getThanhToanByLopHocThisYear();
     }
     @Operation(
             summary = "getAll thanh toan dù có cancel hay không ",

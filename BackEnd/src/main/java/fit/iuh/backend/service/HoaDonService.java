@@ -16,4 +16,7 @@ public interface HoaDonService {
     List<HoaDon> finfByIdLop(Long idLop);
 //    HoaDon deleteHoaDon(Long idHD);
     List<HoaDon> findAll();
+    List<Object[]> tongTienHoaDonTheoNam();
+    List<HoaDon> getHoaDonByYear(int nam);
+    List<HoaDon> getHoaDonLikeNameNV(String name);
 }

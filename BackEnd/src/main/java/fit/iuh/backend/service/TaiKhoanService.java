@@ -20,5 +20,7 @@ public interface TaiKhoanService {
 
     UserDetailsService userDetailsService();
     Optional<TaiKhoanLogin> findBySDT (String sdt);
+    List<TaiKhoanLogin> getListLikeName(String name);
+    List<TaiKhoanLogin> getListTKActive();
 
 }

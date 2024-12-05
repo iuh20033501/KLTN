@@ -19,7 +19,7 @@ public class KetQuaTest {
     private Long idKetQua;
     private Long diemTest;
     private String thoiGianHoanThanh;
-    private Date timeRetest;
+//    private Boolean retest;
     @ManyToOne
     private BaiTest baiTest;
     @ManyToOne
@@ -39,17 +39,5 @@ public class KetQuaTest {
         this.hocVien = hocVien;
     }
 
-    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, Date timeRetest) {
-        this.diemTest = diemTest;
-        this.thoiGianHoanThanh = thoiGianHoanThanh;
-        this.timeRetest = timeRetest;
-    }
 
-    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, Date timeRetest, BaiTest baiTest, HocVien hocVien) {
-        this.diemTest = diemTest;
-        this.thoiGianHoanThanh = thoiGianHoanThanh;
-        this.timeRetest = timeRetest;
-        this.baiTest = baiTest;
-        this.hocVien = hocVien;
-    }
 }

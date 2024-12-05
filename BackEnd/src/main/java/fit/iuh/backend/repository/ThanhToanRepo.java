@@ -14,6 +14,8 @@ public interface ThanhToanRepo extends JpaRepository<ThanhToan, Long> {
 
     @Query("SELECT tt FROM ThanhToan tt JOIN tt.nguoiThanhToan hv ON tt.nguoiThanhToan.idUser = hv.idUser WHERE tt.nguoiThanhToan.idUser =:id")
     List<ThanhToan> findByIdHV(@Param("id") Long idHV);
+    @Query("SELECT tt FROM ThanhToan tt  WHERE tt.trangThai =:trangThai")
+    List<ThanhToan> getAllThạhToanDone(@Param("trangThai") TrangThaiThanhToan trangThai);
 
     @Query("SELECT tt FROM ThanhToan tt JOIN tt.lopHoc lop ON tt.lopHoc.idLopHoc = lop.idLopHoc WHERE tt.lopHoc.idLopHoc =:id")
     List<ThanhToan> findByIdLop(@Param("id") Long idLop);
@@ -31,5 +33,9 @@ public interface ThanhToanRepo extends JpaRepository<ThanhToan, Long> {
     @Query("SELECT tt FROM ThanhToan tt JOIN tt.lopHoc lop ON tt.lopHoc.idLopHoc = lop.idLopHoc WHERE tt.lopHoc.idLopHoc =:id AND tt.trangThai IN (:trangThai1, :trangThai2)")
     List<ThanhToan> findByIdLopAnd2TrangThai(@Param("id") Long idLop, @Param("trangThai1") TrangThaiThanhToan trangThai1, @Param("trangThai2") TrangThaiThanhToan trangThai2);
 
+    @Query("SELECT tt FROM ThanhToan tt " +
+            "JOIN tt.lopHoc lop ON tt.lopHoc.idLopHoc = lop.idLopHoc " +
+            "WHERE YEAR(lop.ngayBD) = :namHienTai AND tt.trangThai= :trangThai")
+    List<ThanhToan> findByLopHocThisYear(@Param("namHienTai") int namHienTai, @Param("trangThai") TrangThaiThanhToan trangThai);
 }
 

@@ -220,47 +220,29 @@ public class BaiTestController {
             summary = "Làm bài test",
             description = """ 
     **Lưu ý:**
-    1. Cần chạy `getListTrue` theo ID bài test để biết có bao nhiêu câu hỏi trong bài, từ đó tính điểm.
-    2. Truyền vào các tham số:
-        - `idBaiTest`: ID của bài test.
-        - `idHocVien`: ID của học viên.
-        - `thoigianLamBai` (String): Thời gian hoàn thành bài test.
-        - số câu đúng (long): số câu đúng
-    3. Nếu bài test chưa được làm, tạo mới và set thời gian `timeReset`.
-    4. Nếu thời gian đã qua (so với `timeReset`), không cho phép cập nhật nữa, trả về `null`.Ngược lại sẽ update theo kq có sẵn
+    tạo ra kết quả 
+    nếu có kêta qua học viên ở bài test đó sẽ trả vè null
     """
     )
-    @PostMapping("/lamBai")
-    public KetQuaTest lamBaiTest(@RequestBody TinhDiemTestDTO tinhDiemDTO){
-        KetQuaTest kq = ketQuaTestService.findByBTandHV(tinhDiemDTO.getIdHocVien(), tinhDiemDTO.getIdBaiTest());
-        Date current = new Date();
-        Long soCauDung = tinhDiemDTO.getSoCauDung();
-        Long diemSo = soCauDung / soLuongCauHoi;
+    @PostMapping("/lamBai/createKetQua/{idBaiTest}/{idHocVien}")
+    public KetQuaTest lamBaiTest(@RequestBody KetQuaTest ketQua, @PathVariable Long idBaiTest, @PathVariable Long idHocVien) {
+        BaiTest baiTest = baiTestService.findById(idBaiTest);
+        HocVien hocVien = hocVienService.findByIdHocVien(idHocVien).orElseThrow(()->new RuntimeException("hoc vien not found "));
 
-        // Kiểm tra nếu chưa có kết quả thì tạo mới
-        if (kq == null){
-            BaiTest baiTest = baiTestService.findById(tinhDiemDTO.getIdBaiTest());
-            HocVien hocVien = hocVienService.findByIdHocVien(tinhDiemDTO.getIdHocVien())
-                    .orElseThrow(() -> new RuntimeException("HocVien not found"));
+        if (baiTest != null && hocVien != null) {
+            // Tìm kiếm kết quả hiện tại dựa trên học viên và bài test
+            KetQuaTest existingKetQua = ketQuaTestService.findByBTandHV(idHocVien, idBaiTest);
 
-            // Lấy thời gian làm bài và cộng thêm thời gian để tính reset
-            long thoiGianLamBai = baiTest.getThoiGianLamBai(); // Thời gian làm bài là kiểu Time
-            long timeRetest = current.getTime() + thoiGianLamBai; // Thêm thời gian làm bài vào thời gian hiện tại
-
-            return ketQuaTestService.crateKQT(new KetQuaTest(diemSo, tinhDiemDTO.getThoigianLamBai(), new java.sql.Date(timeRetest), baiTest, hocVien));
-        }
-        // Nếu đã có kết quả, kiểm tra thời gian
-        else {
-            if (current.before(kq.getTimeRetest())) {
-                kq.setDiemTest(diemSo);
-                kq.setThoiGianHoanThanh(tinhDiemDTO.getThoigianLamBai());
-                return ketQuaTestService.crateKQT(kq);
-            } else {
-                // Nếu quá thời gian, trả về null
-                return null;
+            if (existingKetQua == null) {
+                // Nếu chưa tồn tại, tạo mới kết quả
+                ketQua.setHocVien(hocVien);
+                ketQua.setBaiTest(baiTest);
+                return ketQuaTestService.crateKQT(ketQua);
             }
         }
+        return null;
     }
+
 
     @Operation(
             summary = "get ket quả test theo id",

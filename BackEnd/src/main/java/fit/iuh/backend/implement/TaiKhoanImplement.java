@@ -60,4 +60,14 @@ public class TaiKhoanImplement implements TaiKhoanService {
 
     }
 
+    @Override
+    public List<TaiKhoanLogin> getListLikeName(String name) {
+        return taiKhoanRepo.findTKhoanLikeName(name);
+    }
+
+    @Override
+    public List<TaiKhoanLogin> getListTKActive() {
+        return taiKhoanRepo.findTKhoanTrue();
+    }
+
 }

@@ -1,11 +1,9 @@
 package fit.iuh.backend.controller;
 
 import fit.iuh.backend.moudel.HoaDon;
-import fit.iuh.backend.moudel.HocVien;
 import fit.iuh.backend.moudel.NhanVien;
 import fit.iuh.backend.moudel.ThanhToan;
 import fit.iuh.backend.service.HoaDonService;
-import fit.iuh.backend.service.LopHocService;
 import fit.iuh.backend.service.NhanVienService;
 import fit.iuh.backend.service.ThanhToanService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/hoaDon")
@@ -79,6 +77,11 @@ public class HoaDonController {
         return  hoaDonService.findAll();
 
     }
+    @GetMapping("/getAllThisYear")
+    public List<HoaDon> getAllHoaDonThisYear (){
+        int namHienTai = LocalDate.now().getYear(); // Lấy năm hiện tại
+        return  hoaDonService.getHoaDonByYear(namHienTai);
+    }
     @GetMapping("/getByIdNhanVien/{idNhanVien}")
     public List<HoaDon> getHoaDonByNhanVien(@PathVariable Long idNhanVien){
         return hoaDonService.finfByIdNhanVien(idNhanVien);
@@ -95,6 +98,20 @@ public class HoaDonController {
     public HoaDon getHoaDonByID(@PathVariable Long idHD){
         return hoaDonService.findById(idHD).get();
     }
+
+    @GetMapping ("/baoCaoTrongNam")
+    public List<Object[]> baoCaoTrongNam(){
+        return hoaDonService.tongTienHoaDonTheoNam();
+    }
+    @GetMapping ("/baoCaoTheoNam/{nam}")
+    public List<HoaDon> baoCaoTheoNam(@PathVariable int nam){
+        return hoaDonService.getHoaDonByYear(nam);
+    }
+    @GetMapping ("/baoCaoTheoName/{name}")
+    public List<HoaDon> baoCaoTheoName(@PathVariable String name){
+        return hoaDonService.getHoaDonLikeNameNV(name);
+    }
+
 //    @GetMapping("/createHDAndTT/{idNhanVien}/{idHocVien}")
 //    public HoaDon deleteHD(@PathVariable Long idHD,@RequestBody List<ThanhToan> listThanhToan){
 //

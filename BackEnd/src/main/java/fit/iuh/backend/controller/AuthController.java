@@ -232,4 +232,14 @@ public class AuthController {
     public List<KhoaHoc> getAllKhoa(){
         return khoaHocService.getAll();
     }
+
+    @GetMapping("/findTKhoan/{name}")
+    public List<TaiKhoanLogin> getAllTKhoanLikeName(@PathVariable String name){
+        return tkService.getListLikeName(name);
+    }
+
+    @GetMapping("/findTKhoanActive")
+    public List<TaiKhoanLogin> getAllTKhoanActiveTrue(){
+        return tkService.getListTKActive();
+    }
 }

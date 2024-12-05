@@ -23,4 +23,7 @@ public interface ThanhToanService {
     void reLoadThanhToanByIdLop(Long idLop);
     List<ThanhToan> findByIdHVAndHoaDonNUll(Long idHV);
     List<ThanhToan> findByIdLopva2Enum(Long idLop, TrangThaiThanhToan trangThaiThanhToan,TrangThaiThanhToan trangThaiThanhToan2);
+    List<ThanhToan> getThanhToanByLopHocThisYear();
+    List<ThanhToan> getAllThanhToanTrue();
+
 }

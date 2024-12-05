@@ -16,6 +16,6 @@ public interface BaiTestRepo extends JpaRepository<BaiTest,Long> {
     List<BaiTest> getListTestByIdLopandTrangThaitrue (@Param("id") Long idLop);
     @Query("select test from BaiTest  test  where test.TrangThai =true AND test.xetDuyet= false ")
     List<BaiTest> getListTestByandTrangThaitrue();
-    @Query("select test from BaiTest  test  where test.TrangThai =true AND test.xetDuyet= false AND test.lopHoc.idLopHoc=:id")
+    @Query("select test from BaiTest test where test.TrangThai = true AND test.xetDuyet = false AND test.lopHoc.idLopHoc = :id")
     List<BaiTest> getListBTestByIdLopandTrangThaitrue (@Param("id") Long idLop);
 }

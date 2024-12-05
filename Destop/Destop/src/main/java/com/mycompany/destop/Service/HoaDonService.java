@@ -12,6 +12,7 @@ import com.mycompany.destop.Modul.HoaDon;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
 import com.mycompany.destop.Modul.ThanhToan;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -62,7 +63,103 @@ public class HoaDonService {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
         }
     }
+    public List<HoaDon> getAllHoaDonThisYearApi(String token) throws Exception {
+        String profileUrl = "http://localhost:8081/hoaDon/getAllThisYear"; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành danh sách TaiKhoanLogin
+                Type listType = new TypeToken<List<HoaDon>>() {
+                }.getType();
+                return gson.fromJson(response.toString(), listType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    } 
+    public List<ThanhToan> getAllHThanhToanByLopThisYearApi(String token) throws Exception {
+        String profileUrl = "http://localhost:8081/thanhToan/getAllThisYear"; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành danh sách TaiKhoanLogin
+                Type listType = new TypeToken<List<ThanhToan>>() {
+                }.getType();
+                return gson.fromJson(response.toString(), listType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    }
+    public List<ThanhToan> getAllHThanhToanApi(String token) throws Exception {
+        String profileUrl = "http://localhost:8081/thanhToan/getAllThanhToanDone"; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành danh sách TaiKhoanLogin
+                Type listType = new TypeToken<List<ThanhToan>>() {
+                }.getType();
+                return gson.fromJson(response.toString(), listType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    }
+    
     public HoaDon getHoaDonByIdApi(String token, Long idHoaDon) throws Exception {
         String profileUrl = "http://localhost:8081/hoaDon/getById/" + idHoaDon; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
@@ -108,9 +205,9 @@ public class HoaDonService {
         conn.setDoOutput(true); // Cho phép gửi dữ liệu
 
         // Tạo đối tượng Gson để chuyển đổi danh sách ThanhToan sang JSON
-          Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                        .create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
 
         String jsonInputString = gson.toJson(listIdThanhToan);
 
@@ -180,6 +277,60 @@ public class HoaDonService {
             } else {
                 throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
             }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+
+    public List<Object[]> baoCaoNam(String token, Long idLop) throws Exception {
+        String apiUrl = "http://localhost:8081/hoaDon/baoCaoTheoNam";
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Thêm timeout để tránh tình trạng bị treo khi không nhận được phản hồi
+            conn.setConnectTimeout(5000);  // Timeout khi kết nối (5 giây)
+            conn.setReadTimeout(5000);     // Timeout khi đọc dữ liệu (5 giây)
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
+
+                    // Chuyển đổi JSON trả về thành danh sách đối tượng List<Object[]>
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // Chuyển đổi LocalDate nếu cần
+                            .create();
+                    Type listType = new TypeToken<List<Object[]>>() {
+                    }.getType();
+                    return gson.fromJson(response.toString(), listType);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Không tìm thấy thông tin thanh toán cho lớp học ID: " + idLop);
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+            }
+        } catch (IOException e) {
+            throw new Exception("Lỗi kết nối đến API: " + e.getMessage(), e);
         } finally {
             if (conn != null) {
                 conn.disconnect(); // Đóng kết nối

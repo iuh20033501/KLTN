@@ -15,4 +15,17 @@ public interface LopHocRepo extends JpaRepository<LopHoc, Long> {
 
     @Query("SELECT l FROM LopHoc l JOIN l.khoaHoc k WHERE k.idKhoaHoc = :id")
     List<LopHoc> getListLopByKhoaHoc(@Param("id") Long idKhoa);
+
+    @Query("SELECT l FROM LopHoc l WHERE l.idLopHoc = :id")
+    List<LopHoc> getListLikeId(@Param("id") Long idLopHoc);
+
+    @Query("SELECT l FROM LopHoc l WHERE l.tenLopHoc LIKE %:name%")
+    List<LopHoc> getListLikeTen(@Param("name") String name);
+
+    @Query("SELECT l FROM LopHoc l JOIN l.khoaHoc k WHERE k.tenKhoaHoc LIKE %:name%")
+    List<LopHoc> getListLopLikenameKhoaHoc(@Param("name") String name);
+
+    @Query("SELECT l FROM LopHoc l JOIN l.giangVien gv WHERE gv.hoTen LIKE %:name%")
+    List<LopHoc> getListLopLikenameGiaoVien(@Param("name") String name);
+
 }
