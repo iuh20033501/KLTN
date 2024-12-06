@@ -13,7 +13,8 @@ import com.mycompany.destop.DTO.ProfileDto;
 
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.DTO.SignupDto;
-import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Enum.ChucVu;
+//import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
 import com.mycompany.destop.Reponse.ApiResponse;
 
@@ -237,7 +238,7 @@ public class DangNhap extends javax.swing.JFrame {
                     String formattedDate = signinDTO.getU().getNgaySinh().format(formatter);
 //                System.out.println("Ngày sinh định dạng: " + formattedDate);
                     // Kiểm tra quyền của người dùng
-                    if (signinDTO.getCvEnum().equals(ChucVuEnum.ADMIN) || signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
+                    if (signinDTO.getCvEnum().equals(ChucVu.ADMIN) || signinDTO.getCvEnum().equals(ChucVu.QUANLY)) {
 
 //                        JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
                         Menu menuFrame = new Menu(response.getAccessToken());

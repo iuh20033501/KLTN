@@ -1,6 +1,9 @@
 package fit.iuh.backend.service;
 
 
+import com.twilio.rest.chat.v1.service.ChannelUpdater;
+import com.twilio.rest.chat.v1.service.Role;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,6 @@ public interface TaiKhoanService {
     Optional<TaiKhoanLogin> findBySDT (String sdt);
     List<TaiKhoanLogin> getListLikeName(String name);
     List<TaiKhoanLogin> getListTKActive(String name);
-    List<TaiKhoanLogin> getListTKByRole(String role);
+    List<TaiKhoanLogin> getListTKByRole(ChucVu role);
 
 }

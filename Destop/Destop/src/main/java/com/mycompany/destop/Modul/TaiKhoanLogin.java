@@ -4,7 +4,7 @@
  */
 package com.mycompany.destop.Modul;
 
-import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Enum.ChucVu;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
@@ -21,7 +21,7 @@ public class TaiKhoanLogin {
     @OneToOne
     private User user;
     @Enumerated(value = EnumType.STRING)
-    private ChucVuEnum role;
+    private ChucVu role;
 
     public Long getId() {
         return id;
@@ -63,15 +63,15 @@ public class TaiKhoanLogin {
         this.user = user;
     }
 
-    public ChucVuEnum getRole() {
+    public ChucVu getRole() {
         return role;
     }
 
-    public void setRole(ChucVuEnum role) {
+    public void setRole(ChucVu role) {
         this.role = role;
     }
 
-    public TaiKhoanLogin(String tenDangNhap, String matKhau, Boolean enable, User user, ChucVuEnum role) {
+    public TaiKhoanLogin(String tenDangNhap, String matKhau, Boolean enable, User user, ChucVu role) {
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.enable = enable;
@@ -79,7 +79,7 @@ public class TaiKhoanLogin {
         this.role = role;
     }
 
-    public TaiKhoanLogin(Long id, String tenDangNhap, String matKhau, Boolean enable, User user, ChucVuEnum role) {
+    public TaiKhoanLogin(Long id, String tenDangNhap, String matKhau, Boolean enable, User user, ChucVu role) {
         this.id = id;
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;

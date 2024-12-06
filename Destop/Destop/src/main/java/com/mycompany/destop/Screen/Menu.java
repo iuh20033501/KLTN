@@ -34,7 +34,7 @@ import com.mycompany.destop.DTO.OTPResponseDTO;
 import com.mycompany.destop.DTO.PhoneNumberDTO;
 import com.mycompany.destop.DTO.ProfileDto;
 import com.mycompany.destop.DTO.SignupDto;
-import com.mycompany.destop.Enum.ChucVuEnum;
+//import com.mycompany.destop.Enum.ChucVuEnum;
 import com.mycompany.destop.Modul.BaiTest;
 import com.mycompany.destop.Screen.DangNhap;
 
@@ -125,6 +125,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.ImgTemplate;
 //import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.HocVien;
 import java.text.SimpleDateFormat;
 //import com.itextpdf.text.FontProvider;
@@ -134,7 +135,7 @@ import java.text.SimpleDateFormat;
  * @author User
  */
 public class Menu extends javax.swing.JFrame {
-    
+
     int x = 210;    //chieu rong
     int y = 700;    //chieu cao
 
@@ -165,10 +166,10 @@ public class Menu extends javax.swing.JFrame {
         cardThongKe.setVisible(false);
         LoadInfo();
     }
-    
+
     private void LoadInfo() throws Exception {
         signinDTO = apiClient.callProfileApi(accessTokenLogin);
-        if (signinDTO.getCvEnum().equals(ChucVuEnum.QUANLY)) {
+        if (signinDTO.getCvEnum().equals(ChucVu.QUANLY)) {
             lblTaiKhoan.setVisible(false);
             lblThongKe.setVisible(false);
         }
@@ -206,7 +207,7 @@ public class Menu extends javax.swing.JFrame {
             jLabelImg.setText("Không thể tải ảnh");
         }
     }
-    
+
     private void LoadTableDSLop() {
         try {
             // Gọi API để lấy danh sách lớp học
@@ -246,7 +247,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception e) {
                     e.printStackTrace(); // Xử lý ngoại lệ nếu có
                 }
-                
+
                 model.addRow(new Object[]{
                     lop.getIdLopHoc(),
                     lop.getTenLopHoc(),
@@ -295,7 +296,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void LoadTabletTimIDSLop(ArrayList<LopHoc> danhSachLop) {
         try {
             // Gọi API để lấy danh sách lớp học
@@ -335,7 +336,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception e) {
                     e.printStackTrace(); // Xử lý ngoại lệ nếu có
                 }
-                
+
                 model.addRow(new Object[]{
                     lop.getIdLopHoc(),
                     lop.getTenLopHoc(),
@@ -384,7 +385,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void LoadTableHocVien(Long idLop) {
         try {
             // Gọi API để lấy danh sách học viên của lớp
@@ -422,22 +423,22 @@ public class Menu extends javax.swing.JFrame {
             TableColumn deleteColumn = jTabHocVien.getColumn("Delete");
             deleteColumn.setCellRenderer(new ButtonRenderer());
             deleteColumn.setCellEditor(new ButtonEditorHocVien(new JButton("Delete"), "delete", jTabHocVien, idLop));
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     class ButtonEditorHocVien extends DefaultCellEditor {
-        
+
         private JButton button;
         private String label;
         private boolean clicked;
         private String action;
         private JTable table;
         private Long idLop;
-        
+
         public ButtonEditorHocVien(JButton button, String action, JTable table, Long idLop) {
             super(new JTextField());
             this.button = button;
@@ -446,7 +447,7 @@ public class Menu extends javax.swing.JFrame {
             this.idLop = idLop;
             button.addActionListener(e -> performAction());
         }
-        
+
         private void performAction() {
             int row = table.getSelectedRow(); // Lấy dòng hiện tại
             Object id = table.getValueAt(row, 0); // Lấy giá trị cột ID
@@ -476,7 +477,7 @@ public class Menu extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             label = value != null ? value.toString() : "";
@@ -484,28 +485,28 @@ public class Menu extends javax.swing.JFrame {
             clicked = true;
             return button;
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             clicked = false;
             return label;
         }
-        
+
         @Override
         public boolean stopCellEditing() {
             clicked = false;
             return super.stopCellEditing();
         }
     }
-    
+
     class ButtonEditorLop extends DefaultCellEditor {
-        
+
         private JButton button;
         private String label;
         private boolean clicked;
         private String action;
         private JTable table;
-        
+
         public ButtonEditorLop(JButton button, String action, JTable table) {
             super(new JTextField());
             this.button = button;
@@ -513,7 +514,7 @@ public class Menu extends javax.swing.JFrame {
             this.table = table;
             button.addActionListener(e -> performAction());
         }
-        
+
         private void performAction() {
             int row = table.getSelectedRow(); // Lấy dòng hiện tại
             Object tenLop = table.getValueAt(row, 1); // Lấy giá trị tên lớp
@@ -522,14 +523,14 @@ public class Menu extends javax.swing.JFrame {
             System.out.println("idd" + idLop);
             if ("info".equals(action)) {
                 LopHoc lopHoc;
-                
+
                 try {
                     lopHoc = lopHocService.loadLopHocById(accessTokenLogin, idLop);
                     showDialogLop(lopHoc);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if ("delete".equals(action)) {
                 // Xử lý nút "Delete"
                 int confirm = JOptionPane.showConfirmDialog(button, "Bạn có chắc muốn xóa lớp: " + tenLop + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
@@ -541,16 +542,16 @@ public class Menu extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(button, "Đã xóa lớp: " + tenLop);
                             LoadTableDSLop();
                         } else {
-                            
+
                         }
                     } catch (Exception ex) {
                         Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                 }
             }
         }
-        
+
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             label = value != null ? value.toString() : "";
@@ -558,20 +559,20 @@ public class Menu extends javax.swing.JFrame {
             clicked = true;
             return button;
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             clicked = false;
             return label;
         }
-        
+
         @Override
         public boolean stopCellEditing() {
             clicked = false;
             return super.stopCellEditing();
         }
     }
-    
+
     private void loadTableTaiKhoan() {
         try {
             // Gọi API để lấy danh sách tài khoản
@@ -626,7 +627,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void loadTableFindTaiKhoan(ArrayList<TaiKhoanLogin> danhSachTaiKhoan) {
         try {
             // Gọi API để lấy danh sách tài khoản
@@ -684,11 +685,11 @@ public class Menu extends javax.swing.JFrame {
 
 // Class ButtonRenderer
     class ButtonRenderer extends JButton implements TableCellRenderer {
-        
+
         public ButtonRenderer() {
             setOpaque(true);
         }
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             setText(value != null ? value.toString() : "");
@@ -698,13 +699,13 @@ public class Menu extends javax.swing.JFrame {
 
 // Class ButtonEditor
     class ButtonEditor extends DefaultCellEditor {
-        
+
         private JButton button;
         private String label;
         private boolean clicked;
         private String action;
         private JTable table;
-        
+
         public ButtonEditor(JButton button, String action, JTable table) {
             super(new JTextField());
             this.button = button;
@@ -712,12 +713,12 @@ public class Menu extends javax.swing.JFrame {
             this.table = table;
             button.addActionListener(e -> performAction());
         }
-        
+
         private void performAction() {
             int row = table.getSelectedRow(); // Lấy dòng hiện tại
             Object id = table.getValueAt(row, 0); // Lấy giá trị cột ID
             Object soDienThoai = table.getValueAt(row, 3);
-            
+
             if ("info".equals(action)) {
                 try {
                     // Xử lý nút "Xem Thông tin"
@@ -739,7 +740,7 @@ public class Menu extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             label = value != null ? value.toString() : "";
@@ -747,20 +748,20 @@ public class Menu extends javax.swing.JFrame {
             clicked = true;
             return button;
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             clicked = false;
             return label;
         }
-        
+
         @Override
         public boolean stopCellEditing() {
             clicked = false;
             return super.stopCellEditing();
         }
     }
-    
+
     private void LoadTableKhoa() {
         try {
             // Gọi API để lấy danh sách khóa học
@@ -803,19 +804,19 @@ public class Menu extends javax.swing.JFrame {
             // Thêm renderer và editor cho các cột nút
             TableColumn xemColumn = jTableKhoa.getColumn("Xem thông tin");
             TableColumn deleteColumn = jTableKhoa.getColumn("Delete");
-            
+
             xemColumn.setCellRenderer(new ButtonRenderer());
             deleteColumn.setCellRenderer(new ButtonRenderer());
-            
+
             xemColumn.setCellEditor(new ButtonEditorKhoa(new JButton("Xem"), "info", jTableKhoa));
             deleteColumn.setCellEditor(new ButtonEditorKhoa(new JButton("Delete"), "delete", jTableKhoa));
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void LoadTableFindKhoa(ArrayList<KhoaHoc> danhSachKhoaHoc) {
         try {
             // Gọi API để lấy danh sách khóa học
@@ -858,25 +859,25 @@ public class Menu extends javax.swing.JFrame {
             // Thêm renderer và editor cho các cột nút
             TableColumn xemColumn = jTableKhoa.getColumn("Xem thông tin");
             TableColumn deleteColumn = jTableKhoa.getColumn("Delete");
-            
+
             xemColumn.setCellRenderer(new ButtonRenderer());
             deleteColumn.setCellRenderer(new ButtonRenderer());
-            
+
             xemColumn.setCellEditor(new ButtonEditorKhoa(new JButton("Xem"), "info", jTableKhoa));
             deleteColumn.setCellEditor(new ButtonEditorKhoa(new JButton("Delete"), "delete", jTableKhoa));
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     class ButtonEditorKhoa extends DefaultCellEditor {
-        
+
         private JButton button;
         private String action;
         private JTable table;
-        
+
         public ButtonEditorKhoa(JButton button, String action, JTable table) {
             super(new JTextField());
             this.button = button;
@@ -886,13 +887,13 @@ public class Menu extends javax.swing.JFrame {
             // Lắng nghe sự kiện khi nhấn nút
             button.addActionListener(e -> performAction());
         }
-        
+
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             button.setText(value == null ? "" : value.toString()); // Cập nhật text của nút
             return button;
         }
-        
+
         private void performAction() {
             int row = table.getSelectedRow(); // Lấy dòng hiện tại
             if (row == -1) {
@@ -908,11 +909,11 @@ public class Menu extends javax.swing.JFrame {
                     KhoaHoc khoaHoc = khoaHocService.loadKhoaHocById(accessTokenLogin, idKhoa);
                     showDialogKhoa(khoaHoc);
                     LoadTableKhoa();
-                    
+
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if ("delete".equals(action)) {
                 // Xử lý nút "Delete"
                 int confirm = JOptionPane.showConfirmDialog(button, "Bạn có chắc muốn xóa khóa học ID: " + id + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
@@ -924,18 +925,18 @@ public class Menu extends javax.swing.JFrame {
                     } catch (Exception ex) {
                         Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                 }
             }
             fireEditingStopped(); // Kết thúc chế độ chỉnh sửa
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             return button.getText();
         }
     }
-    
+
     private void LoadTableHoaDon() {
         try {
             // Gọi API để lấy danh sách hóa đơn
@@ -964,11 +965,11 @@ public class Menu extends javax.swing.JFrame {
                     if (hoaDon.getNgayLap() != null) {
                         ngayLapFormatted = sdfOutput.format(hoaDon.getNgayLap()); // Định dạng ngày bắt đầu
                     }
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace(); // Xử lý ngoại lệ nếu có
                 }
-                
+
                 model.addRow(new Object[]{
                     hoaDon.getIdHoaDon(),
                     ngayLapFormatted,
@@ -996,7 +997,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void LoadTableFindHoaDon(ArrayList<HoaDon> danhSachHoaDon) {
         try {
             // Gọi API để lấy danh sách hóa đơn
@@ -1025,11 +1026,11 @@ public class Menu extends javax.swing.JFrame {
                     if (hoaDon.getNgayLap() != null) {
                         ngayLapFormatted = sdfOutput.format(hoaDon.getNgayLap()); // Định dạng ngày bắt đầu
                     }
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace(); // Xử lý ngoại lệ nếu có
                 }
-                
+
                 model.addRow(new Object[]{
                     hoaDon.getIdHoaDon(),
                     ngayLapFormatted,
@@ -1057,13 +1058,13 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     class ButtonEditorHoaDon extends DefaultCellEditor {
-        
+
         private JButton button;
         private String action;
         private JTable table;
-        
+
         public ButtonEditorHoaDon(JButton button, String action, JTable table) {
             super(new JTextField());
             this.button = button;
@@ -1073,7 +1074,7 @@ public class Menu extends javax.swing.JFrame {
             // Lắng nghe sự kiện nhấn nút
             button.addActionListener(e -> performAction());
         }
-        
+
         private void performAction() {
             try {
                 int row = table.getSelectedRow(); // Lấy dòng được chọn
@@ -1081,13 +1082,13 @@ public class Menu extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(button, "Không có dòng nào được chọn!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                
+
                 Object idObj = table.getValueAt(row, 0); // Lấy giá trị ID từ cột đầu tiên
                 if (idObj == null) {
                     JOptionPane.showMessageDialog(button, "Không tìm thấy ID hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 Long idHD = Long.parseLong(idObj.toString());
                 if ("info".equals(action)) {
                     // Gọi hàm xử lý khi nhấn nút "Xem"
@@ -1098,7 +1099,7 @@ public class Menu extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(button, "Đã xảy ra lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             button.setText(value != null ? value.toString() : "Xem");
@@ -1113,7 +1114,7 @@ public class Menu extends javax.swing.JFrame {
         jplSlideMenu.setVisible(true);
         jplSlideMenu.setSize(x, y);
         if (x == 0) {
-            
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1130,9 +1131,9 @@ public class Menu extends javax.swing.JFrame {
             x = 210;
 //          
         }
-        
+
     }
-    
+
     public void closeMenu() {
         jplSlideMenu.setSize(x, y);
         if (x == 210) {
@@ -1152,7 +1153,7 @@ public class Menu extends javax.swing.JFrame {
         }
         jplSlideMenu.setVisible(false);
     }
-    
+
     private void createInfoDialog() {
 //        var isImageLoaded = false;
         // Tạo JDialog
@@ -1236,7 +1237,7 @@ public class Menu extends javax.swing.JFrame {
         lblDisplayImage.setPreferredSize(new Dimension(100, 100));
         lblDisplayImage.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         mainPanel.add(lblDisplayImage, gbc);
-        
+
         dialog.add(mainPanel, BorderLayout.CENTER);
 
         // Panel cho các nút
@@ -1245,15 +1246,15 @@ public class Menu extends javax.swing.JFrame {
         btnSave.setPreferredSize(new Dimension(100, 35));
         btnSave.setBackground(new Color(0, 204, 0));
         btnSave.setForeground(Color.WHITE);
-        
+
         JButton btnCancel = new JButton("Hủy");
         btnCancel.setPreferredSize(new Dimension(100, 35));
         btnCancel.setBackground(new Color(204, 0, 0));
         btnCancel.setForeground(Color.WHITE);
-        
+
         buttonPanel.add(btnSave);
         buttonPanel.add(btnCancel);
-        
+
         dialog.add(buttonPanel, BorderLayout.SOUTH);
         // Hiển thị dialog
         dialog.setVisible(true);
@@ -1268,7 +1269,7 @@ public class Menu extends javax.swing.JFrame {
                         .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
                 imageIcon.setDescription(file.getAbsolutePath());
                 lblDisplayImage.setIcon(imageIcon);
-                
+
             }
         });
 
@@ -1289,10 +1290,10 @@ public class Menu extends javax.swing.JFrame {
                 dialog.dispose(); // Đóng dialog nếu cập nhật thành công
             }
         });
-        
+
         btnCancel.addActionListener(e -> dialog.dispose());
     }
-    
+
     private boolean UpdateInfo(JTextField txtName, JCheckBox chkMale, JTextField txtEmail, JTextField txtPhone,
             com.toedter.calendar.JDateChooser dateChooser, JTextField txtAddress, JLabel lblDisplayImage,
             AWSService awsService, String token, Long nhanVienId, String oldImageUrl) {
@@ -1323,7 +1324,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Ngày sinh không được lớn hơn ngày hiện tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        
+
         String newImageUrl = signinDTO.getU().getImage(); // Mặc định là ảnh cũ
 //        System.out.println(lblDisplayImage.getIcon());
         if (lblDisplayImage.getIcon() != null) {
@@ -1343,7 +1344,7 @@ public class Menu extends javax.swing.JFrame {
 
                 // Upload ảnh lên AWS S3
                 newImageUrl = awsService.uploadImage(localFilePath, fileName);
-                
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Không thể tải ảnh lên AWS: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -1395,7 +1396,7 @@ public class Menu extends javax.swing.JFrame {
             return false;
         }
     }
-    
+
     private void changePass(String token) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Đổi mật khẩu");
@@ -1415,7 +1416,7 @@ public class Menu extends javax.swing.JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         mainPanel.add(lblOldPass, gbc);
-        
+
         gbc.gridx = 1;
         mainPanel.add(txtOldPass, gbc);
 
@@ -1425,7 +1426,7 @@ public class Menu extends javax.swing.JFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         mainPanel.add(lblNewPass, gbc);
-        
+
         gbc.gridx = 1;
         mainPanel.add(txtNewPass, gbc);
 
@@ -1435,7 +1436,7 @@ public class Menu extends javax.swing.JFrame {
         gbc.gridx = 0;
         gbc.gridy = 2;
         mainPanel.add(lblConfirmNewPass, gbc);
-        
+
         gbc.gridx = 1;
         mainPanel.add(txtConfirmNewPass, gbc);
 
@@ -1511,7 +1512,7 @@ public class Menu extends javax.swing.JFrame {
         // Hiển thị dialog
         dialog.setVisible(true);
     }
-    
+
     private void showCatalogTaiKhoan(TaiKhoanLogin taiKhoan) {
         // Tạo JDialog
         JDialog dialog = new JDialog();
@@ -1625,10 +1626,10 @@ public class Menu extends javax.swing.JFrame {
             GiangVien giangVien = null;
             try {
                 // Kiểm tra vai trò (role) của người dùng
-                if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.QUANLY)) {
+                if (taiKhoan.getRole().equals(ChucVu.ADMIN) || taiKhoan.getRole().equals(ChucVu.QUANLY)) {
                     nhanVien = apiClient.findNhanVienById(accessTokenLogin, taiKhoan.getUser().getIdUser());
                     txtLuong.setText(nhanVien.getLuongThang().toString());
-                } else if (taiKhoan.getRole().equals(ChucVuEnum.TEACHER)) {
+                } else if (taiKhoan.getRole().equals(ChucVu.TEACHER)) {
                     giangVien = apiClient.findGiangVienById(accessTokenLogin, taiKhoan.getUser().getIdUser());
                     txtLuong.setText(giangVien.getLuong().toString());
                 } else if (nhanVien == null && giangVien == null) {
@@ -1668,7 +1669,7 @@ public class Menu extends javax.swing.JFrame {
                     cbVaiTro.setSelectedItem("HocVien");
             }
         }
-        
+
         gbc.gridx = 1;
         mainPanel.add(cbVaiTro, gbc);
         // Hình ảnh
@@ -1719,7 +1720,7 @@ public class Menu extends javax.swing.JFrame {
                 imageIcon.setDescription(file.getAbsolutePath());
                 lblDisplayImage.setText("");
                 lblDisplayImage.setIcon(imageIcon);
-                
+
             }
         });
         // Panel cho các nút
@@ -1728,24 +1729,24 @@ public class Menu extends javax.swing.JFrame {
         btnSave.setPreferredSize(new Dimension(100, 35));
         btnSave.setBackground(new Color(0, 204, 0));
         btnSave.setForeground(Color.WHITE);
-        
+
         JButton btnUpdateLuong = new JButton("Cập nhật lương");
         btnUpdateLuong.setPreferredSize(new Dimension(100, 35));
         btnUpdateLuong.setBackground(new Color(0, 204, 0));
         btnUpdateLuong.setForeground(Color.WHITE);
-        
+
         JButton btnCancel = new JButton("Hủy");
         btnCancel.setPreferredSize(new Dimension(100, 35));
         btnCancel.setBackground(new Color(204, 0, 0));
         btnCancel.setForeground(Color.WHITE);
         if (taiKhoan == null) {
             buttonPanel.add(btnSave);
-        } else if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.ADMIN)) {
+        } else if (taiKhoan.getRole().equals(ChucVu.ADMIN) || taiKhoan.getRole().equals(ChucVu.ADMIN) || taiKhoan.getRole().equals(ChucVu.ADMIN)) {
 //            btnSave.setText("Cập nhật lương");
             buttonPanel.add(btnUpdateLuong);
         }
         buttonPanel.add(btnCancel);
-        
+
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         // Hiển thị dialog
@@ -1753,7 +1754,7 @@ public class Menu extends javax.swing.JFrame {
 
         // Xử lý sự kiện lưu và hủy
         btnSave.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Lấy giá trị từ các trường nhập liệu
@@ -1772,35 +1773,35 @@ public class Menu extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(dialog, "Tên đăng nhập phải chứa ít nhất một chữ cái.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 if (!isValidEmail(email)) {
                     JOptionPane.showMessageDialog(dialog, "Email phải có dạng @gmail.com.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 if (!isValidPhone(phone)) {
                     JOptionPane.showMessageDialog(dialog, "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 if (!isValidDateOfBirth(selectedDate, currentDate)) {
                     JOptionPane.showMessageDialog(dialog, "Ngày sinh phải là một ngày trong quá khứ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 String selectedRole = (String) cbVaiTro.getSelectedItem();
                 int vaiTroValue = getRoleValue(selectedRole);
-                
+
                 if (vaiTroValue == -1) {
                     JOptionPane.showMessageDialog(dialog, "Vai trò không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 if (!isValidSalary(salaryStr)) {
                     JOptionPane.showMessageDialog(dialog, "Lương phải là một số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 try {
                     String oldImageUrl = getOldImageUrl();
                     String newImageUrl = uploadImageIfNeeded();
@@ -1811,7 +1812,7 @@ public class Menu extends javax.swing.JFrame {
                     } else {
                         JOptionPane.showMessageDialog(null, "Số điện thoại đã được đăng ký tài khoản. Đảm bảo số điện thoại có định dạng đúng.");
                     }
-                    
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Lỗi khi tạo tài khoản", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -1890,7 +1891,7 @@ public class Menu extends javax.swing.JFrame {
                 if (oldImageUrl != null && !oldImageUrl.isEmpty() && !oldImageUrl.equals(newImageUrl)) {
                     awsService.deleteImage(oldImageUrl);
                 }
-                
+
                 return newImageUrl;
             }
 
@@ -1901,11 +1902,11 @@ public class Menu extends javax.swing.JFrame {
                 String OTP;
                 try {
                     OTP = apiClient.sendOTP(phoneNumberDTO);
-                    
+
                     if (OTP != null) {
                         int maxRetryAttempts = 5;
                         int attemptCount = 0;
-                        
+
                         while (attemptCount < maxRetryAttempts) {
                             String otpInput = JOptionPane.showInputDialog(null, "Nhập mã OTP vừa được gửi tới " + phone + ":");
                             if (otpInput == null) {
@@ -1937,7 +1938,7 @@ public class Menu extends javax.swing.JFrame {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
         });
         btnUpdateLuong.addActionListener(new ActionListener() {
             @Override
@@ -1947,13 +1948,13 @@ public class Menu extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(dialog, "Lương phải là một số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if (taiKhoan.getRole().equals(ChucVuEnum.ADMIN) || taiKhoan.getRole().equals(ChucVuEnum.QUANLY)) {
-                    
-                } else if (taiKhoan.getRole().equals(ChucVuEnum.TEACHER)) {
-                    
+                if (taiKhoan.getRole().equals(ChucVu.ADMIN) || taiKhoan.getRole().equals(ChucVu.QUANLY)) {
+
+                } else if (taiKhoan.getRole().equals(ChucVu.TEACHER)) {
+
                 }
             }
-            
+
             private boolean isValidSalary(String salaryStr) {
                 try {
                     Long.parseLong(salaryStr);
@@ -1965,12 +1966,12 @@ public class Menu extends javax.swing.JFrame {
         });
         btnCancel.addActionListener(e -> dialog.dispose());
     }
-    
+
     private boolean updateTaiKhoanInfo(SignupDto signupDTO, int role) {
-        
+
         return true; // Trả về true nếu cập nhật thành công
     }
-    
+
     public void showDialogKhoa(KhoaHoc khoaHoc) {
         JDialog dialogKhoa = new JDialog();
         dialogKhoa.setTitle("Nhập thông tin Khóa Học");
@@ -2076,12 +2077,12 @@ public class Menu extends javax.swing.JFrame {
         lblDisplayImageKhoa.setPreferredSize(new Dimension(100, 100));
         lblDisplayImageKhoa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         mainPanel.add(lblDisplayImageKhoa, gbc);
-        
+
         dialogKhoa.add(mainPanel, BorderLayout.CENTER);
 
         // Panel nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        
+
         JButton btnSaveKhoa = new JButton("Lưu");
         if (khoaHoc != null) {
             txtTenKhoaHoc.setText(khoaHoc.getTenKhoaHoc());
@@ -2126,21 +2127,21 @@ public class Menu extends javax.swing.JFrame {
                     }
                 }
             }
-            
+
             btnSaveKhoa.setText("Cập nhật");
         }
         btnSaveKhoa.setPreferredSize(new Dimension(100, 35));
         btnSaveKhoa.setBackground(new Color(0, 204, 0));
         btnSaveKhoa.setForeground(Color.WHITE);
-        
+
         JButton btnCancel = new JButton("Hủy");
         btnCancel.setPreferredSize(new Dimension(100, 35));
         btnCancel.setBackground(new Color(204, 0, 0));
         btnCancel.setForeground(Color.WHITE);
-        
+
         buttonPanel.add(btnSaveKhoa);
         buttonPanel.add(btnCancel);
-        
+
         dialogKhoa.add(buttonPanel, BorderLayout.SOUTH);
 
         // Xử lý nút tải ảnh
@@ -2153,7 +2154,7 @@ public class Menu extends javax.swing.JFrame {
                         .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
                 imageIcon.setDescription(file.getAbsolutePath());
                 lblDisplayImageKhoa.setIcon(imageIcon);
-                
+
             }
         });
         // Xử lý nút lưu
@@ -2184,18 +2185,18 @@ public class Menu extends javax.swing.JFrame {
         // Hiển thị dialog
         dialogKhoa.setVisible(true);
     }
-    
+
     private ArrayList<User> getDanhSachGiangVien() {
         try {
             return (ArrayList<User>) apiClient.getAllGiangVienLamViec(accessTokenLogin);
-            
+
         } catch (Exception ex) {
-            
+
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             return new ArrayList<>();
         }
     }
-    
+
     private ArrayList<KhoaHoc> getDanhSachKhoaHoc() {
         try {
             return (ArrayList<KhoaHoc>) khoaHocService.getAllKhoaHocApi(accessTokenLogin);
@@ -2204,7 +2205,7 @@ public class Menu extends javax.swing.JFrame {
             return new ArrayList<>();
         }
     }
-    
+
     private void ShowDialogThanhToan(ArrayList<ThanhToan> list) {
         // Khởi tạo danh sách thanh toán
         ArrayList<ThanhToan> thanhToanDaChon = new ArrayList<ThanhToan>();
@@ -2217,7 +2218,7 @@ public class Menu extends javax.swing.JFrame {
         // Tạo bảng hiển thị thông tin thanh toán
         Object[][] data = new Object[list.size()][5];
         String[] columnNames = {"Chọn", "ID", "Học viên", "Lớp học", "Trạng thái"};
-        
+
         for (int i = 0; i < list.size(); i++) {
             ThanhToan thanhToan = list.get(i);
             data[i][0] = false; // Dùng cho checkbox, mặc định là không chọn
@@ -2234,7 +2235,7 @@ public class Menu extends javax.swing.JFrame {
                 return column == 0; // Chỉ cho phép chỉnh sửa cột "Chọn" (checkbox)
             }
         };
-        
+
         JTable table = new JTable(model);
 
         // Sử dụng DefaultCellEditor để tạo checkbox trong cột "Chọn"
@@ -2255,7 +2256,7 @@ public class Menu extends javax.swing.JFrame {
         // Tạo Panel chứa nút Hủy và Thêm
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
-        
+
         JButton btnHuy = new JButton("Hủy");
         btnHuy.addActionListener(new ActionListener() {
             @Override
@@ -2263,7 +2264,7 @@ public class Menu extends javax.swing.JFrame {
                 dialogThanhToan.dispose(); // Đóng dialog khi nhấn Hủy
             }
         });
-        
+
         JButton btnThem = new JButton("Thêm");
         btnThem.addActionListener(new ActionListener() {
             @Override
@@ -2278,7 +2279,7 @@ public class Menu extends javax.swing.JFrame {
                             listIdClick.add(thanhToanClick.getIdTT());
                         }
                     }
-                    
+
                     HoaDon hoaDonThem = hoaDonService.createHoaDonApi(accessTokenLogin, signinDTO.getU().getIdUser(), listIdClick);
                     JOptionPane.showMessageDialog(null, "Thêm hóa đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     dialogThanhToan.dispose(); // Đóng dialog khi nhấn Thêm
@@ -2288,22 +2289,22 @@ public class Menu extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         panel.add(btnHuy);
         panel.add(btnThem);
-        
+
         dialogThanhToan.add(panel, BorderLayout.SOUTH);
 
         // Hiển thị dialog
         dialogThanhToan.setVisible(true); // Gọi setVisible(true) để hiển thị dialog
     }
-    
+
     public void showInfoHoaDon(Long idHoaDon) {
         // Giả sử lấy thông tin hóa đơn từ dịch vụ
         try {
             HoaDon hoaDon = hoaDonService.getHoaDonByIdApi(accessTokenLogin, idHoaDon);
             ArrayList<ThanhToan> listTT = (ArrayList<ThanhToan>) hoaDonService.FindThanhToanByIdHoaDon(accessTokenLogin, idHoaDon);
-            
+
             if (hoaDon == null) {
                 JOptionPane.showMessageDialog(null, "Hóa đơn không tồn tại.");
                 return;
@@ -2326,7 +2327,7 @@ public class Menu extends javax.swing.JFrame {
                 data[i][1] = thanhToan.getNguoiThanhToan().getHoTen();
                 data[i][2] = thanhToan.getLopHoc().getTenLopHoc();
             }
-            
+
             DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
             JTable table = new JTable(tableModel);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -2339,7 +2340,7 @@ public class Menu extends javax.swing.JFrame {
             infoPanel.add(new JLabel("Người lập:"));
             JTextField txtNguoiLap = new JTextField(hoaDon.getNguoiLap().getHoTen()); // Hiển thị tên người lập
             infoPanel.add(txtNguoiLap);
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             infoPanel.add(new JLabel("Ngày lập:"));
             JTextField txtNgayLap = new JTextField(sdf.format(hoaDon.getNgayLap())); // Hiển thị ngày lập
@@ -2353,7 +2354,7 @@ public class Menu extends javax.swing.JFrame {
             // Tạo các nút Cancel và Export PDF
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
-            
+
             JButton btnCancel = new JButton("Hủy");
             btnCancel.addActionListener(new ActionListener() {
                 @Override
@@ -2361,7 +2362,7 @@ public class Menu extends javax.swing.JFrame {
                     dialogListThanhToan.dispose(); // Đóng dialog khi nhấn "Hủy"
                 }
             });
-            
+
             JButton btnExportPDF = new JButton("Export PDF");
             btnExportPDF.addActionListener(new ActionListener() {
                 @Override
@@ -2375,7 +2376,7 @@ public class Menu extends javax.swing.JFrame {
                     }
                 }
             });
-            
+
             buttonPanel.add(btnCancel);
             buttonPanel.add(btnExportPDF);
 
@@ -2384,19 +2385,19 @@ public class Menu extends javax.swing.JFrame {
             dialogListThanhToan.add(scrollPane, BorderLayout.CENTER);
             dialogListThanhToan.add(infoPanel, BorderLayout.SOUTH);
             dialogListThanhToan.add(buttonPanel, BorderLayout.SOUTH);
-            
+
             dialogListThanhToan.setVisible(true); // Hiển thị dialog
         } catch (Exception ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void showCatalogTableTest(Long idLop) {
         try {
             // Lấy thông tin hóa đơn từ dịch vụ
 
             ArrayList<BaiTest> listBaiTest = (ArrayList<BaiTest>) lopHocService.loadBaiTestByIdLopxetTuyenFalse(accessTokenLogin, idLop);
-            
+
             if (listBaiTest == null || listBaiTest.size() == 0) {
                 JOptionPane.showMessageDialog(null, "Không có bài Test nào cần duyệt");
                 return;
@@ -2411,7 +2412,7 @@ public class Menu extends javax.swing.JFrame {
             // Tạo bảng hiển thị thông tin
             String[] columnNames = {"Chọn", "ID Bai Test", "Ngày bắt đầu", "Ngày kết thúc", "Loai Test"};
             Object[][] data = new Object[listBaiTest.size()][5];
-            
+
             for (int i = 0; i < listBaiTest.size(); i++) {
                 BaiTest baiTest = listBaiTest.get(i);
                 data[i][0] = false; // Cột checkbox mặc định là chưa chọn
@@ -2420,7 +2421,7 @@ public class Menu extends javax.swing.JFrame {
                 data[i][3] = baiTest.getNgayKT();
                 data[i][4] = baiTest.getLoaiTest(); // Hiển thị số tiền
             }
-            
+
             DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
                 @Override
                 public Class<?> getColumnClass(int column) {
@@ -2433,10 +2434,10 @@ public class Menu extends javax.swing.JFrame {
             // Panel chứa các nút chức năng
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
-            
+
             JButton btnCancel = new JButton("Hủy");
             btnCancel.addActionListener(e -> dialogListThanhToan.dispose());
-            
+
             JButton btnAccept = new JButton("Chấp nhận");
             btnAccept.addActionListener(e -> {
                 ArrayList<Long> selectedIds = new ArrayList<>();
@@ -2473,7 +2474,7 @@ public class Menu extends javax.swing.JFrame {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             });
-            
+
             buttonPanel.add(btnCancel);
             buttonPanel.add(btnAccept);
             buttonPanel.add(btnCancelTest);
@@ -2482,14 +2483,14 @@ public class Menu extends javax.swing.JFrame {
             dialogListThanhToan.setLayout(new BorderLayout());
             dialogListThanhToan.add(scrollPane, BorderLayout.CENTER);
             dialogListThanhToan.add(buttonPanel, BorderLayout.SOUTH);
-            
+
             dialogListThanhToan.setVisible(true); // Hiển thị dialog
         } catch (Exception ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin hóa đơn.");
         }
     }
-    
+
     public void exportToPDF(HoaDon hoaDon, ArrayList<ThanhToan> listTT) throws DocumentException, IOException {
         // Tạo tài liệu PDF
         Document document = new Document();
@@ -2508,7 +2509,7 @@ public class Menu extends javax.swing.JFrame {
         table.addCell("ID");
         table.addCell("Học viên");
         table.addCell("Lớp học");
-        
+
         for (ThanhToan thanhToan : listTT) {
             table.addCell(String.valueOf(thanhToan.getIdTT()));
             table.addCell(thanhToan.getNguoiThanhToan().getHoTen());
@@ -2529,7 +2530,7 @@ public class Menu extends javax.swing.JFrame {
             System.out.println("Không thể tìm thấy file: " + fileName);
         }
     }
-    
+
     public void exportToPDFLopHoc() throws DocumentException, IOException {
         // Tạo tài liệu PDF
         if (idLopOutClass == -1) {
@@ -2543,7 +2544,7 @@ public class Menu extends javax.swing.JFrame {
             } catch (Exception ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             Document document = new Document();
             String fileName = "hoa_don_" + lop.getIdLopHoc() + ".pdf";
             PdfWriter.getInstance(document, new FileOutputStream(fileName));
@@ -2562,7 +2563,7 @@ public class Menu extends javax.swing.JFrame {
             table.addCell("So dien thoai");
             table.addCell("Email");
             table.addCell("Trang Thai");
-            
+
             for (ThanhToan thanhToan : danhSachThanhToan) {
                 table.addCell(String.valueOf(thanhToan.getNguoiThanhToan().getIdUser()));
                 table.addCell(thanhToan.getNguoiThanhToan().getHoTen());
@@ -2586,7 +2587,7 @@ public class Menu extends javax.swing.JFrame {
             }
         }
     }
-    
+
     public void showDialogLop(LopHoc lop) {
         JDialog dialogLop = new JDialog();
         dialogLop.setTitle("Nhập thông tin Lớp Học");
@@ -2668,12 +2669,12 @@ public class Menu extends javax.swing.JFrame {
         JTextArea txtMoTa = new JTextArea(5, 20);
         gbc.gridx = 1;
         mainPanel.add(txtMoTa, gbc);
-        
+
         dialogLop.add(mainPanel, BorderLayout.CENTER);
 
         // Panel nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        
+
         if (lop != null) {
             txtSoHocVien.setText(lop.getSoHocVien().toString());
             txtMoTa.setText(lop.getMoTa());
@@ -2715,7 +2716,7 @@ public class Menu extends javax.swing.JFrame {
         buttonPanel.add(btnSaveLop);
         buttonPanel.add(btnLoadTest);
         buttonPanel.add(btnCancel);
-        
+
         dialogLop.add(buttonPanel, BorderLayout.SOUTH);
 
         // Xử lý nút lưu
@@ -2762,7 +2763,7 @@ public class Menu extends javax.swing.JFrame {
         });
         return comboBox;
     }
-    
+
     private boolean themLopHoc(
             String token, LopHoc lop, JTextField txtTenLopHoc, JTextField txtSoHocVien,
             JDateChooser dateChooserNgayBD, JDateChooser dateChooserNgayKT,
@@ -2771,7 +2772,7 @@ public class Menu extends javax.swing.JFrame {
     ) {
         String tenLopHoc = txtTenLopHoc.getText().trim();
         String soHocVienStr = txtSoHocVien.getText().trim();
-        
+
         Date ngayBD = dateChooserNgayBD.getDate();
         Date ngayKT = dateChooserNgayKT.getDate(); // Sửa: đúng tên biến của DateChooser
 
@@ -2779,20 +2780,20 @@ public class Menu extends javax.swing.JFrame {
         if (lop == null) {
             lop = new LopHoc();
         }
-        
+
         String moTa = txtMoTa.getText().trim();
         TrangThaiLop trangThai = (TrangThaiLop) cbTrangThai.getSelectedItem();
-        
+
         if (tenLopHoc.isEmpty() || soHocVienStr.isEmpty() || ngayBD == null || ngayKT == null || moTa.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        
+
         if (!soHocVienStr.matches("\\d+")) {
             JOptionPane.showMessageDialog(null, "Số học viên phải là số nguyên hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         if (ngayKT.before(ngayBD)) {
             JOptionPane.showMessageDialog(null, "Ngày kết thúc không được trước ngày bắt đầu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -2842,7 +2843,7 @@ public class Menu extends javax.swing.JFrame {
             return false;
         }
     }
-    
+
     public ArrayList<Skill> getSelectedSkills(JCheckBox[] checkBoxes) {
         ArrayList<Skill> selectedSkills = new ArrayList<>();
 
@@ -2854,7 +2855,7 @@ public class Menu extends javax.swing.JFrame {
         }
         return selectedSkills;
     }
-    
+
     private boolean themKhoa(String token, JLabel lblDisplayImageKhoa, JTextField txtTenKhoaHoc, JTextField txtGiaTien, JDateChooser dateChooser, JTextField txtSoBuoi, JTextArea txtMoTa, JCheckBox[] skillCheckBoxes, JCheckBox chkTrangThai, Long id, String img) {
         String tenKhoaHoc = txtTenKhoaHoc.getText().trim();
         String giaTien = txtGiaTien.getText().trim();
@@ -2872,35 +2873,35 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        
+
         if (thoiGianDienRa == null) {
             JOptionPane.showMessageDialog(null, "Thời gian diễn ra không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         if (selectedSkills.size() == 0) {
             JOptionPane.showMessageDialog(null, "Kĩ năng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         Date currentDate = new Date();
         if (thoiGianDienRa.before(currentDate)) {
             JOptionPane.showMessageDialog(null, "Thời gian diễn ra phải là ngày trong tương lai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         String giaTienPattern = "\\d+";
         if (!giaTien.matches(giaTienPattern)) {
             JOptionPane.showMessageDialog(null, "Giá tiền phải là số nguyên hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         String soBuoiPattern = "\\d+";
         if (!soBuoi.matches(soBuoiPattern)) {
             JOptionPane.showMessageDialog(null, "Số buổi phải là số nguyên hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         KhoaHoc khoaHoc = new KhoaHoc();
         if (id != null) {
             khoaHoc.setIdKhoaHoc(id);
@@ -2912,7 +2913,7 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Giá tiền phải là số hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         try {
             khoaHoc.setSoBuoi(Long.parseLong(soBuoi));
         } catch (NumberFormatException e) {
@@ -2923,7 +2924,7 @@ public class Menu extends javax.swing.JFrame {
 // Kiểm tra nếu Icon là kiểu ImageIcon\
         String oldImageUrl = img;
         String newImageUrl = oldImageUrl;
-        
+
         if (lblDisplayImageKhoa.getIcon() != null) {
             try {
                 // Lấy thông tin từ icon
@@ -2995,7 +2996,7 @@ public class Menu extends javax.swing.JFrame {
             return false;
         }
     }
-    
+
     public static boolean containsAccents(String input) {
         if (input == null) {
             return false;
@@ -3003,7 +3004,7 @@ public class Menu extends javax.swing.JFrame {
         // Biểu thức chính quy kiểm tra có chứa các ký tự có dấu tiếng Việt
         return input.matches(".*[ạáàảãâấầẩẫậăắằẳẵặđẹéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ].*");
     }
-    
+
     public void findLop() {
         String textTim = jTextTimLop.getText();
         String textComBoLop = jComTimLop.getSelectedItem().toString();
@@ -3024,7 +3025,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBoLop.equals("Tên Lớp")) {
                 try {
                     System.out.println(textTim);
@@ -3033,7 +3034,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBoLop.equals("Tên Khóa")) {
                 try {
                     System.out.println(textTim);
@@ -3042,7 +3043,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBoLop.equals("ID Giảng Viên")) {
                 try {
                     System.out.println(textTim);
@@ -3051,7 +3052,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBoLop.equals("Tên Giảng Viên")) {
                 try {
                     System.out.println(textTim);
@@ -3060,7 +3061,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBoLop.equals("ID")) {
                 try {
                     System.out.println(textTim);
@@ -3071,11 +3072,11 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         }
     }
-    
+
     public void findKhoa() {
         String textTim = jTextTimKhoa.getText();
         String textComBo = jCombKhoaHoc.getSelectedItem().toString();
@@ -3096,7 +3097,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("Tên Khóa")) {
                 try {
                     System.out.println(textTim);
@@ -3105,7 +3106,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("Theo Năm")) {
                 try {
                     System.out.println(textTim);
@@ -3114,7 +3115,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("ID Khóa")) {
                 try {
                     System.out.println(textTim);
@@ -3125,11 +3126,11 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         }
     }
-    
+
     public void findTaiKhoan() {
         String textTim = jTextSearchTK.getText();
         String textComBo = jComSearchTK.getSelectedItem().toString();
@@ -3144,13 +3145,13 @@ public class Menu extends javax.swing.JFrame {
             }
             if (textComBo.equals("Còn hoạt động")) {
                 try {
-                    System.out.println(textTim);                    
+                    System.out.println(textTim);
                     listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.getAllTKhoanAcTiveLikeNameApi(accessTokenLogin, textTim);
                     loadTableFindTaiKhoan(listDS);
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("Tên")) {
                 try {
                     System.out.println(textTim);
@@ -3159,16 +3160,22 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("Chức vụ")) {
                 try {
                     System.out.println(textTim);
-                    listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.callFindByRoleTKApi(textTim, textTim);
-                    loadTableFindTaiKhoan(listDS);
+                    ChucVu chucVu = timChucVuGanDung(textTim);
+                    if (chucVu != null) {
+                        System.out.println("chuvu " + chucVu.toString());
+                        listDS = (ArrayList<TaiKhoanLogin>) taiKhoanService.callFindByRoleTKApi(accessTokenLogin, chucVu.toString());
+                        loadTableFindTaiKhoan(listDS);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Chức vụ không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("ID")) {
                 try {
                     System.out.println(textTim);
@@ -3179,11 +3186,63 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         }
     }
-    
+
+    public static ChucVu timChucVuGanDung(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            System.err.println("Chuỗi nhập không hợp lệ!");
+            return null;
+        }
+
+        input = input.toUpperCase().trim(); // Chuyển input thành chữ hoa và loại bỏ khoảng trắng
+        ChucVu closestMatch = null;
+        int maxSimilarity = 0;
+
+        // Lặp qua tất cả các giá trị trong enum để tìm chuỗi gần giống nhất
+        for (ChucVu chucVu : ChucVu.values()) {
+            int similarity = tinhDoTuongDong(input, chucVu.name());
+            if (similarity > maxSimilarity) {
+                maxSimilarity = similarity;
+                closestMatch = chucVu;
+            }
+        }
+
+        // Xác định ngưỡng tối thiểu để chấp nhận kết quả
+        if (maxSimilarity > 60) { // 60% là ngưỡng, bạn có thể điều chỉnh
+            return closestMatch;
+        }
+
+        System.err.println("Không tìm thấy chức vụ phù hợp với: " + input);
+        return null;
+    }
+
+    public static int tinhDoTuongDong(String s1, String s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i == 0) {
+                    dp[i][j] = j;
+                } else if (j == 0) {
+                    dp[i][j] = i;
+                } else {
+                    int cost = (s1.charAt(i - 1) == s2.charAt(j - 1)) ? 0 : 1;
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost);
+                }
+            }
+        }
+
+        // Tính phần trăm tương đồng
+        int maxLength = Math.max(s1.length(), s2.length());
+        int distance = dp[m][n];
+        return (int) ((1 - (double) distance / maxLength) * 100);
+    }
+
     public void findHoaDon() {
         String textTim = jTextTimHoaDon.getText();
         String textComBo = jComHoaDon.getSelectedItem().toString();
@@ -3204,7 +3263,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("Năm Lập")) {
                 try {
                     System.out.println(textTim);
@@ -3213,7 +3272,7 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             } else if (textComBo.equals("ID")) {
                 try {
                     System.out.println(textTim);
@@ -3224,11 +3283,11 @@ public class Menu extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         }
     }
-    
+
     public static void showDialogGioiThieu() {
         // Tạo một JDialog
         JDialog dialog = new JDialog();
@@ -3274,7 +3333,7 @@ public class Menu extends javax.swing.JFrame {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
-    
+
     public static void showDialogFeedback() {
         // Tạo một JDialog
         JDialog dialog = new JDialog();
@@ -3335,19 +3394,19 @@ public class Menu extends javax.swing.JFrame {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
-    
+
     private Map<Integer, Double> thongKeDoanhThuTheoThanMap(ArrayList<HoaDon> listHoaDon) {
         Map<Integer, Double> doanhThuTheoThang = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("MM");
-        
+
         for (HoaDon hoaDon : listHoaDon) {
             int month = Integer.parseInt(sdf.format(hoaDon.getNgayLap())); // Lấy tháng từ ngày lập
             doanhThuTheoThang.put(month, doanhThuTheoThang.getOrDefault(month, 0.0) + hoaDon.getThanhTien());
         }
-        
+
         return doanhThuTheoThang;
     }
-    
+
     private void veSoDoTheoThang(JPanel jPnSoDo, Map<Integer, Double> doanhThuTheoThang) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -3377,19 +3436,19 @@ public class Menu extends javax.swing.JFrame {
         jPnSoDo.revalidate(); // Làm mới giao diện
         jPnSoDo.repaint();
     }
-    
+
     private Map<Integer, Double> thongKeDoanhThuTheoNam(ArrayList<HoaDon> listHoaDon) {
         Map<Integer, Double> doanhThuTheoNam = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-        
+
         for (HoaDon hoaDon : listHoaDon) {
             int year = Integer.parseInt(sdf.format(hoaDon.getNgayLap())); // Lấy năm từ ngày lập
             doanhThuTheoNam.put(year, doanhThuTheoNam.getOrDefault(year, 0.0) + hoaDon.getThanhTien());
         }
-        
+
         return doanhThuTheoNam;
     }
-    
+
     private void veSoDoTheoNam(JPanel jPnSoDo, Map<Integer, Double> doanhThuTheoNam) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -3419,19 +3478,19 @@ public class Menu extends javax.swing.JFrame {
         jPnSoDo.revalidate(); // Làm mới giao diện
         jPnSoDo.repaint();
     }
-    
+
     private Map<String, Double> thongKeDoanhThuTheoLop(ArrayList<ThanhToan> listThanhToan) {
         Map<String, Double> doanhThuTheoLop = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-        
+
         for (ThanhToan thanhToan : listThanhToan) {
             String tenLop = thanhToan.getLopHoc().getTenLopHoc(); // Lấy năm từ ngày lập
             doanhThuTheoLop.put(tenLop, doanhThuTheoLop.getOrDefault(tenLop, 0.0) + thanhToan.getLopHoc().getKhoaHoc().getGiaTien());
         }
-        
+
         return doanhThuTheoLop;
     }
-    
+
     private void veSoDoTheoLop(JPanel jPnSoDo, Map<String, Double> doanhThuTheoLop) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -3461,19 +3520,19 @@ public class Menu extends javax.swing.JFrame {
         jPnSoDo.revalidate(); // Làm mới giao diện
         jPnSoDo.repaint();
     }
-    
+
     private Map<String, Double> thongKeDoanhThuTheoKhoa(ArrayList<ThanhToan> listThanhToan) {
         Map<String, Double> doanhThuTheoKhoa = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-        
+
         for (ThanhToan thanhToan : listThanhToan) {
             String tenKhoa = thanhToan.getLopHoc().getKhoaHoc().getTenKhoaHoc(); // Lấy năm từ ngày lập
             doanhThuTheoKhoa.put(tenKhoa, doanhThuTheoKhoa.getOrDefault(tenKhoa, 0.0) + thanhToan.getLopHoc().getKhoaHoc().getGiaTien());
         }
-        
+
         return doanhThuTheoKhoa;
     }
-    
+
     private void veSoDoTheoKhoa(JPanel jPnSoDo, Map<String, Double> doanhThuTheoKhoa) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -3633,7 +3692,7 @@ public class Menu extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/avatar.png"))); // NOI18N
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/EFYWEB.png"))); // NOI18N
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel4.setText("EYL");
@@ -3656,8 +3715,8 @@ public class Menu extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addContainerGap(121, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblCloseMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
@@ -3667,9 +3726,9 @@ public class Menu extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCloseMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
+                    .addComponent(lblCloseMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
                 .addContainerGap(11, Short.MAX_VALUE))
         );
@@ -4734,15 +4793,15 @@ public class Menu extends javax.swing.JFrame {
     private void lblCloseMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCloseMenuMouseClicked
         closeMenu();
         jButtonChangeInfo.setEnabled(true);
-        jBtDoanhSo.setEnabled(true);
-        jBtSoHocVien.setEnabled(true);
+//        jBtDoanhSo.setEnabled(true);
+//        jBtSoHocVien.setEnabled(true);
     }//GEN-LAST:event_lblCloseMenuMouseClicked
 
     private void lblOpenMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblOpenMenuMouseClicked
         openMenu();
 //        jButtonChangeInfo.setEnabled(false);
 //        jBtDoanhSo.setEnabled(false);
-        jBtSoHocVien.setEnabled(false);
+//        jBtSoHocVien.setEnabled(false);
 //        jplSlideMenu.setVisible(true);
     }//GEN-LAST:event_lblOpenMenuMouseClicked
 
@@ -5106,7 +5165,7 @@ public class Menu extends javax.swing.JFrame {
                 }
             }
         });
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

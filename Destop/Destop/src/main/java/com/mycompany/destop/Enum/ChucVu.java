@@ -8,10 +8,10 @@ package com.mycompany.destop.Enum;
  *
  * @author Windows 10
  */
-public enum ChucVuEnum {
+public enum ChucVu {
     ADMIN ,
     QUANLY,
     STUDENT,
-    TEACHER;
+    TEACHER
 }
 

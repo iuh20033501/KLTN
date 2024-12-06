@@ -14,7 +14,7 @@ import com.mycompany.destop.DTO.ResetPassDto;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.DTO.SignupDto;
 import com.mycompany.destop.DTO.UpdateUserDTO;
-import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.GiangVien;
 import com.mycompany.destop.Modul.KhoaHoc;
 import com.mycompany.destop.Modul.NhanVien;

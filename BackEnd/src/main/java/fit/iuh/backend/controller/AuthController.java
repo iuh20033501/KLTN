@@ -249,8 +249,19 @@ public class AuthController {
     public List<TaiKhoanLogin> getAllTKhoanActiveTrue(@PathVariable String name){
         return tkService.getListTKActive(name);
     }
-    @GetMapping("/findTKhoanByrole/{role}")
-    public List<TaiKhoanLogin> getAllTKhoanByRole(@PathVariable String role){
-        return tkService.getListTKByRole(role);
+    @GetMapping("/findTKhoanByroleDestop/{chucVu}")
+    public List<TaiKhoanLogin> getAllTKhoanByRole(@PathVariable String chucVu){
+        if(chucVu.equals("STUDENT")) {
+            return tkService.getListTKByRole(ChucVu.STUDENT);
+        }else  if(chucVu.equals("ADMIN")) {
+            return tkService.getListTKByRole(ChucVu.ADMIN);
+        }
+        else  if(chucVu.equals("TEACHER")) {
+            return tkService.getListTKByRole(ChucVu.TEACHER);
+        }
+        else  if(chucVu.equals("QUANLY")) {
+            return tkService.getListTKByRole(ChucVu.QUANLY);
+        }
+        return  null;
     }
 }

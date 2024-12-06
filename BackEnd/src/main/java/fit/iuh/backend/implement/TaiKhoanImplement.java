@@ -9,6 +9,7 @@ import fit.iuh.backend.repository.UserRepo;
 import fit.iuh.backend.service.TaiKhoanService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.BeanDefinitionDsl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -72,16 +73,8 @@ public class TaiKhoanImplement implements TaiKhoanService {
         return taiKhoanRepo.findTKhoanTrue(name);
     }
 
-    public List<TaiKhoanLogin> getListTKByRole(String role) {
-        try {
-            // Kiểm tra và ánh xạ role thành enum ChucVu
-            ChucVu chucVu = ChucVu.valueOf(role);
-            return taiKhoanRepo.findTKhoanByRole(chucVu);
-        } catch (IllegalArgumentException e) {
-            // Xử lý trường hợp role không hợp lệ
-            System.err.println("Role không hợp lệ: " + role);
-            return new ArrayList<>(); // Trả về danh sách rỗng
-        }
+    public List<TaiKhoanLogin> getListTKByRole(ChucVu role) {
+        return taiKhoanRepo.findTKhoanByRole(role);
     }
 
 

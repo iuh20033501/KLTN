@@ -5,7 +5,7 @@
 package com.mycompany.destop.DTO;
 
 import com.google.gson.annotations.SerializedName;
-import com.mycompany.destop.Enum.ChucVuEnum;
+import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.User;
 
 /**
@@ -15,7 +15,7 @@ import com.mycompany.destop.Modul.User;
 public class SigninDTO {
 //    @SerializedName("u")
     private User u;
-    private ChucVuEnum cvEnum;
+    private ChucVu cvEnum;
 
     // Getter cho User
     public User getU() {
@@ -28,12 +28,12 @@ public class SigninDTO {
     }
 
     // Getter cho ChucVuEnum
-    public ChucVuEnum getCvEnum() {
+    public ChucVu getCvEnum() {
         return cvEnum;
     }
 
     // Setter cho ChucVuEnum
-    public void setCvEnum(ChucVuEnum cvEnum) {
+    public void setCvEnum(ChucVu cvEnum) {
         this.cvEnum = cvEnum;
     }
 }

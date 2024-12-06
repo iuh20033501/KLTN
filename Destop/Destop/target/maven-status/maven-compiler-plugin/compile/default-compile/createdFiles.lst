@@ -109,6 +109,7 @@ com\mycompany\destop\Screen\DangNhap$3.class
 com\mycompany\destop\Screen\Menu$12.class
 com\mycompany\destop\Screen\Menu$32.class
 com\mycompany\destop\DTO\TinhDiemTestDTO.class
+com\mycompany\destop\Enum\ChucVu.class
 com\mycompany\destop\Screen\Menu$27.class
 com\mycompany\destop\Screen\Menu$47.class
 com\mycompany\destop\DTO\OTPResponseDTO.class
@@ -129,7 +130,6 @@ com\mycompany\destop\Screen\Menu$38.class
 com\mycompany\destop\Service\HoaDonService$2.class
 com\mycompany\destop\DTO\SigninDTO.class
 com\mycompany\destop\Modul\ThanhToan.class
-com\mycompany\destop\Enum\ChucVuEnum.class
 com\mycompany\destop\Screen\Menu$49.class
 com\mycompany\destop\Screen\Menu$14.class
 com\mycompany\destop\Screen\Menu$6.class
