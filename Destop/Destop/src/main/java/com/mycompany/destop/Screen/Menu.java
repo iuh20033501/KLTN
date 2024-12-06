@@ -128,6 +128,10 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.HocVien;
 import java.text.SimpleDateFormat;
+import org.jfree.chart.labels.PieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
 //import com.itextpdf.text.FontProvider;
 
 /**
@@ -3437,6 +3441,118 @@ public class Menu extends javax.swing.JFrame {
         jPnSoDo.repaint();
     }
 
+    private Map<String, Integer> soHocVienTheoKhoa(ArrayList<LopHoc> listLopHocs) {
+        Map<String, Integer> soHocVienTheoKhoa = new TreeMap<>(); // Đổi kiểu dữ liệu thành Integer để lưu số học viên
+
+        // Lặp qua danh sách lớp học
+        for (LopHoc lopHoc : listLopHocs) {
+            String tenLop = lopHoc.getTenLopHoc(); // Lấy tên lớp học
+            Long idLop = lopHoc.getIdLopHoc(); // Lấy ID lớp học
+
+            int soHocVien = 0;
+            try {
+                // Lấy danh sách các thanh toán đã hoàn thành cho lớp này
+                ArrayList<ThanhToan> listTTDone = (ArrayList<ThanhToan>) hoaDonService.ThanhToanbyIdLopandDone(accessTokenLogin, idLop);
+                // Kiểm tra và đếm số học viên trong lớp
+                if (listTTDone != null) {
+                    soHocVien = listTTDone.size();
+                }
+            } catch (Exception ex) {
+                // Ghi log nếu có lỗi xảy ra
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // Lưu tên lớp và số học viên vào map
+            soHocVienTheoKhoa.put(tenLop, soHocVien);
+        }
+
+        return soHocVienTheoKhoa;
+    }
+
+    private Map<String, Integer> soHocVienTheoLop(Long idLop) {
+        Map<String, Integer> soHocVienTheoKhoa = new TreeMap<>(); // Đổi kiểu dữ liệu thành Integer để lưu số học viên
+        int soHocVien = 0;
+        try {
+            // Lấy danh sách các thanh toán đã hoàn thành cho lớp này
+            ArrayList<ThanhToan> listTTDone = (ArrayList<ThanhToan>) hoaDonService.ThanhToanbyIdLopandDone(accessTokenLogin, idLop);
+            // Kiểm tra và đếm số học viên trong lớp
+            if (listTTDone != null) {
+                soHocVien = listTTDone.size();
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Lưu tên lớp và số học viên vào map
+        soHocVienTheoKhoa.put("Done", soHocVien);
+        try {
+            // Lấy danh sách các thanh toán đã hoàn thành cho lớp này
+            ArrayList<ThanhToan> listTTDone = (ArrayList<ThanhToan>) hoaDonService.ThanhToanbyIdLopandWait(accessTokenLogin, idLop);
+            // Kiểm tra và đếm số học viên trong lớp
+            if (listTTDone != null) {
+                soHocVien = listTTDone.size();
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Lưu tên lớp và số học viên vào map
+        soHocVienTheoKhoa.put("Wait", soHocVien);
+        try {
+            // Lấy danh sách các thanh toán đã hoàn thành cho lớp này
+            ArrayList<ThanhToan> listTTDone = (ArrayList<ThanhToan>) hoaDonService.ThanhToanbyIdLopandCancel(accessTokenLogin, idLop);
+            // Kiểm tra và đếm số học viên trong lớp
+            if (listTTDone != null) {
+                soHocVien = listTTDone.size();
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Lưu tên lớp và số học viên vào map
+        soHocVienTheoKhoa.put("Cancel", soHocVien);
+
+        return soHocVienTheoKhoa;
+    }
+
+    public void veSoDoTron(JPanel jPnSoDo, Map<String, Integer> soHocVienTheoKhoa, String tenBieuDo) {
+        // Tạo một dataset cho biểu đồ tròn
+        DefaultPieDataset dataset = new DefaultPieDataset();
+
+        // Thêm dữ liệu vào dataset từ Map
+        for (Map.Entry<String, Integer> entry : soHocVienTheoKhoa.entrySet()) {
+            dataset.setValue(entry.getKey(), entry.getValue()); // Thêm tên lớp và số học viên vào biểu đồ
+        }
+
+        // Tạo biểu đồ tròn từ dataset
+        JFreeChart chart = ChartFactory.createPieChart(
+                tenBieuDo, // Tiêu đề biểu đồ
+                dataset, // Dữ liệu
+                true, // Hiển thị chú thích
+                true, // Hiển thị tooltips
+                false // Không tạo URL
+        );
+
+        // Cấu hình biểu đồ
+        PiePlot plot = (PiePlot) chart.getPlot();
+
+        // Định dạng hiển thị phần trăm trong biểu đồ
+        PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}: {1} ({2}%)");
+        plot.setLabelGenerator(labelGenerator); // Hiển thị tên lớp, giá trị và phần trăm
+
+        // Hiển thị biểu đồ lên JPanel
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(jPnSoDo.getSize());
+        jPnSoDo.removeAll(); // Xóa nội dung cũ của JPanel
+        jPnSoDo.setLayout(new BorderLayout());
+        jPnSoDo.add(chartPanel, BorderLayout.CENTER); // Thêm biểu đồ vào trung tâm JPanel
+        jPnSoDo.revalidate(); // Làm mới giao diện
+        jPnSoDo.repaint(); // Vẽ lại giao diện
+    }
+
     private Map<Integer, Double> thongKeDoanhThuTheoNam(ArrayList<HoaDon> listHoaDon) {
         Map<Integer, Double> doanhThuTheoNam = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
@@ -3952,6 +4068,9 @@ public class Menu extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jComSearchTKMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jComSearchTKMouseEntered(evt);
+            }
         });
 
         javax.swing.GroupLayout cardTaiKhoanLayout = new javax.swing.GroupLayout(cardTaiKhoan);
@@ -3959,7 +4078,7 @@ public class Menu extends javax.swing.JFrame {
         cardTaiKhoanLayout.setHorizontalGroup(
             cardTaiKhoanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardTaiKhoanLayout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
+                .addContainerGap(47, Short.MAX_VALUE)
                 .addComponent(jLabelMenuTK, javax.swing.GroupLayout.PREFERRED_SIZE, 929, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
@@ -4765,6 +4884,11 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
+        jPnSoDo.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jPnSoDoMouseMoved(evt);
+            }
+        });
         jPnSoDo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPnSoDoMouseClicked(evt);
@@ -4816,7 +4940,7 @@ public class Menu extends javax.swing.JFrame {
         cardThongKe.setLayout(cardThongKeLayout);
         cardThongKeLayout.setHorizontalGroup(
             cardThongKeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabelTextThongKe, javax.swing.GroupLayout.DEFAULT_SIZE, 1100, Short.MAX_VALUE)
+            .addComponent(jLabelTextThongKe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(cardThongKeLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPnSoDo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -4962,17 +5086,20 @@ public class Menu extends javax.swing.JFrame {
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
         // TODO add your handling code here:
+        closeMenu();
         showDialogGioiThieu();
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jLabel11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel11MouseClicked
         // TODO add your handling code here:
 //        jplFilnal.setComponentZOrder(jplSlideMenu, 0);
+        closeMenu();
         showDialogFeedback();
     }//GEN-LAST:event_jLabel11MouseClicked
 
     private void jButtonChangeInfoMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonChangeInfoMouseMoved
         // TODO add your handling code here:
+        closeMenu();
     }//GEN-LAST:event_jButtonChangeInfoMouseMoved
 
     private void jButtonChangeInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonChangeInfoMouseClicked
@@ -5140,7 +5267,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBtDoanhSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtDoanhSoMouseClicked
         // TODO add your handling code here:
-
+        closeMenu();
         ArrayList<HoaDon> listHoaDon = null;
         ArrayList<ThanhToan> listThanhToan = null;
         String selectedOption = jComDoanhSo.getSelectedItem().toString();
@@ -5196,11 +5323,11 @@ public class Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
         closeMenu();
         findLop();
-
     }//GEN-LAST:event_jBtTimLopMouseClicked
 
     private void jComHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComHoaDonMouseClicked
         // TODO add your handling code here:
+        closeMenu();
 //        String textComHoaDon = jComHoaDon.getSelectedItem().toString();
 //        if(textComHoaDon.equals("Theo Tháng")){
 //             jMonthChooser.setVisible(true);
@@ -5254,6 +5381,74 @@ public class Menu extends javax.swing.JFrame {
     private void jBtSoHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtSoHocVienMouseClicked
         // TODO add your handling code here:
         closeMenu();
+        ArrayList<LopHoc> listLopHoc = null;
+        ArrayList<ThanhToan> listThanhToan = null;
+        String selectedOption = jComSoHocVien.getSelectedItem().toString();
+
+        if ("Theo Lớp".equals(selectedOption)) {
+            String idLop = JOptionPane.showInputDialog("Vui lòng nhập ID lớp muốn vẽ sơ đồ:");
+            if (idLop == null || idLop.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ID khóa không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return; // Dừng lại nếu ID khóa rỗng
+            }
+            if (!idLop.matches("\\d+")) {
+                JOptionPane.showMessageDialog(null, "ID phải là số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return; // Dừng lại nếu ID không phải là số
+            }
+
+            try {
+                // Kiểm tra xem khóa có tồn tại hay không
+                LopHoc LopExist = lopHocService.loadLopHocById(accessTokenLogin, Long.parseLong(idLop)); // Giả sử bạn có hàm này để kiểm tra
+
+                if (LopExist == null) {
+                    JOptionPane.showMessageDialog(null, "Khóa không tồn tại. Vui lòng kiểm tra lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return; // Dừng lại nếu khóa không tồn tại
+                }
+
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            Map<String, Integer> soHocVienTrongKhoa = soHocVienTheoLop(Long.parseLong(idLop));
+
+            // Vẽ sơ đồ theo năm
+            veSoDoTron(jPnSoDo, soHocVienTrongKhoa, "Biểu đồ tổng quan trình trạng học viên trong lớp " + idLop);
+        } else if ("Theo Khóa".equals(selectedOption)) {
+            // Hiển thị dialog yêu cầu nhập ID khóa
+            String idKhoa = JOptionPane.showInputDialog("Vui lòng nhập ID khóa muốn vẽ sơ đồ:");
+
+            // Kiểm tra ID khóa có rỗng không
+            if (idKhoa == null || idKhoa.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ID khóa không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return; // Dừng lại nếu ID khóa rỗng
+            }
+            if (!idKhoa.matches("\\d+")) {
+                JOptionPane.showMessageDialog(null, "ID phải là số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return; // Dừng lại nếu ID không phải là số
+            }
+
+            try {
+                // Kiểm tra xem khóa có tồn tại hay không
+                KhoaHoc KhoaExist = khoaHocService.loadKhoaHocById(accessTokenLogin, Long.parseLong(idKhoa)); // Giả sử bạn có hàm này để kiểm tra
+
+                if (KhoaExist == null) {
+                    JOptionPane.showMessageDialog(null, "Khóa không tồn tại. Vui lòng kiểm tra lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return; // Dừng lại nếu khóa không tồn tại
+                }
+
+                // Tính toán dữ liệu thống kê theo năm
+                listLopHoc = (ArrayList<LopHoc>) lopHocService.getAllLopHocByIdKhoaApi(accessTokenLogin, Long.parseLong(idKhoa));
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            Map<String, Integer> soHocVienTrongKhoa = soHocVienTheoKhoa(listLopHoc);
+
+            // Vẽ sơ đồ theo năm
+            veSoDoTron(jPnSoDo, soHocVienTrongKhoa, "Biểu đồ tổng quan số lượng học viên trong khóa " + idKhoa);
+        }
+
+        jBnExportPDF.setEnabled(true);
     }//GEN-LAST:event_jBtSoHocVienMouseClicked
 
     private void jComDoanhSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComDoanhSoMouseClicked
@@ -5345,6 +5540,16 @@ public class Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
         closeMenu();
     }//GEN-LAST:event_jComSearchTKMouseClicked
+
+    private void jComSearchTKMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComSearchTKMouseEntered
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComSearchTKMouseEntered
+
+    private void jPnSoDoMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPnSoDoMouseMoved
+        // TODO add your handling code here:
+//        closeMenu();
+    }//GEN-LAST:event_jPnSoDoMouseMoved
 
     /**
      * @param args the command line arguments

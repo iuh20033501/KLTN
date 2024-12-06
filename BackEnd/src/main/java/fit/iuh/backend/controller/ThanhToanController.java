@@ -260,7 +260,7 @@ public class ThanhToanController {
             description = """
            
              id thanhToaN
-            Update ThanHtOAN cancel
+            
     """
     )
     @GetMapping("/findByIdHocVienWait/{idHV}")
@@ -269,4 +269,23 @@ public class ThanhToanController {
         List<ThanhToan> list = thanhToanService.findByIDHVvaEnum(idHV, TrangThaiThanhToan.WAIT);
         return list;
     }
+    @GetMapping("/findByIdLopDone/{idLop}")
+    public List<ThanhToan> findByIdLopandDone (@PathVariable Long idLop){
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
+        List<ThanhToan> list = thanhToanService.findByIdLopvaEnum(idLop,TrangThaiThanhToan.DONE);
+        return list;
+    }
+    @GetMapping("/findByIdLopWait/{idLop}")
+    public List<ThanhToan> findByIdLopandWait (@PathVariable Long idLop){
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
+        List<ThanhToan> list = thanhToanService.findByIdLopvaEnum(idLop,TrangThaiThanhToan.WAIT);
+        return list;
+    }
+    @GetMapping("/findByIdLopCancel/{idLop}")
+    public List<ThanhToan> findByIdLopandCancel (@PathVariable Long idLop){
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
+        List<ThanhToan> list = thanhToanService.findByIdLopvaEnum(idLop,TrangThaiThanhToan.CANCEL);
+        return list;
+    }
+
 }
