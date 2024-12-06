@@ -54,10 +54,13 @@ public class HoaDonController {
         // Tính tổng tiền và cập nhật các mục thanh toán
         Long tongTien = 0L;
         for (Long idTT : listIdThanhToan) {
+            System.out.println(idTT);
             ThanhToan tt= thanhToanService.findById(idTT).get();
-            if (tt != null && tt.getLopHoc() != null && tt.getLopHoc().getKhoaHoc() != null) {
+            if (tt != null && tt.getLopHoc() != null ) {
                 Long giaTien = tt.getLopHoc().getKhoaHoc().getGiaTien();
                 tongTien += (giaTien != null ? giaTien : 0); // Tránh lỗi nếu giá tiền null
+
+                System.out.println(hoaDonSaved.getIdHoaDon());
                 // Cập nhật trạng thái và ID hóa đơn cho mục thanh toán
                 thanhToanService.updateDoneThanhToanAndIdHoaDon(tt, hoaDonSaved.getIdHoaDon());
             }

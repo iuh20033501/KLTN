@@ -1,7 +1,9 @@
 package fit.iuh.backend.implement;
 
 import fit.iuh.backend.enumclass.TrangThaiThanhToan;
+import fit.iuh.backend.moudel.HoaDon;
 import fit.iuh.backend.moudel.ThanhToan;
+import fit.iuh.backend.repository.HoaDonRepo;
 import fit.iuh.backend.repository.ThanhToanRepo;
 import fit.iuh.backend.service.ThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import java.util.Optional;
 public class ThanhToanImplement implements ThanhToanService {
     @Autowired
     private ThanhToanRepo thanhToanRepo;
+    @Autowired
+    private HoaDonRepo hoaDonRepo;
 
     @Override
     public ThanhToan createThanhToan(ThanhToan thanhToan) {
@@ -56,6 +60,9 @@ public class ThanhToanImplement implements ThanhToanService {
     @Override
     public ThanhToan updateDoneThanhToanAndIdHoaDon(ThanhToan thanhToan, Long idHoaDon) {
         thanhToan.setTrangThai(TrangThaiThanhToan.DONE);
+        HoaDon hd =hoaDonRepo.findById(idHoaDon).orElseThrow(()->new RuntimeException("hoa đơn not found "));
+
+        thanhToan.setHoaDon(hd);
         return thanhToanRepo.save(thanhToan);
     }
     @Override
