@@ -187,11 +187,11 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
           <View style={styles.scheduleContainer}>
             {user.cvEnum === 'TEACHER' ? (
               <View style={styles.scheduleCard}>
-                <Text style={styles.scheduleTitle}>Mục bài tập</Text>
-                <Text style={styles.scheduleNumber}>Bài tập về nhà
+                <Text style={styles.scheduleTitle}>Thông báo</Text>
+                <Text style={styles.scheduleNumber}>0
                 </Text>
                 <TouchableOpacity>
-                  <Text style={styles.linkText}>Tạo</Text>
+                  <Text style={styles.linkText}>Xem chi tiết</Text>
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
@@ -256,11 +256,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch giảng dạy</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+              onPress={() => {
+                navigation.navigate('ResultTeacherScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+              }}>
                 <AntDesign name="linechart" size={24} color="black" />
                 <Text style={styles.featureText}>Quản lý điểm số</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}
+              <TouchableOpacity style={styles.featureCard} 
                 onPress={() => {
                   navigation.navigate('TeacherClassesScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
                 }}>
@@ -292,7 +295,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <AntDesign name="calendar" size={24} color="black" />
                 <Text style={styles.featureText}>Lịch học</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.featureCard}>
+              <TouchableOpacity style={styles.featureCard}
+               onPress={() => {
+                navigation.navigate('ResultStudentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
+              }}>
                 <AntDesign name="linechart" size={24} color="black" />
                 <Text style={styles.featureText}>Xem điểm bài test</Text>
               </TouchableOpacity>
