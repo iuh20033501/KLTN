@@ -80,6 +80,17 @@ public class BaiTestController {
     public List<BaiTest> findBTByXetDuyetFalse(@PathVariable Long idLop){
         return baiTestService.finByIdLopTrue(idLop);
     }
+//    @PostMapping("/setListBaiTestofXetDuetFalse/{accept}")
+//    public List<BaiTest> findBTByXetDuyetFalse(@PathVariable Boolean accept, @RequestBody List<Long> list){
+//        if(accept = true){
+//            for(list: Long id ){
+//
+//            }
+//
+//        }
+//        return baiTestService.finByIdLopTrue(idLop);
+//    }
+//
     @Operation(
             summary = "get bai test theo idLop ",
             description = """     
@@ -95,7 +106,7 @@ public class BaiTestController {
         return baiTestService.finByIdLopTrueXetDUyetFalse(idLop);
     }
 
-    @GetMapping("/AceptBaiTestofLopXetFalse")
+    @PostMapping("/AceptBaiTestofLopXetFalse")
     public Boolean aceptBTByLopXetFalse(@RequestBody List<Long> listLong) {
         try {
             for (Long id : listLong) {
@@ -111,7 +122,7 @@ public class BaiTestController {
             return false; // Gặp lỗi
         }
     }
-    @GetMapping("/CancelBaiTestofLopXetFalse")
+    @PostMapping("/CancelBaiTestofLopXetFalse")
     public Boolean cancelBTByLopXetFalse(@RequestBody List<Long> listLong) {
         try {
             for (Long id : listLong) {

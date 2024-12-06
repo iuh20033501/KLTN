@@ -123,7 +123,7 @@ public class TaiKhoanService {
         }
     }
      public TaiKhoanLogin callFindByIdtaiKhoanApi(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/auth//findById/" + id; // URL API
+        String apiUrl = "http://localhost:8081/auth/findById/" + id; // URL API
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
