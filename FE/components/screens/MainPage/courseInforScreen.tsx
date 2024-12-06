@@ -42,16 +42,8 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           Thông tin
         </Text>
 
-        <Text style={styles.courseTitle}>Tiếng Anh giao tiếp - [mã lớp]</Text>
+        <Text style={styles.courseTitle}>Trung Tâm EFY</Text>
         <View style={styles.infoBox}>
-          <View style={styles.infoRow}>
-            <FontAwesome name="calendar" size={24} color="black" />
-            <Text style={styles.infoText}>1/9/2024 - 30/12/2024</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="school" size={24} color="black" />
-            <Text style={styles.infoText}>Phòng học A3.04</Text>
-          </View>
           <View style={styles.infoRow}>
             <Entypo name="location-pin" size={24} color="black" />
             <Text style={styles.infoText}>
