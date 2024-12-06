@@ -2450,7 +2450,7 @@ public class Menu extends javax.swing.JFrame {
                 try {
                     Boolean kqua = lopHocService.aceptBaiTestByIdLopxetTuyenFalse(accessTokenLogin, selectedIds);
                     dialogListThanhToan.dispose();
-//                JOptionPane.showMessageDialog(dialogListThanhToan, "Danh sách ID đã chọn: " + selectedIds);
+                JOptionPane.showMessageDialog(dialogListThanhToan, "Chấp nhận thành công!! ");
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -2468,6 +2468,7 @@ public class Menu extends javax.swing.JFrame {
                 try {
                     Boolean kqua = lopHocService.aceptBaiTestByIdLopxetTuyenFalse(accessTokenLogin, selectedIds);
                     dialogListThanhToan.dispose();
+                     JOptionPane.showMessageDialog(dialogListThanhToan, "Từ chối thành công!! ");
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
