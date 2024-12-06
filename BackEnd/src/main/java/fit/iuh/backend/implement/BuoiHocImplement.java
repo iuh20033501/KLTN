@@ -42,4 +42,9 @@ public class BuoiHocImplement implements BuoiHocService {
     public List<BuoiHoc> getBuoiDaHoc() {
         return buoiHocRepo.getBuoiDaHoc();
     }
+
+    @Override
+    public List<BuoiHoc> getBuoiDaHocTheoLop(Long idLop) {
+        return buoiHocRepo.getBuoiDaHocTheoLop(idLop);
+    }
 }

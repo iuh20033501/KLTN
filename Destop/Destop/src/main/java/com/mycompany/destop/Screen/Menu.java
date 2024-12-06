@@ -5039,6 +5039,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jButtonTimTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonTimTKMouseClicked
         // TODO add your handling code here:
+        findTaiKhoan();
     }//GEN-LAST:event_jButtonTimTKMouseClicked
 
     private void jButTimKhoaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButTimKhoaMouseClicked
@@ -5048,6 +5049,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBntTimHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBntTimHoaDonMouseClicked
         // TODO add your handling code here:
+        findHoaDon();
     }//GEN-LAST:event_jBntTimHoaDonMouseClicked
 
     private void jBnExportHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBnExportHocVienMouseClicked
