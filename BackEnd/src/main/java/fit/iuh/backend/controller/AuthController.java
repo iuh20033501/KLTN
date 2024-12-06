@@ -4,6 +4,7 @@ package fit.iuh.backend.controller;
 
 
 import fit.iuh.backend.dto.*;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.jwt.JwtRequest;
 import fit.iuh.backend.jwt.JwtResponse;
 import fit.iuh.backend.jwt.RefreshTokenRequest;
@@ -247,5 +248,9 @@ public class AuthController {
     @GetMapping("/findTKhoanActiveLikeName/{name}")
     public List<TaiKhoanLogin> getAllTKhoanActiveTrue(@PathVariable String name){
         return tkService.getListTKActive(name);
+    }
+    @GetMapping("/findTKhoanByrole/{role}")
+    public List<TaiKhoanLogin> getAllTKhoanByRole(@PathVariable String role){
+        return tkService.getListTKByRole(role);
     }
 }

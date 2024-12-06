@@ -22,5 +22,6 @@ public interface TaiKhoanService {
     Optional<TaiKhoanLogin> findBySDT (String sdt);
     List<TaiKhoanLogin> getListLikeName(String name);
     List<TaiKhoanLogin> getListTKActive(String name);
+    List<TaiKhoanLogin> getListTKByRole(String role);
 
 }

@@ -158,5 +158,43 @@ public class TaiKhoanService {
             throw new Exception("Không thể gọi API xóa tài khoản. Mã phản hồi: " + responseCode);
         }
     }
+     public  List<TaiKhoanLogin>  callFindByRoleTKApi(String token, String role) throws Exception {
+        String apiUrl = "http://localhost:8081/auth/findTKhoanByrole/" + role; // URL API
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+
+        // Xử lý phản hồi từ server
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với LocalDateAdapter
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành đối tượng TaiKhoanLogin
+                 Type listType = new TypeToken<List<TaiKhoanLogin>>() {
+                }.getType();
+                return gson.fromJson(response.toString(), listType);
+            }
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Không tìm thấy tài khoản với ID: " + role);
+        } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new Exception("Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra token.");
+        } else {
+            throw new Exception("Không thể gọi API xóa tài khoản. Mã phản hồi: " + responseCode);
+        }
+    }
 
 }

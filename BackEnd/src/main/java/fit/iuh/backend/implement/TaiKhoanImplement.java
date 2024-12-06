@@ -2,6 +2,7 @@ package fit.iuh.backend.implement;
 
 
 import fit.iuh.backend.dto.TaiKhoanDto;
+import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.moudel.TaiKhoanLogin;
 import fit.iuh.backend.repository.TaiKhoanRepo;
 import fit.iuh.backend.repository.UserRepo;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Component
@@ -69,5 +71,18 @@ public class TaiKhoanImplement implements TaiKhoanService {
     public List<TaiKhoanLogin> getListTKActive(String name) {
         return taiKhoanRepo.findTKhoanTrue(name);
     }
+
+    public List<TaiKhoanLogin> getListTKByRole(String role) {
+        try {
+            // Kiểm tra và ánh xạ role thành enum ChucVu
+            ChucVu chucVu = ChucVu.valueOf(role);
+            return taiKhoanRepo.findTKhoanByRole(chucVu);
+        } catch (IllegalArgumentException e) {
+            // Xử lý trường hợp role không hợp lệ
+            System.err.println("Role không hợp lệ: " + role);
+            return new ArrayList<>(); // Trả về danh sách rỗng
+        }
+    }
+
 
 }
