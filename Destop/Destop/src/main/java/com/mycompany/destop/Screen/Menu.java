@@ -2280,8 +2280,9 @@ public class Menu extends javax.swing.JFrame {
                     for (int i = 0; i < list.size(); i++) {
                         Boolean isSelected = (Boolean) table.getValueAt(i, 0);
                         if (isSelected != null && isSelected) {
-                            ThanhToan thanhToanClick = list.get(i);
-                            listIdClick.add(thanhToanClick.getIdTT());
+                            Long idTT = (Long) table.getValueAt(i, 1);
+                            System.out.println(idTT);
+                            listIdClick.add(idTT);
                         }
                     }
 
