@@ -3878,6 +3878,11 @@ public class Menu extends javax.swing.JFrame {
 
         jplMain.setBackground(new java.awt.Color(255, 255, 255));
         jplMain.setPreferredSize(new java.awt.Dimension(990, 600));
+        jplMain.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jplMainMouseClicked(evt);
+            }
+        });
         jplMain.setLayout(new java.awt.CardLayout());
 
         cardTaiKhoan.setBackground(new java.awt.Color(255, 255, 255));
@@ -3910,6 +3915,11 @@ public class Menu extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableTK.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableTKMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableTK);
 
         jButtonTimTK.setBackground(new java.awt.Color(51, 51, 255));
@@ -3919,6 +3929,12 @@ public class Menu extends javax.swing.JFrame {
         jButtonTimTK.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButtonTimTKMouseClicked(evt);
+            }
+        });
+
+        jTextSearchTK.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextSearchTKMouseClicked(evt);
             }
         });
 
@@ -3932,15 +3948,20 @@ public class Menu extends javax.swing.JFrame {
         });
 
         jComSearchTK.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Tên", "Chức vụ", "Còn hoạt động" }));
+        jComSearchTK.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComSearchTKMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout cardTaiKhoanLayout = new javax.swing.GroupLayout(cardTaiKhoan);
         cardTaiKhoan.setLayout(cardTaiKhoanLayout);
         cardTaiKhoanLayout.setHorizontalGroup(
             cardTaiKhoanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardTaiKhoanLayout.createSequentialGroup()
-                .addContainerGap(90, Short.MAX_VALUE)
+                .addContainerGap(23, Short.MAX_VALUE)
                 .addComponent(jLabelMenuTK, javax.swing.GroupLayout.PREFERRED_SIZE, 929, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 81, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
             .addGroup(cardTaiKhoanLayout.createSequentialGroup()
                 .addComponent(jTextSearchTK)
@@ -4248,7 +4269,7 @@ public class Menu extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cardTrangChuLayout.createSequentialGroup()
-                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 695, Short.MAX_VALUE)
+                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanelGioiTinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanelAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -4337,6 +4358,11 @@ public class Menu extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTabDSLop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTabDSLopMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTabDSLop);
 
         jBtTimLop.setText("Tìm kiếm");
@@ -4347,7 +4373,18 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
+        jTextTimLop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextTimLopMouseClicked(evt);
+            }
+        });
+
         jComTimLop.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "IDKhoa", "ID Giảng Viên", "Tên Giảng Viên", "Tên Lớp", "Tên Khóa", " " }));
+        jComTimLop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComTimLopMouseClicked(evt);
+            }
+        });
         jComTimLop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComTimLopActionPerformed(evt);
@@ -4382,6 +4419,11 @@ public class Menu extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        jTabHocVien.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTabHocVienMouseClicked(evt);
             }
         });
         jScrollPane6.setViewportView(jTabHocVien);
@@ -4501,6 +4543,11 @@ public class Menu extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableKhoa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableKhoaMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(jTableKhoa);
 
         jButTimKhoa.setText("Tìm kiếm");
@@ -4508,6 +4555,12 @@ public class Menu extends javax.swing.JFrame {
         jButTimKhoa.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButTimKhoaMouseClicked(evt);
+            }
+        });
+
+        jTextTimKhoa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextTimKhoaMouseClicked(evt);
             }
         });
 
@@ -4593,6 +4646,11 @@ public class Menu extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableHoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableHoaDonMouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(jTableHoaDon);
 
         jBntTimHoaDon.setText("Tìm kiếm");
@@ -4605,6 +4663,12 @@ public class Menu extends javax.swing.JFrame {
         jBntTimHoaDon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBntTimHoaDonActionPerformed(evt);
+            }
+        });
+
+        jTextTimHoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextTimHoaDonMouseClicked(evt);
             }
         });
 
@@ -4676,13 +4740,34 @@ public class Menu extends javax.swing.JFrame {
         });
 
         jBtDiemSo.setText("Điểm bài tập");
+        jBtDiemSo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jBtDiemSoMouseClicked(evt);
+            }
+        });
 
         jBtSoHocVien.setText("Số học viên");
+        jBtSoHocVien.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jBtSoHocVienMouseClicked(evt);
+            }
+        });
 
         jButDiemTest.setText("Điểm bài Test");
+        jButDiemTest.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButDiemTestMouseClicked(evt);
+            }
+        });
         jButDiemTest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButDiemTestActionPerformed(evt);
+            }
+        });
+
+        jPnSoDo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPnSoDoMouseClicked(evt);
             }
         });
 
@@ -4698,12 +4783,32 @@ public class Menu extends javax.swing.JFrame {
         );
 
         jComDoanhSo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Tháng", "Theo Năm", "Theo Lớp Trong Năm", "Theo Khóa" }));
+        jComDoanhSo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComDoanhSoMouseClicked(evt);
+            }
+        });
 
         jComSoHocVien.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+        jComSoHocVien.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComSoHocVienMouseClicked(evt);
+            }
+        });
 
         jComBaiTap.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+        jComBaiTap.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComBaiTapMouseClicked(evt);
+            }
+        });
 
         jComBaiTest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+        jComBaiTest.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComBaiTestMouseClicked(evt);
+            }
+        });
 
         jBnExportPDF.setText("ExportPDF");
 
@@ -4844,6 +4949,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jButtonChangPassMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonChangPassMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         changePass(accessTokenLogin);
     }//GEN-LAST:event_jButtonChangPassMouseClicked
 
@@ -4871,6 +4977,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jButtonChangeInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonChangeInfoMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         createInfoDialog();
     }//GEN-LAST:event_jButtonChangeInfoMouseClicked
 
@@ -4946,17 +5053,20 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBntKhoaHocMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBntKhoaHocMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         showDialogKhoa(null);
     }//GEN-LAST:event_jBntKhoaHocMouseClicked
 
     private void jBtThemLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtThemLopMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         showDialogLop(null);
     }//GEN-LAST:event_jBtThemLopMouseClicked
 
     private void jBtKTraDangKyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtKTraDangKyMouseClicked
         try {
             // TODO add your handling code here:
+            closeMenu();
             ArrayList<ThanhToan> list = (ArrayList<ThanhToan>) hoaDonService.loadApiUploadThanhToanByLop(accessTokenLogin, 1l);
             JOptionPane.showMessageDialog(null, "Kiểm tra đã hoàn thành!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
@@ -4966,6 +5076,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBtThemHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtThemHocVienMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         String idHocVien = JOptionPane.showInputDialog(this, "Vui lòng nhập mã học viên:");
 
         // Kiểm tra xem mã học viên có rỗng không
@@ -4992,6 +5103,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBntThemHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBntThemHoaDonMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         String idHocVien = JOptionPane.showInputDialog(this, "Vui lòng nhập mã học viên:");
 
         // Kiểm tra xem mã học viên có rỗng không
@@ -5022,6 +5134,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBtThemTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtThemTKMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         showCatalogTaiKhoan(null);
     }//GEN-LAST:event_jBtThemTKMouseClicked
 
@@ -5081,6 +5194,7 @@ public class Menu extends javax.swing.JFrame {
 
     private void jBtTimLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtTimLopMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         findLop();
 
     }//GEN-LAST:event_jBtTimLopMouseClicked
@@ -5099,22 +5213,26 @@ public class Menu extends javax.swing.JFrame {
 
     private void jButtonTimTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonTimTKMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         findTaiKhoan();
     }//GEN-LAST:event_jButtonTimTKMouseClicked
 
     private void jButTimKhoaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButTimKhoaMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         findKhoa();
     }//GEN-LAST:event_jButTimKhoaMouseClicked
 
     private void jBntTimHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBntTimHoaDonMouseClicked
         // TODO add your handling code here:
+        closeMenu();
         findHoaDon();
     }//GEN-LAST:event_jBntTimHoaDonMouseClicked
 
     private void jBnExportHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBnExportHocVienMouseClicked
         try {
             // TODO add your handling code here:
+            closeMenu();
             exportToPDFLopHoc();
         } catch (DocumentException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -5127,6 +5245,106 @@ public class Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
 //        if(jCombKhoaHoc.getSelectedItem().toString().equals("Theo"))
     }//GEN-LAST:event_jCombKhoaHocMouseClicked
+
+    private void jplMainMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jplMainMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jplMainMouseClicked
+
+    private void jBtSoHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtSoHocVienMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jBtSoHocVienMouseClicked
+
+    private void jComDoanhSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComDoanhSoMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComDoanhSoMouseClicked
+
+    private void jComSoHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComSoHocVienMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComSoHocVienMouseClicked
+
+    private void jBtDiemSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtDiemSoMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jBtDiemSoMouseClicked
+
+    private void jComBaiTapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComBaiTapMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComBaiTapMouseClicked
+
+    private void jButDiemTestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButDiemTestMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jButDiemTestMouseClicked
+
+    private void jComBaiTestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComBaiTestMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComBaiTestMouseClicked
+
+    private void jPnSoDoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPnSoDoMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jPnSoDoMouseClicked
+
+    private void jTextTimHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextTimHoaDonMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTextTimHoaDonMouseClicked
+
+    private void jTableHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableHoaDonMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTableHoaDonMouseClicked
+
+    private void jTextTimKhoaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextTimKhoaMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTextTimKhoaMouseClicked
+
+    private void jTableKhoaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableKhoaMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTableKhoaMouseClicked
+
+    private void jTextTimLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextTimLopMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTextTimLopMouseClicked
+
+    private void jComTimLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComTimLopMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComTimLopMouseClicked
+
+    private void jTabDSLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabDSLopMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTabDSLopMouseClicked
+
+    private void jTabHocVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabHocVienMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTabHocVienMouseClicked
+
+    private void jTableTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableTKMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTableTKMouseClicked
+
+    private void jTextSearchTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextSearchTKMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jTextSearchTKMouseClicked
+
+    private void jComSearchTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComSearchTKMouseClicked
+        // TODO add your handling code here:
+        closeMenu();
+    }//GEN-LAST:event_jComSearchTKMouseClicked
 
     /**
      * @param args the command line arguments
