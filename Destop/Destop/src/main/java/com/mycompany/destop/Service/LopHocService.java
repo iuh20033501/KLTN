@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mycompany.destop.DTO.CreateLopDTO;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Modul.BaiTest;
+import com.mycompany.destop.Modul.BuoiHoc;
 import com.mycompany.destop.Modul.KhoaHoc;
 import com.mycompany.destop.Modul.LopHoc;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
@@ -611,6 +612,140 @@ public class LopHocService {
                 }
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                 throw new Exception("Lớp học không tồn tại.");
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+      public List<BuoiHoc> getAllBuoiHocByLopApi(String token, Long idLop) throws Exception {
+        String profileUrl = "http://localhost:8081/buoihoc/getbuoiHocByLop/"+idLop; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        try {
+            // Cấu hình GET request với JWT token trong header
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+
+                    // Sử dụng Gson để chuyển đổi JSON thành danh sách LopHoc
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    Type listType = new TypeToken<List<BuoiHoc>>() {
+                    }.getType();
+                    return gson.fromJson(response.toString(), listType); // Trả về danh sách LopHoc
+                }
+            } else {
+                throw new Exception("Không thể gọi API lớp học, mã phản hồi: " + responseCode);
+            }
+        } catch (IOException e) {
+            throw new Exception("Lỗi khi kết nối tới API: " + e.getMessage());
+        } finally {
+            conn.disconnect(); // Đảm bảo đóng kết nối
+        }
+    }
+       public BuoiHoc getBuoiHocById(String token, Long id) throws Exception {
+        String apiUrl = "http://localhost:8081/buoihoc/getBuoiById/" + id; // URL endpoint của API xóa lớp học
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET"); // Phương thức GET
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
+
+                    // Chuyển đổi JSON trả về thành đối tượng LopHoc
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // Xử lý LocalDate nếu cần
+                            .create();
+                    return gson.fromJson(response.toString(), BuoiHoc.class);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Lớp học không tồn tại.");
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+        public LopHoc CreateBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
+        String apiUrl = "http://localhost:8081/buoihoc/createBuoiHoc/"+ idLop; // URL API
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true); // Cho phép gửi dữ liệu qua request body
+
+            // Chuyển đối tượng LopHoc sang JSON
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // Xử lý LocalDate nếu cần
+                    .create();
+            String jsonBody = gson.toJson(buoiHoc);
+
+            // Gửi dữ liệu qua request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonBody.getBytes("UTF-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Chuyển đổi JSON trả về thành đối tượng LopHoc
+                    return gson.fromJson(response.toString(), LopHoc.class);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Không tìm thấy giảng viên hoặc khóa học.");
             } else {
                 throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
             }

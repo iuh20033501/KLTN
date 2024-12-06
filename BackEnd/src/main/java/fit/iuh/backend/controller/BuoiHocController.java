@@ -73,5 +73,11 @@ public class BuoiHocController {
     public List<BuoiHoc> getBuoiDaHoc(@PathVariable Long idLop ){
         return buoiHocService.getBuoiDaHocTheoLop(idLop);
     }
+    @GetMapping("/getBuoiById/{id}")
+    public BuoiHoc getBuoiById(@PathVariable Long id ){
+        return buoiHocService.findById(id);
+    }
+
+
 
 }

@@ -126,6 +126,7 @@ import com.itextpdf.text.ImgTemplate;
 //import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.mycompany.destop.Enum.ChucVu;
+import com.mycompany.destop.Modul.BuoiHoc;
 import com.mycompany.destop.Modul.HocVien;
 import java.text.SimpleDateFormat;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
@@ -2021,7 +2022,7 @@ public class Menu extends javax.swing.JFrame {
         mainPanel.add(new JLabel("Trạng thái:"), gbc);
         JCheckBox chkTrangThai = new JCheckBox("Hoạt động");
         if (khoaHoc == null) {
-            chkTrangThai.setSelected(true);
+//            chkTrangThai.setSelected(true);
             chkTrangThai.setEnabled(false);
         }
         gbc.gridx = 1;
@@ -2050,20 +2051,20 @@ public class Menu extends javax.swing.JFrame {
         mainPanel.add(new JLabel("Kỹ năng:"), gbc);
 
 // Tạo danh sách các kỹ năng
-        String[] skills = {"LISTEN", "REAL", "WRITE", "SPEAK"};
-
-// Tạo JComboBox cho phép chọn nhiều kỹ năng
-        JCheckBox[] skillCheckBoxes = new JCheckBox[skills.length];
-//        JPanel comboPanel = new JPanel(new GridLayout(0, 1)); // Panel chứa các CheckBox
-        JPanel jpSkill = new JPanel();
-        for (int i = 0; i < skills.length; i++) {
-            skillCheckBoxes[i] = new JCheckBox(skills[i]);
-            jpSkill.add(skillCheckBoxes[i]);
-        }
+//        String[] skills = {"LISTEN", "REAL", "WRITE", "SPEAK"};
+//
+//// Tạo JComboBox cho phép chọn nhiều kỹ năng
+//        JCheckBox[] skillCheckBoxes = new JCheckBox[skills.length];
+////        JPanel comboPanel = new JPanel(new GridLayout(0, 1)); // Panel chứa các CheckBox
+//        JPanel jpSkill = new JPanel();
+//        for (int i = 0; i < skills.length; i++) {
+//            skillCheckBoxes[i] = new JCheckBox(skills[i]);
+//            jpSkill.add(skillCheckBoxes[i]);
+//        }
 
 //// Thêm vào giao diện chính
-        gbc.gridx = 1;
-        mainPanel.add(jpSkill, gbc);
+//        gbc.gridx = 1;
+//        mainPanel.add(jpSkill, gbc);
 
         // Hình ảnh
         gbc.gridx = 0;
@@ -2096,7 +2097,7 @@ public class Menu extends javax.swing.JFrame {
             if (khoaHoc.getThoiGianDienRa() != null) {
                 dateChooser.setDate(java.sql.Date.valueOf(khoaHoc.getThoiGianDienRa()));
             }
-            chkTrangThai.setSelected(khoaHoc.getTrangThai());
+//            chkTrangThai.setSelected(khoaHoc.getTrangThai());
             // Xử lý set ảnh (nếu có ảnh)
             if (khoaHoc.getImage() != null) {
                 try {
@@ -2117,20 +2118,20 @@ public class Menu extends javax.swing.JFrame {
             }
 
             // Xử lý so sánh và set checkbox (cho skillEnum)
-            ArrayList<Skill> listSkills = khoaHoc.getSkillEnum();
-            for (int i = 0; i < skillCheckBoxes.length; i++) {
-                JCheckBox checkBox = skillCheckBoxes[i];
-                checkBox.setSelected(false); // Mặc định bỏ chọn trước
-
-                if (listSkills != null) {
-                    for (Skill skill : listSkills) {
-                        if (checkBox.getText().equals(skill.toString())) { // So sánh tên skill
-                            checkBox.setSelected(true); // Chọn checkbox nếu khớp
-                            break;
-                        }
-                    }
-                }
-            }
+//            ArrayList<Skill> listSkills = khoaHoc.getSkillEnum();
+//            for (int i = 0; i < skillCheckBoxes.length; i++) {
+//                JCheckBox checkBox = skillCheckBoxes[i];
+//                checkBox.setSelected(false); // Mặc định bỏ chọn trước
+//
+//                if (listSkills != null) {
+//                    for (Skill skill : listSkills) {
+//                        if (checkBox.getText().equals(skill.toString())) { // So sánh tên skill
+//                            checkBox.setSelected(true); // Chọn checkbox nếu khớp
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
 
             btnSaveKhoa.setText("Cập nhật");
         }
@@ -2172,7 +2173,7 @@ public class Menu extends javax.swing.JFrame {
                 idKhoa = null;
                 img = null;
             }
-            boolean update = themKhoa(accessTokenLogin, lblDisplayImageKhoa, txtTenKhoaHoc, txtGiaTien, dateChooser, txtSoBuoi, txtMoTa, skillCheckBoxes, chkTrangThai, idKhoa, img);
+            boolean update = themKhoa(accessTokenLogin, lblDisplayImageKhoa, txtTenKhoaHoc, txtGiaTien, dateChooser, txtSoBuoi, txtMoTa, chkTrangThai, idKhoa, img);
             if (update) {
                 try {
                     LoadTableKhoa();
@@ -2493,6 +2494,115 @@ public class Menu extends javax.swing.JFrame {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin hóa đơn.");
         }
+    }
+
+    public void showCatalogBuoiHoc(Long idLop) {
+        try {
+            // Lấy thông tin buổi học từ dịch vụ
+            ArrayList<BuoiHoc> listBuoiHoc = (ArrayList<BuoiHoc>) lopHocService.getAllBuoiHocByLopApi(accessTokenLogin,idLop);
+
+            if (listBuoiHoc == null || listBuoiHoc.size() == 0) {
+                JOptionPane.showMessageDialog(null, "Không có buổi học nào cần duyệt");
+                return;
+            }
+
+            // Tạo JDialog
+            JDialog dialogListBuoiHoc = new JDialog();
+            dialogListBuoiHoc.setTitle("Thông tin buổi học cần duyệt");
+            dialogListBuoiHoc.setSize(800, 500);
+            dialogListBuoiHoc.setLocationRelativeTo(null); // Đặt dialog giữa màn hình
+
+            // Tạo bảng hiển thị thông tin
+            String[] columnNames = {"Chọn", "ID Buổi Học", "Chủ đề", "Ngày học", "Học Online", "Nơi học", "Giờ học", "Giờ kết thúc"};
+            Object[][] data = new Object[listBuoiHoc.size()][8];
+
+            for (int i = 0; i < listBuoiHoc.size(); i++) {
+                BuoiHoc buoiHoc = listBuoiHoc.get(i);
+                data[i][0] = false; // Cột checkbox mặc định là chưa chọn
+                data[i][1] = buoiHoc.getIdBuoiHoc();
+                data[i][2] = buoiHoc.getChuDe();
+                data[i][3] = buoiHoc.getNgayHoc();
+                data[i][4] = buoiHoc.getHocOnl() ? "Có" : "Không"; // Hiển thị "Có" hoặc "Không" tùy theo giá trị
+                data[i][5] = buoiHoc.getNoiHoc();
+                data[i][6] = buoiHoc.getGioHoc();
+                data[i][7] = buoiHoc.getGioKetThuc();
+            }
+
+            DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+                @Override
+                public Class<?> getColumnClass(int column) {
+                    return column == 0 ? Boolean.class : String.class; // Cột 0 là checkbox
+                }
+            };
+            JTable table = new JTable(tableModel);
+            JScrollPane scrollPane = new JScrollPane(table);
+
+            // Panel chứa các nút chức năng
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new FlowLayout());
+
+            // Nút Hủy
+            JButton btnCancel = new JButton("Hủy");
+            btnCancel.addActionListener(e -> dialogListBuoiHoc.dispose());
+
+            // Nút Xóa
+            JButton btnDelete = new JButton("Xóa");
+            btnDelete.addActionListener(e -> {
+                // Kiểm tra chỉ có một dòng được chọn
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Vui lòng chọn một buổi học để xóa.");
+                    return;
+                }
+                Long idBH = Long.valueOf(tableModel.getValueAt(selectedRow, 1).toString());
+                try {
+//                    Boolean kqua = lopHocService.deleteBuoiHocById(idBH);
+                    dialogListBuoiHoc.dispose();
+                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Xóa buổi học thành công!! ");
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+
+            // Nút Chỉnh sửa
+            JButton btnEdit = new JButton("Chỉnh sửa");
+            btnEdit.addActionListener(e -> {
+                // Kiểm tra chỉ có một dòng được chọn
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Vui lòng chọn một buổi học để chỉnh sửa.");
+                    return;
+                }
+                Long idBH = Long.valueOf(tableModel.getValueAt(selectedRow, 1).toString());
+                // Mở cửa sổ chỉnh sửa buổi học (có thể tạo thêm một form hoặc dialog để chỉnh sửa)
+                // Ví dụ: Mở một form chỉnh sửa buổi học với ID đã chọn
+                openEditDialog(idBH);
+            });
+
+            buttonPanel.add(btnCancel);
+            buttonPanel.add(btnDelete);
+            buttonPanel.add(btnEdit);
+
+            // Thêm các thành phần vào JDialog
+            dialogListBuoiHoc.setLayout(new BorderLayout());
+            dialogListBuoiHoc.add(scrollPane, BorderLayout.CENTER);
+            dialogListBuoiHoc.add(buttonPanel, BorderLayout.SOUTH);
+
+            dialogListBuoiHoc.setVisible(true); // Hiển thị dialog
+        } catch (Exception ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin buổi học.");
+        }
+    }
+
+    private void openEditDialog(Long idBuoiHoc) {
+        // Tạo một dialog hoặc form để chỉnh sửa buổi học, ví dụ:
+        // JDialog editDialog = new JDialog();
+        // editDialog.setTitle("Chỉnh sửa buổi học");
+        // editDialog.setSize(400, 300);
+        // editDialog.setLocationRelativeTo(null);
+        // Thêm các thành phần để chỉnh sửa (ví dụ, TextField, ComboBox, Button, v.v...)
+        // editDialog.setVisible(true);
     }
 
     public void exportToPDF(HoaDon hoaDon, ArrayList<ThanhToan> listTT) throws DocumentException, IOException {
@@ -2848,19 +2958,19 @@ public class Menu extends javax.swing.JFrame {
         }
     }
 
-    public ArrayList<Skill> getSelectedSkills(JCheckBox[] checkBoxes) {
-        ArrayList<Skill> selectedSkills = new ArrayList<>();
+//    public ArrayList<Skill> getSelectedSkills(JCheckBox[] checkBoxes) {
+//        ArrayList<Skill> selectedSkills = new ArrayList<>();
+//
+//        // Duyệt qua các checkbox, nếu được chọn thì thêm vào danh sách
+//        for (int i = 0; i < checkBoxes.length; i++) {
+//            if (checkBoxes[i].isSelected()) {
+//                selectedSkills.add(Skill.values()[i]); // Thêm Skill tương ứng từ enum
+//            }
+//        }
+//        return selectedSkills;
+//    }
 
-        // Duyệt qua các checkbox, nếu được chọn thì thêm vào danh sách
-        for (int i = 0; i < checkBoxes.length; i++) {
-            if (checkBoxes[i].isSelected()) {
-                selectedSkills.add(Skill.values()[i]); // Thêm Skill tương ứng từ enum
-            }
-        }
-        return selectedSkills;
-    }
-
-    private boolean themKhoa(String token, JLabel lblDisplayImageKhoa, JTextField txtTenKhoaHoc, JTextField txtGiaTien, JDateChooser dateChooser, JTextField txtSoBuoi, JTextArea txtMoTa, JCheckBox[] skillCheckBoxes, JCheckBox chkTrangThai, Long id, String img) {
+    private boolean themKhoa(String token, JLabel lblDisplayImageKhoa, JTextField txtTenKhoaHoc, JTextField txtGiaTien, JDateChooser dateChooser, JTextField txtSoBuoi, JTextArea txtMoTa, JCheckBox chkTrangThai, Long id, String img) {
         String tenKhoaHoc = txtTenKhoaHoc.getText().trim();
         String giaTien = txtGiaTien.getText().trim();
         Date thoiGianDienRa = dateChooser.getDate();
@@ -2868,8 +2978,8 @@ public class Menu extends javax.swing.JFrame {
         String moTa = txtMoTa.getText().trim();
         System.out.println("mota " + moTa);
         Boolean trangThai = chkTrangThai.isSelected();
-        ArrayList<Skill> selectedSkills = getSelectedSkills(skillCheckBoxes);
-        System.out.println("selectedSkills:  " + selectedSkills);
+//        ArrayList<Skill> selectedSkills = getSelectedSkills(skillCheckBoxes);
+//        System.out.println("selectedSkills:  " + selectedSkills);
         // Kiểm tra rỗng và các điều kiện khác như trước
         if (tenKhoaHoc.isEmpty() || giaTien.toString().isEmpty()
                 || soBuoi.toString().isEmpty() || moTa.toString().isEmpty()
@@ -2883,10 +2993,10 @@ public class Menu extends javax.swing.JFrame {
             return false;
         }
 
-        if (selectedSkills.size() == 0) {
-            JOptionPane.showMessageDialog(null, "Kĩ năng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+//        if (selectedSkills.size() == 0) {
+//            JOptionPane.showMessageDialog(null, "Kĩ năng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
 
         Date currentDate = new Date();
         if (thoiGianDienRa.before(currentDate)) {
@@ -2981,7 +3091,7 @@ public class Menu extends javax.swing.JFrame {
         SimpleDateFormat sdfKhoa = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = sdfKhoa.format(thoiGianDienRa);
         khoaHoc.setThoiGianDienRa(formattedDate);
-        khoaHoc.setSkillEnum(selectedSkills);
+//        khoaHoc.setSkillEnum(selectedSkills);
         khoaHoc.setTrangThai(trangThai);
         khoaHoc.setMoTa(moTa);
 //        System.out.println("anh"+khoaHoc.getImage());

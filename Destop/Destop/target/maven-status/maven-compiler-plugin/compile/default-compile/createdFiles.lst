@@ -24,6 +24,7 @@ com\mycompany\destop\Modul\TaiKhoanLogin.class
 com\mycompany\destop\Screen\Menu$13.class
 com\mycompany\destop\Screen\Menu$63.class
 com\mycompany\destop\Screen\Menu$73.class
+com\mycompany\destop\Screen\Menu$83.class
 com\mycompany\destop\Screen\Menu$23.class
 com\mycompany\destop\Service\HoaDonService$7.class
 com\mycompany\destop\Service\HoaDonService$14.class
@@ -64,6 +65,7 @@ com\mycompany\destop\Screen\Menu$35.class
 com\mycompany\destop\Screen\Menu$61.class
 com\mycompany\destop\Service\HoaDonService$5.class
 com\mycompany\destop\Screen\Menu$45.class
+com\mycompany\destop\Service\LopHocService$8.class
 com\mycompany\destop\Screen\Menu$21.class
 com\mycompany\destop\Screen\Menu$11.class
 com\mycompany\destop\Service\LopHocService$1.class
