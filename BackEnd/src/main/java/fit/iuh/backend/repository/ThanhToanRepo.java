@@ -40,6 +40,8 @@ public interface ThanhToanRepo extends JpaRepository<ThanhToan, Long> {
 
 //    @Query("SELECT tt FROM ThanhToan tt JOIN tt.nguoiThanhToan hv ON tt.nguoiThanhToan.idUser = hv.idUser WHERE tt.lopHoc.idLopHoc =:id and ThanhToan.trangThai =: trangThai")
 //    List<ThanhToan> findByLopThanhToan(@Param("id") Long idHV);
+@Query("SELECT tt FROM ThanhToan tt WHERE tt.lopHoc.idLopHoc = :idLop AND tt.nguoiThanhToan.idUser = :idUser")
+List<ThanhToan> findByIdLopIdHV(@Param("idLop") Long idLop, @Param("idUser") Long idUser);
 
 }
 

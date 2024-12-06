@@ -12,6 +12,7 @@ public interface ThanhToanService {
     ThanhToan createThanhToan(ThanhToan thanhToan);
     Optional<ThanhToan> findById(Long id);
     List<ThanhToan> finfByIdLop(Long idLop);
+    List<ThanhToan> finfByIdLopAndHV(Long idLop,Long idHV);
     List<ThanhToan> findByIdHV(Long idHV);
     List<ThanhToan> findByIdHoaDon(Long idHD);
     void deleteThanhToan(Long idTT);

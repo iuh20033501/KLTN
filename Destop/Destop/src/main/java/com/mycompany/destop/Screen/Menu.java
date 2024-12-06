@@ -4499,7 +4499,7 @@ public class Menu extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addGroup(cardTrangChuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cardTrangChuLayout.createSequentialGroup()
-                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
+                                .addComponent(jPanelBirthday, javax.swing.GroupLayout.DEFAULT_SIZE, 695, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanelGioiTinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanelAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -5329,6 +5329,10 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Mã học viên phải là số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
+       
+        
+//         ThanhToan tt= hoaDonService.loadApi(accessTokenLogin, Long.parseLong(idHocVien));
+        
         try {
             ThanhToan thanhToan = hoaDonService.loadApiCreateThanhToan(accessTokenLogin, idLopOutClass, Long.parseLong(idHocVien));
             JOptionPane.showMessageDialog(null, "Bạn đã đăng ký cho học viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
