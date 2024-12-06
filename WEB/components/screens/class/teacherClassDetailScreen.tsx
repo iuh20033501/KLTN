@@ -428,16 +428,11 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             setSelectedDocument(null);
         }
     };
-    const generateFileUrl = (key: string): string => {
-        const bucketName = AWSConfig.bucketName;
-        const region = AWSConfig.region;
-        return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
-    };
-
+   
     const handleOpenDocument = (key: string) => {
         try {
-            const url = generateFileUrl(key); 
-            window.open(url, '_blank'); 
+            const url = key; 
+            window.open(url); 
         } catch (error) {
             console.error('Error opening document:', error);
         }

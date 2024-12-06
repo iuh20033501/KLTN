@@ -4,6 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, Modal } from 'react-native';
+import StudentClassProgressScreen from '../progess/studentClassProgessScreen';
+import StudentClassAssignmentProgressScreen from '../progess/studentClassAssignmentProgessScreen';
+import TeacherClassProgessScreen from '../progess/teacherClassProgessScreen';
 
 const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -340,9 +343,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               <View style={[styles.section, { marginLeft: 10 }]}>
                 <Text style={styles.sectionTitle}>Chương trình giảng dạy</Text>
                 <View style={styles.classList}>
-                  <Text style={styles.classItem}>Lớp TOEIC - Unit 1: Hello!</Text>
-                  <Text style={styles.classItem}>Lớp TOEIC - Unit 2: Watch movie</Text>
-                  <Text style={styles.classItem}>Lớp TOEIC - Unit 3: Go to school</Text>
+               <TeacherClassProgessScreen></TeacherClassProgessScreen>
                 </View>
               </View>
             </>
@@ -358,9 +359,8 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
               <View style={[styles.section, { marginLeft: 10 }]}>
                 <Text style={styles.sectionTitle}>Tiến độ học tập</Text>
                 <View style={styles.classList}>
-                  <Text style={styles.classItem}>Unit 1: Hello!</Text>
-                  <Text style={styles.classItem}>Unit 2: Watch movie</Text>
-                  <Text style={styles.classItem}>Unit 3: Go to school</Text>
+                 <StudentClassProgressScreen></StudentClassProgressScreen>
+                 <StudentClassAssignmentProgressScreen></StudentClassAssignmentProgressScreen>
                 </View>
               </View>
             </>
@@ -626,7 +626,6 @@ const styles = StyleSheet.create({
   },
   classList: {
     marginTop: 10,
-    marginLeft: 20
   },
   classItem: {
     fontSize: 18,

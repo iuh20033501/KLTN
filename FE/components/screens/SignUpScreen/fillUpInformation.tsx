@@ -55,7 +55,6 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
 
     return age;
   };
-  // Format hiển thị date
   const displayDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     const [year, month, day] = dateString.split('-');
@@ -70,7 +69,7 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       if (response.status === 200) {
         console.log(response.data);
         const otpConfirm = response.data
-        Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn." +otpConfirm );
+        Alert.alert("Thành công", "Mã OTP đã được gửi đến số điện thoại của bạn.");
         navigation.navigate('Authentication', {
           userName, passWord, name, phone, gmail,birthday, gender, image, otpConfirm
         });
