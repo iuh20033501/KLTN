@@ -226,6 +226,17 @@ public class ThanhToanController {
         return list;
     }
     @Operation(
+            summary = "getAll thanh toan  trang thái là Done và wait",
+            description = """
+            
+    """
+    )
+    @GetMapping("/findByIdLopAndHV/{idLop}/{idHV}")
+    public ThanhToan findByIdLopHV (@PathVariable Long idLop,@PathVariable Long idHV){
+        return thanhToanService.finfByIdLopAndHV(idLop,idHV);
+
+    }
+    @Operation(
             summary = "getAll thanh toan dù có trang thái là Done và wait",
             description = """
              truyền IdLop

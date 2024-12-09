@@ -65,7 +65,10 @@ public class HocVienController {
     public List<HocVien> findAll(){
         return hocVienService.getAll();
     }
-
+    @GetMapping("/getListHocVienDangHoc")
+    public List<User> getListHocVienDangHoc(){
+        return hocVienService.getListHocVienDangHoc();
+    }
     @Operation(
             summary = "Đăng ký lớp của học viên",
             description = """ 

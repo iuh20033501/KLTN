@@ -15,12 +15,22 @@ public class BuoiHoc {
      private Long idBuoiHoc;
     private String chuDe;
     private Date ngayHoc;
-    private Boolean HocOnl;
+    private Boolean hocOnl;
     private String noiHoc;
     private String gioHoc;
     private String gioKetThuc;
     @ManyToOne
     private LopHoc lopHoc;
+     private Boolean trangThai;
+
+    public Boolean getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+     
 
     public Long getIdBuoiHoc() {
         return idBuoiHoc;
@@ -47,11 +57,11 @@ public class BuoiHoc {
     }
 
     public Boolean getHocOnl() {
-        return HocOnl;
+        return hocOnl;
     }
 
     public void setHocOnl(Boolean HocOnl) {
-        this.HocOnl = HocOnl;
+        this.hocOnl = HocOnl;
     }
 
     public String getNoiHoc() {
@@ -86,36 +96,27 @@ public class BuoiHoc {
         this.lopHoc = lopHoc;
     }
 
-    public BuoiHoc(String chuDe, Date ngayHoc, Boolean HocOnl, String noiHoc, String gioHoc, String gioKetThuc) {
-        this.chuDe = chuDe;
-        this.ngayHoc = ngayHoc;
-        this.HocOnl = HocOnl;
-        this.noiHoc = noiHoc;
-        this.gioHoc = gioHoc;
-        this.gioKetThuc = gioKetThuc;
-    }
-
-    public BuoiHoc(String chuDe, Date ngayHoc, Boolean HocOnl, String noiHoc, String gioHoc, String gioKetThuc, LopHoc lopHoc) {
-        this.chuDe = chuDe;
-        this.ngayHoc = ngayHoc;
-        this.HocOnl = HocOnl;
-        this.noiHoc = noiHoc;
-        this.gioHoc = gioHoc;
-        this.gioKetThuc = gioKetThuc;
-        this.lopHoc = lopHoc;
-    }
-
-    public BuoiHoc(Long idBuoiHoc, String chuDe, Date ngayHoc, Boolean HocOnl, String noiHoc, String gioHoc, String gioKetThuc, LopHoc lopHoc) {
+    public BuoiHoc(Long idBuoiHoc, String chuDe, Date ngayHoc, Boolean hocOnl, String noiHoc, String gioHoc, String gioKetThuc, LopHoc lopHoc, Boolean trangThai) {
         this.idBuoiHoc = idBuoiHoc;
         this.chuDe = chuDe;
         this.ngayHoc = ngayHoc;
-        this.HocOnl = HocOnl;
+        this.hocOnl = hocOnl;
         this.noiHoc = noiHoc;
         this.gioHoc = gioHoc;
         this.gioKetThuc = gioKetThuc;
         this.lopHoc = lopHoc;
+        this.trangThai = trangThai;
     }
 
+    public BuoiHoc(String chuDe, Boolean hocOnl, String noiHoc, String gioHoc, String gioKetThuc, Boolean trangThai) {
+        this.chuDe = chuDe;
+        this.hocOnl = hocOnl;
+        this.noiHoc = noiHoc;
+        this.gioHoc = gioHoc;
+        this.gioKetThuc = gioKetThuc;
+       
+        this.trangThai = trangThai;
+    }
     public BuoiHoc() {
     }
     

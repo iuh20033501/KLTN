@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
  */
 public class KetQuaTest {
     private Long idKetQua;
-    private Long diemTest;
+    private Float diemTest;
     private String thoiGianHoanThanh;
     @ManyToOne
     private BaiTest baiTest;
@@ -27,13 +27,15 @@ public class KetQuaTest {
         this.idKetQua = idKetQua;
     }
 
-    public Long getDiemTest() {
+    public Float getDiemTest() {
         return diemTest;
     }
 
-    public void setDiemTest(Long diemTest) {
+    public void setDiemTest(Float diemTest) {
         this.diemTest = diemTest;
     }
+
+   
 
     public String getThoiGianHoanThanh() {
         return thoiGianHoanThanh;
@@ -59,19 +61,19 @@ public class KetQuaTest {
         this.hocVien = hocVien;
     }
 
-    public KetQuaTest(Long diemTest, String thoiGianHoanThanh) {
+    public KetQuaTest(Float diemTest, String thoiGianHoanThanh) {
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;
     }
 
-    public KetQuaTest(Long diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
+    public KetQuaTest(Float diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;
         this.baiTest = baiTest;
         this.hocVien = hocVien;
     }
 
-    public KetQuaTest(Long idKetQua, Long diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
+    public KetQuaTest(Long idKetQua, Float diemTest, String thoiGianHoanThanh, BaiTest baiTest, HocVien hocVien) {
         this.idKetQua = idKetQua;
         this.diemTest = diemTest;
         this.thoiGianHoanThanh = thoiGianHoanThanh;

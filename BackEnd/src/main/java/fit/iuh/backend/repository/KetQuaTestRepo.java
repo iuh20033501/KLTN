@@ -18,5 +18,8 @@ public interface KetQuaTestRepo extends JpaRepository<KetQuaTest,Long> {
             "where kq.baiTest.idTest = :idBaiTest " +
             "and kq.hocVien.idUser = :idHocVien")
     KetQuaTest findByHocVienAndBaiTest(@Param("idBaiTest") Long idBaiTest, @Param("idHocVien") Long idHocVien);
+    @Query("select kq from KetQuaTest kq join kq.baiTest bt join bt.lopHoc lh where lh.idLopHoc =:id ")
+    List<KetQuaTest> findByLop(@Param("id") Long id);
+
 
 }

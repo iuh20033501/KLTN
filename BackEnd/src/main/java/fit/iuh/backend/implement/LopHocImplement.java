@@ -7,6 +7,8 @@ import fit.iuh.backend.service.LopHocService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,13 @@ public class LopHocImplement implements LopHocService {
     public List<LopHoc> findAll() {
         return lopHocRepo.findAll();
     }
+
+    @Override
+    public List<LopHoc> findAllTrue() {
+        return lopHocRepo.getListByTrangThaiInList(Arrays.asList(TrangThaiLop.READY, TrangThaiLop.FULL));
+    }
+
+
 
     @Override
     public List<LopHoc> findByGiangVien(Long idGv) {

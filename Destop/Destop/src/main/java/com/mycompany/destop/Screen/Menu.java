@@ -128,7 +128,17 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.BuoiHoc;
 import com.mycompany.destop.Modul.HocVien;
+import com.mycompany.destop.Modul.KetQuaTest;
+import com.mycompany.destop.Modul.TienTrinh;
+import com.mycompany.destop.Service.BuoiHocService;
+import com.mycompany.destop.Service.DiemSoService;
+import java.text.Format;
 import java.text.SimpleDateFormat;
+import javax.swing.AbstractCellEditor;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
@@ -153,6 +163,8 @@ public class Menu extends javax.swing.JFrame {
     private LopHocService lopHocService = new LopHocService();
     private KhoaHocService khoaHocService = new KhoaHocService();
     private HoaDonService hoaDonService = new HoaDonService();
+    private DiemSoService diemSoService = new DiemSoService();
+    private BuoiHocService buoiHocService = new BuoiHocService();
     private Long idLopOutClass = -1l;
 //    private Long idHoaDonOutClass = 1l;
 
@@ -213,6 +225,122 @@ public class Menu extends javax.swing.JFrame {
         }
     }
 
+    private ArrayList<LopHoc> getDanhSachLopHocTrue() {
+        try {
+            return (ArrayList<LopHoc>) lopHocService.getAllLopHocTrueApi(accessTokenLogin);
+        } catch (Exception ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            return new ArrayList<>();
+        }
+    }
+
+// Helper function to create combo box
+    private <T> JComboBox<T> taoComboBox(ArrayList<T> danhSach, Function<T, String> hienThi) {
+        JComboBox<T> comboBox = new JComboBox<>();
+        for (T item : danhSach) {
+            comboBox.addItem(item);
+        }
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    setText(hienThi.apply((T) value));
+                }
+                return this;
+            }
+        });
+        return comboBox;
+    }
+
+//    private void ShowDialogTableBuoi(ArrayList<BuoiHoc> list) {
+//        // Khởi tạo dialog
+//        JDialog dialogBuoiHoc = new JDialog(this, "Danh sách buổi học", true);
+//        dialogBuoiHoc.setSize(600, 400);
+//        dialogBuoiHoc.setLocationRelativeTo(this);
+//
+//        // Tạo bảng hiển thị thông tin buổi học
+//        Object[][] data = new Object[list.size()][6];
+//        String[] columnNames = {"Chọn", "ID", "Chủ đề", "Ngày học", "Học Online", "Trạng thái"};
+//
+//        for (int i = 0; i < list.size(); i++) {
+//            BuoiHoc buoi = list.get(i);
+//            data[i][0] = false; // Dùng cho checkbox, mặc định là không chọn
+//            data[i][1] = buoi.getIdBuoiHoc();
+//            data[i][2] = buoi.getChuDe();
+//            data[i][3] = buoi.getNgayHoc();
+//            data[i][4] = buoi.getHocOnl() ? "Có" : "Không";
+//            data[i][5] = buoi.getTrangThai() ? "Sẵn sàng" : "Đã xóa";
+//        }
+//        // Tạo DefaultTableModel
+//        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+//            @Override
+//            public boolean isCellEditable(int row, int column) {
+//                return column == 0; // Chỉ cho phép chỉnh sửa cột "Chọn" (checkbox)
+//            }
+//        };
+//
+//        JTable table = new JTable(model);
+//
+//        // Sử dụng DefaultCellEditor để tạo checkbox trong cột "Chọn"
+//        table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+//        table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+//            @Override
+//            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+//                JCheckBox checkBox = new JCheckBox();
+//                checkBox.setSelected(value != null && (Boolean) value); // Thiết lập trạng thái checkbox
+//                return checkBox;
+//            }
+//        });
+//
+//        // Cài đặt cho phép chọn một dòng duy nhất
+//        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//
+//        // ScrollPane cho JTable
+//        JScrollPane scrollPane = new JScrollPane(table);
+//        dialogBuoiHoc.add(scrollPane, BorderLayout.CENTER);
+//
+//        // Tạo Panel chứa nút Hủy và Xác nhận
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new FlowLayout());
+//
+//        JButton btnHuy = new JButton("Hủy");
+//        btnHuy.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dialogBuoiHoc.dispose(); // Đóng dialog khi nhấn Hủy
+//            }
+//        });
+//
+//        JButton btnXacNhan = new JButton("Xác nhận");
+//        btnXacNhan.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // Lấy buổi học đã chọn
+//                int selectedRow = table.getSelectedRow();
+//                if (selectedRow >= 0) {
+//                    Long idBuoiHoc = (Long) table.getValueAt(selectedRow, 1);
+//                    System.out.println("ID Buổi học đã chọn: " + idBuoiHoc);
+//
+//                    // Tiến hành xử lý với buổi học đã chọn, ví dụ như tạo hóa đơn hoặc xử lý khác
+//                    // HoaDon hoaDonThem = hoaDonService.createHoaDonApi(...);
+//                    JOptionPane.showMessageDialog(null, "Xác nhận buổi học thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//                    dialogBuoiHoc.dispose(); // Đóng dialog khi nhấn Xác nhận
+//                    // LoadTableBuoiHoc(); // Gọi lại phương thức cập nhật bảng nếu cần
+//                } else {
+//                    JOptionPane.showMessageDialog(null, "Vui lòng chọn một buổi học!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+//                }
+//            }
+//        });
+//
+//        panel.add(btnHuy);
+//        panel.add(btnXacNhan);
+//
+//        dialogBuoiHoc.add(panel, BorderLayout.SOUTH);
+//
+//        // Hiển thị dialog
+//        dialogBuoiHoc.setVisible(true); // Gọi setVisible(true) để hiển thị dialog
+//    }
     private void LoadTableDSLop() {
         try {
             // Gọi API để lấy danh sách lớp học
@@ -222,12 +350,12 @@ public class Menu extends javax.swing.JFrame {
             DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                     new String[]{
                         "ID", "Tên Lớp", "Trạng thái", "Tên giảng viên", "Số học viên", "Ngày bắt đầu",
-                        "Ngày kết thúc", "Khóa Học", "Tùy Chỉnh", "Delete"
+                        "Ngày kết thúc", "Quản lí buổi", "Tùy Chỉnh", "Delete"
                     }) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     // Chỉ cho phép chỉnh sửa cột "Tùy Chỉnh" và "Delete"
-                    return column == 8 || column == 9;
+                    return column == 7 || column == 8 || column == 9;
                 }
             };
 
@@ -261,7 +389,7 @@ public class Menu extends javax.swing.JFrame {
                     lop.getSoHocVien(),
                     ngayBDFormatted, // Ngày bắt đầu đã được định dạng lại
                     ngayKTFormatted,
-                    lop.getKhoaHoc().getTenKhoaHoc(),
+                    "Quản lí buổi",
                     "Tùy Chỉnh", // Nút "Tùy Chỉnh"
                     "Delete" // Nút "Delete"
                 }
@@ -275,10 +403,12 @@ public class Menu extends javax.swing.JFrame {
             jTabDSLop.setRowHeight(30);
 
             // Thêm renderer cho các cột nút
+            jTabDSLop.getColumn("Quản lí buổi").setCellRenderer(new ButtonRenderer());
             jTabDSLop.getColumn("Tùy Chỉnh").setCellRenderer(new ButtonRenderer());
             jTabDSLop.getColumn("Delete").setCellRenderer(new ButtonRenderer());
 
             // Thêm editor cho các cột nút
+            jTabDSLop.getColumn("Quản lí buổi").setCellEditor(new ButtonEditorLop(new JButton("Quản lí buổi"), "controlBuoi", jTabDSLop));
             jTabDSLop.getColumn("Tùy Chỉnh").setCellEditor(new ButtonEditorLop(new JButton("Tùy Chỉnh"), "info", jTabDSLop));
             jTabDSLop.getColumn("Delete").setCellEditor(new ButtonEditorLop(new JButton("Delete"), "delete", jTabDSLop));
 
@@ -311,7 +441,7 @@ public class Menu extends javax.swing.JFrame {
             DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                     new String[]{
                         "ID", "Tên Lớp", "Trạng thái", "Tên giảng viên", "Số học viên", "Ngày bắt đầu",
-                        "Ngày kết thúc", "Khóa Học", "Tùy Chỉnh", "Delete"
+                        "Ngày kết thúc", "Quản lí buổi", "Tùy Chỉnh", "Delete"
                     }) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -350,7 +480,7 @@ public class Menu extends javax.swing.JFrame {
                     lop.getSoHocVien(),
                     ngayBDFormatted, // Ngày bắt đầu đã được định dạng lại
                     ngayKTFormatted,
-                    lop.getKhoaHoc().getTenKhoaHoc(),
+                    "Quản lí buổi",
                     "Tùy Chỉnh", // Nút "Tùy Chỉnh"
                     "Delete" // Nút "Delete"
                 }
@@ -364,10 +494,12 @@ public class Menu extends javax.swing.JFrame {
             jTabDSLop.setRowHeight(30);
 
             // Thêm renderer cho các cột nút
+            jTabDSLop.getColumn("Quản lí buổi").setCellRenderer(new ButtonRenderer());
             jTabDSLop.getColumn("Tùy Chỉnh").setCellRenderer(new ButtonRenderer());
             jTabDSLop.getColumn("Delete").setCellRenderer(new ButtonRenderer());
 
             // Thêm editor cho các cột nút
+            jTabDSLop.getColumn("Quản lí buổi").setCellEditor(new ButtonEditorLop(new JButton("Quản lí buổi"), "controlBuoi", jTabDSLop));
             jTabDSLop.getColumn("Tùy Chỉnh").setCellEditor(new ButtonEditorLop(new JButton("Tùy Chỉnh"), "info", jTabDSLop));
             jTabDSLop.getColumn("Delete").setCellEditor(new ButtonEditorLop(new JButton("Delete"), "delete", jTabDSLop));
 
@@ -463,19 +595,19 @@ public class Menu extends javax.swing.JFrame {
                 // Xử lý nút "Delete"
                 int confirm = JOptionPane.showConfirmDialog(button, "Bạn có chắc muốn xóa Thành Viên : " + tenHV + " khỏi lớp học?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    if (trangThai.toString().equals("CANCEL")) {
-//                          if (trangThai.toString().equals("DONE")) {
-                        try {
-                            if (hoaDonService.loadApiDeleteThanhToan(accessTokenLogin, idTT) != null) {
-                                JOptionPane.showMessageDialog(button, "Đã xóa học viên : " + tenHV);
-                                LoadTableHocVien(idLop);
+                    if (!trangThai.toString().equals("CANCEL")) {
+                        if (!trangThai.toString().equals("DONE")) {
+                            try {
+                                if (hoaDonService.loadApiDeleteThanhToan(accessTokenLogin, idTT) != null) {
+                                    JOptionPane.showMessageDialog(button, "Đã xóa học viên : " + tenHV);
+                                    LoadTableHocVien(idLop);
+                                }
+                            } catch (Exception ex) {
+                                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (Exception ex) {
-                            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Học viên dã thanh toán tiền không thể xóa", "Error", JOptionPane.ERROR_MESSAGE);
                         }
-//                          }else {
-//                        JOptionPane.showMessageDialog(null, "Học viên dã thanh toán tiền không thể xóa", "Error", JOptionPane.ERROR_MESSAGE);
-//                    }
                     } else {
                         JOptionPane.showMessageDialog(null, "Học viên dã bị bị xóa khỏi lớp trước đó", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -532,6 +664,7 @@ public class Menu extends javax.swing.JFrame {
                 try {
                     lopHoc = lopHocService.loadLopHocById(accessTokenLogin, idLop);
                     showDialogLop(lopHoc);
+
                 } catch (Exception ex) {
                     Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -554,6 +687,10 @@ public class Menu extends javax.swing.JFrame {
                     }
 
                 }
+            } else if ("controlBuoi".equals(action)) {
+                System.out.println("lamBuoi");
+                showCatalogBuoiHoc(idLop);
+
             }
         }
 
@@ -2061,11 +2198,9 @@ public class Menu extends javax.swing.JFrame {
 //            skillCheckBoxes[i] = new JCheckBox(skills[i]);
 //            jpSkill.add(skillCheckBoxes[i]);
 //        }
-
 //// Thêm vào giao diện chính
 //        gbc.gridx = 1;
 //        mainPanel.add(jpSkill, gbc);
-
         // Hình ảnh
         gbc.gridx = 0;
         gbc.gridy++;
@@ -2132,7 +2267,6 @@ public class Menu extends javax.swing.JFrame {
 //                    }
 //                }
 //            }
-
             btnSaveKhoa.setText("Cập nhật");
         }
         btnSaveKhoa.setPreferredSize(new Dimension(100, 35));
@@ -2204,7 +2338,7 @@ public class Menu extends javax.swing.JFrame {
 
     private ArrayList<KhoaHoc> getDanhSachKhoaHoc() {
         try {
-            return (ArrayList<KhoaHoc>) khoaHocService.getAllKhoaHocApi(accessTokenLogin);
+            return (ArrayList<KhoaHoc>) khoaHocService.getAllTrueKhoaHocApi(accessTokenLogin);
         } catch (Exception ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             return new ArrayList<>();
@@ -2493,117 +2627,462 @@ public class Menu extends javax.swing.JFrame {
             dialogListThanhToan.setVisible(true); // Hiển thị dialog
         } catch (Exception ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin hóa đơn.");
+            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị danh sách bài test.");
         }
+    }
+
+    private boolean themBuoiHoc(
+            String token, BuoiHoc buoi, Boolean trangThai, JTextField txtChuDe, JDateChooser dateChooserNgayHoc,
+            JCheckBox chkHocOnl, JTextField txtGioHoc, JTextField txtGioKetThuc,
+            JComboBox<LopHoc> cbLopHoc
+    ) {
+        // Lấy giá trị từ các trường nhập liệu
+        String chuDe = txtChuDe.getText().trim();
+        Date ngayHoc = dateChooserNgayHoc.getDate(); // Lấy ngày học từ JDateChooser
+        boolean hocOnl = chkHocOnl.isSelected(); // Lấy giá trị của checkbox học online
+        String gioHocStr = txtGioHoc.getText().trim();
+        String gioKetThucStr = txtGioKetThuc.getText().trim();
+
+        // Kiểm tra các trường nhập liệu có trống không
+        if (chuDe.isEmpty() || ngayHoc == null || gioHocStr.isEmpty() || gioKetThucStr.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        // Kiểm tra định dạng giờ và phút cho Giờ học và Giờ kết thúc
+        if (!gioHocStr.matches("^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$")) { // Giờ học phải có định dạng hợp lệ (hh:mm)
+            JOptionPane.showMessageDialog(null, "Giờ học phải có định dạng hợp lệ (hh:mm)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!gioKetThucStr.matches("^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$")) { // Giờ kết thúc phải có định dạng hợp lệ (hh:mm)
+            JOptionPane.showMessageDialog(null, "Giờ kết thúc phải có định dạng hợp lệ (hh:mm)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Tách giờ và phút từ chuỗi Giờ học và Giờ kết thúc
+        String[] gioHocParts = gioHocStr.split(":");
+        String[] gioKetThucParts = gioKetThucStr.split(":");
+        int gioHoc = Integer.parseInt(gioHocParts[0]);
+        int phutHoc = Integer.parseInt(gioHocParts[1]);
+        int gioKetThuc = Integer.parseInt(gioKetThucParts[0]);
+        int phutKetThuc = Integer.parseInt(gioKetThucParts[1]);
+
+        // Kiểm tra giờ kết thúc phải lớn hơn giờ học
+        if (gioKetThuc < gioHoc || (gioKetThuc == gioHoc && phutKetThuc <= phutHoc)) {
+            JOptionPane.showMessageDialog(null, "Giờ kết thúc phải sau giờ học!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Kiểm tra chọn lớp học và trạng thái
+        LopHoc selectedLopHoc = (LopHoc) cbLopHoc.getSelectedItem();
+//        Boolean trangThai = (Boolean) cbTrangThai.getSelectedItem();
+
+        if (selectedLopHoc == null) {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn Lớp học!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Kiểm tra ngày giờ học phải ở tương lai so với ngày giờ hiện tại
+        Calendar currentCalendar = Calendar.getInstance(); // Lấy thời gian hiện tại
+        currentCalendar.set(Calendar.MILLISECOND, 0); // Xóa bỏ phần milliseconds
+
+        // Tạo một đối tượng Calendar cho ngày giờ học
+        Calendar buoiCalendar = Calendar.getInstance();
+        buoiCalendar.setTime(ngayHoc);
+        buoiCalendar.set(Calendar.HOUR_OF_DAY, gioHoc);
+        buoiCalendar.set(Calendar.MINUTE, phutHoc);
+        buoiCalendar.set(Calendar.SECOND, 0); // Đảm bảo không có giây
+
+        // So sánh ngày giờ học với ngày giờ hiện tại
+        if (buoiCalendar.before(currentCalendar)) {
+            JOptionPane.showMessageDialog(null, "Ngày và giờ học phải ở tương lai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Cập nhật thông tin cho đối tượng BuoiHoc
+        buoi.setChuDe(chuDe);
+        buoi.setNgayHoc(ngayHoc);
+        buoi.setHocOnl(hocOnl);
+        buoi.setTrangThai(trangThai);
+        buoi.setLopHoc(selectedLopHoc);
+
+        // Lưu buổi học vào hệ thống (giả sử bạn có phương thức service để thực hiện)
+        try {
+            BuoiHoc result = buoiHocService.createBuoiHoc(token, buoi, selectedLopHoc.getIdLopHoc());
+            if (result != null) {
+                JOptionPane.showMessageDialog(null, "Lưu thông tin buổi học thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "Lưu thông tin buổi học thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi trong quá trình lưu", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private void showDialogBuoi(BuoiHoc buoi) {
+        // Create a dialog window for BuoiHoc
+        JDialog dialogBuoi = new JDialog();
+        dialogBuoi.setTitle("Nhập thông tin Buổi Học");
+        dialogBuoi.setSize(500, 500);
+        dialogBuoi.setLayout(new BorderLayout(10, 10));
+        dialogBuoi.setLocationRelativeTo(null);
+
+        // Main panel
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Chu đề
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(new JLabel("Chủ đề:"), gbc);
+        JTextField txtChuDe = new JTextField();
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        mainPanel.add(txtChuDe, gbc);
+        if (buoi != null) {
+            txtChuDe.setText(buoi.getChuDe());
+        }
+
+        // Ngày học
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Ngày học:"), gbc);
+        JDateChooser dateChooserNgayHoc = new JDateChooser();
+        gbc.gridx = 1;
+        mainPanel.add(dateChooserNgayHoc, gbc);
+        if (buoi != null) {
+            dateChooserNgayHoc.setDate(buoi.getNgayHoc());
+        }
+
+        // Học Online (Checkbox)
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Học Online:"), gbc);
+        JCheckBox chkHocOnl = new JCheckBox();
+        gbc.gridx = 1;
+        mainPanel.add(chkHocOnl, gbc);
+        if (buoi != null) {
+            chkHocOnl.setSelected(buoi.getHocOnl());
+        }
+
+        // Nơi học
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Nơi học:"), gbc);
+        JTextField txtNoiHoc = new JTextField();
+        gbc.gridx = 1;
+        mainPanel.add(txtNoiHoc, gbc);
+        if (buoi != null) {
+            txtNoiHoc.setText(buoi.getNoiHoc());
+        }
+
+        // Giờ học và phút học
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JPanel gioHocPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JTextField txtGioHoc = new JTextField(2); // Giờ
+        JTextField txtPhutHoc = new JTextField(2); // Phút
+        txtGioHoc.setPreferredSize(new Dimension(30, 25));
+        txtPhutHoc.setPreferredSize(new Dimension(30, 25));
+        gioHocPanel.add(txtGioHoc);
+        gioHocPanel.add(new JLabel("h:"));
+        gioHocPanel.add(txtPhutHoc);
+        gbc.gridx = 1;
+        mainPanel.add(gioHocPanel, gbc);
+
+        // Giờ kết thúc và phút kết thúc
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Giờ kết thúc:"), gbc);
+        JPanel gioKetThucPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JTextField txtGioKetThuc = new JTextField(2); // Giờ
+        JTextField txtPhutKetThuc = new JTextField(2); // Phút
+        txtGioKetThuc.setPreferredSize(new Dimension(30, 25));
+        txtPhutKetThuc.setPreferredSize(new Dimension(30, 25));
+        gioKetThucPanel.add(txtGioKetThuc);
+        gioKetThucPanel.add(new JLabel("h:"));
+        gioKetThucPanel.add(txtPhutKetThuc);
+        gbc.gridx = 1;
+        mainPanel.add(gioKetThucPanel, gbc);
+
+        // Lớp học
+        ArrayList<LopHoc> danhSachLopHoc = getDanhSachLopHocTrue(); // Assuming this function fetches the LopHoc list
+        JComboBox<LopHoc> cbLopHoc = taoComboBox(danhSachLopHoc, LopHoc::getTenLopHoc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Lớp học:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(cbLopHoc, gbc);
+
+        // Set selected LopHoc if BuoiHoc is not null
+        if (buoi != null && buoi.getLopHoc() != null) {
+            LopHoc lopHoc = buoi.getLopHoc();
+            for (int i = 0; i < cbLopHoc.getItemCount(); i++) {
+                if (cbLopHoc.getItemAt(i).getIdLopHoc() == lopHoc.getIdLopHoc()) {
+                    cbLopHoc.setSelectedIndex(i); // Select the correct LopHoc
+                    break;
+                }
+            }
+        }
+
+        // Ghi chú
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Ghi chú:"), gbc);
+        JTextField txtGhiChu = new JTextField();
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        mainPanel.add(txtGhiChu, gbc);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+        // Set values if BuoiHoc is not null (for editing an existing record)
+        if (buoi != null) {
+            txtChuDe.setText(buoi.getChuDe());
+            dateChooserNgayHoc.setDate(buoi.getNgayHoc());
+            chkHocOnl.setSelected(buoi.getHocOnl());
+            String[] gioHoc = buoi.getGioHoc().split(":");
+            txtGioHoc.setText(gioHoc[0]);
+            txtPhutHoc.setText(gioHoc[1]);
+            String[] gioKetThuc = buoi.getGioKetThuc().split(":");
+            txtGioKetThuc.setText(gioKetThuc[0]);
+            txtPhutKetThuc.setText(gioKetThuc[1]);
+        }
+
+        // Save or Update button
+        JButton btnSaveBuoi = new JButton(buoi == null ? "Lưu" : "Cập nhật");
+        btnSaveBuoi.setPreferredSize(new Dimension(120, 40));
+        btnSaveBuoi.setBackground(new Color(0, 153, 0));
+        btnSaveBuoi.setForeground(Color.WHITE);
+        btnSaveBuoi.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // Cancel button
+        JButton btnCancel = new JButton("Hủy");
+        btnCancel.setPreferredSize(new Dimension(120, 40));
+        btnCancel.setBackground(new Color(204, 0, 0));
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        buttonPanel.add(btnSaveBuoi);
+        buttonPanel.add(btnCancel);
+
+        dialogBuoi.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Handle save button click
+        btnSaveBuoi.addActionListener(e -> {
+            try {
+                // Retrieve Giờ học and Giờ kết thúc as String formatted "HH:mm"
+                String gioHoc = txtGioHoc.getText() + ":" + txtPhutHoc.getText();
+                String gioKetThuc = txtGioKetThuc.getText() + ":" + txtPhutKetThuc.getText();
+                Boolean kqua = false;
+                if (buoi == null) {
+                    kqua = themBuoiHoc(accessTokenLogin, new BuoiHoc(), true, jTextTimLop, dateChooserNgayHoc, chkHocOnl, jTextTimKhoa, jTextTimKhoa, cbLopHoc);
+                } else {
+                    kqua = themBuoiHoc(accessTokenLogin, buoi, buoi.getTrangThai(), jTextTimLop, dateChooserNgayHoc, chkHocOnl, jTextTimKhoa, jTextTimKhoa, cbLopHoc);
+                }
+                if (kqua == true) {
+
+                    dialogBuoi.dispose();
+                } else {
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Handle cancel button click
+        btnCancel.addActionListener(e -> dialogBuoi.dispose());
+
+        // Show dialog
+        dialogBuoi.setVisible(true);
     }
 
     public void showCatalogBuoiHoc(Long idLop) {
         try {
-            // Lấy thông tin buổi học từ dịch vụ
-            ArrayList<BuoiHoc> listBuoiHoc = (ArrayList<BuoiHoc>) lopHocService.getAllBuoiHocByLopApi(accessTokenLogin,idLop);
+            ArrayList<BuoiHoc> listBuoiHoc = (ArrayList<BuoiHoc>) lopHocService.getAllBuoiHocByLopApi(accessTokenLogin, idLop);
 
-            if (listBuoiHoc == null || listBuoiHoc.size() == 0) {
+            if (listBuoiHoc == null || listBuoiHoc.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Không có buổi học nào cần duyệt");
                 return;
             }
 
-            // Tạo JDialog
             JDialog dialogListBuoiHoc = new JDialog();
             dialogListBuoiHoc.setTitle("Thông tin buổi học cần duyệt");
             dialogListBuoiHoc.setSize(800, 500);
-            dialogListBuoiHoc.setLocationRelativeTo(null); // Đặt dialog giữa màn hình
+            dialogListBuoiHoc.setLocationRelativeTo(null);
 
-            // Tạo bảng hiển thị thông tin
-            String[] columnNames = {"Chọn", "ID Buổi Học", "Chủ đề", "Ngày học", "Học Online", "Nơi học", "Giờ học", "Giờ kết thúc"};
+            String[] columnNames = {"ID Buổi Học", "Chủ đề", "Ngày học", "Nơi học", "Giờ học", "Giờ kết thúc", "Xóa", "Cập nhật"};
             Object[][] data = new Object[listBuoiHoc.size()][8];
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  // Định dạng ngày theo kiểu yyyy-MM-dd
 
             for (int i = 0; i < listBuoiHoc.size(); i++) {
                 BuoiHoc buoiHoc = listBuoiHoc.get(i);
-                data[i][0] = false; // Cột checkbox mặc định là chưa chọn
-                data[i][1] = buoiHoc.getIdBuoiHoc();
-                data[i][2] = buoiHoc.getChuDe();
-                data[i][3] = buoiHoc.getNgayHoc();
-                data[i][4] = buoiHoc.getHocOnl() ? "Có" : "Không"; // Hiển thị "Có" hoặc "Không" tùy theo giá trị
-                data[i][5] = buoiHoc.getNoiHoc();
-                data[i][6] = buoiHoc.getGioHoc();
-                data[i][7] = buoiHoc.getGioKetThuc();
+                data[i][0] = buoiHoc.getIdBuoiHoc();
+                data[i][1] = buoiHoc.getChuDe();
+                data[i][2] = buoiHoc.getNgayHoc() != null ? dateFormat.format(buoiHoc.getNgayHoc()) : "";  // Định dạng ngày
+                data[i][3] = (buoiHoc.getHocOnl() != null && buoiHoc.getHocOnl()) ? "Online" : "Offline";
+                data[i][4] = buoiHoc.getGioHoc();
+                data[i][5] = buoiHoc.getGioKetThuc();
+                data[i][6] = "Xóa";  // Cột Xóa
+                data[i][7] = "Cập nhật";  // Cột Cập nhật
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
                 @Override
                 public Class<?> getColumnClass(int column) {
-                    return column == 0 ? Boolean.class : String.class; // Cột 0 là checkbox
+                    if (column == 2) {
+                        return String.class;  // Cột "Ngày học" là String do đã được định dạng
+                    }
+                    return String.class;
+                }
+
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return column == 6 || column == 7;  // Chỉ cho phép chỉnh sửa 2 cột "Xóa" và "Cập nhật"
                 }
             };
+
             JTable table = new JTable(tableModel);
+
+            // Thay đổi chiều cao dòng
+            table.setRowHeight(40);  // Bạn có thể điều chỉnh giá trị này nếu cần
+
+            // Định dạng lại cột "Ngày học" để hiển thị theo định dạng yyyy-MM-dd
+            table.getColumn("Ngày học").setCellRenderer(new DefaultTableCellRenderer() {
+                @Override
+                public void setValue(Object value) {
+                    if (value instanceof String) {
+                        super.setValue(value);
+                    } else if (value instanceof java.util.Date) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        super.setValue(dateFormat.format((java.util.Date) value));
+                    } else {
+                        super.setValue(value);
+                    }
+                }
+            });
+
             JScrollPane scrollPane = new JScrollPane(table);
 
-            // Panel chứa các nút chức năng
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.setLayout(new FlowLayout());
+            // Cột Xóa
+            table.getColumn("Xóa").setCellRenderer(new ButtonRenderer());
+            table.getColumn("Xóa").setCellEditor(new ButtonEditorBuoi(new JButton(), "Xóa", table));
 
-            // Nút Hủy
+            table.getColumn("Cập nhật").setCellRenderer(new ButtonRenderer());
+            table.getColumn("Cập nhật").setCellEditor(new ButtonEditorBuoi(new JButton(), "Cập nhật", table));
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Căn giữa và thêm khoảng cách giữa các nút
+
+// Nút "Hủy"
             JButton btnCancel = new JButton("Hủy");
+            btnCancel.setBackground(Color.RED); // Đổi màu nền của nút thành đỏ
+            btnCancel.setForeground(Color.WHITE); // Đổi màu chữ thành trắng
+            btnCancel.setPreferredSize(new Dimension(120, 40)); // Đặt kích thước cố định cho nút
+            btnCancel.setFont(new Font("Arial", Font.BOLD, 14)); // Đổi font chữ
             btnCancel.addActionListener(e -> dialogListBuoiHoc.dispose());
 
-            // Nút Xóa
-            JButton btnDelete = new JButton("Xóa");
-            btnDelete.addActionListener(e -> {
-                // Kiểm tra chỉ có một dòng được chọn
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Vui lòng chọn một buổi học để xóa.");
-                    return;
-                }
-                Long idBH = Long.valueOf(tableModel.getValueAt(selectedRow, 1).toString());
-                try {
-//                    Boolean kqua = lopHocService.deleteBuoiHocById(idBH);
-                    dialogListBuoiHoc.dispose();
-                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Xóa buổi học thành công!! ");
-                } catch (Exception ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
+// Nút "Thêm Buổi"
+            JButton btnThem = new JButton("Thêm Buổi");
+            btnThem.setBackground(Color.GREEN); // Đổi màu nền của nút thành xanh lá
+            btnThem.setForeground(Color.WHITE); // Đổi màu chữ thành trắng
+            btnThem.setPreferredSize(new Dimension(120, 40)); // Đặt kích thước cố định cho nút
+            btnThem.setFont(new Font("Arial", Font.BOLD, 14)); // Đổi font chữ
+            btnThem.addActionListener(e -> showDialogBuoi(null));
 
-            // Nút Chỉnh sửa
-            JButton btnEdit = new JButton("Chỉnh sửa");
-            btnEdit.addActionListener(e -> {
-                // Kiểm tra chỉ có một dòng được chọn
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(dialogListBuoiHoc, "Vui lòng chọn một buổi học để chỉnh sửa.");
-                    return;
-                }
-                Long idBH = Long.valueOf(tableModel.getValueAt(selectedRow, 1).toString());
-                // Mở cửa sổ chỉnh sửa buổi học (có thể tạo thêm một form hoặc dialog để chỉnh sửa)
-                // Ví dụ: Mở một form chỉnh sửa buổi học với ID đã chọn
-                openEditDialog(idBH);
-            });
-
+// Thêm các nút vào JPanel
             buttonPanel.add(btnCancel);
-            buttonPanel.add(btnDelete);
-            buttonPanel.add(btnEdit);
+            buttonPanel.add(btnThem);
 
-            // Thêm các thành phần vào JDialog
             dialogListBuoiHoc.setLayout(new BorderLayout());
             dialogListBuoiHoc.add(scrollPane, BorderLayout.CENTER);
             dialogListBuoiHoc.add(buttonPanel, BorderLayout.SOUTH);
 
-            dialogListBuoiHoc.setVisible(true); // Hiển thị dialog
+            dialogListBuoiHoc.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi hiển thị thông tin buổi học.");
         }
     }
 
-    private void openEditDialog(Long idBuoiHoc) {
-        // Tạo một dialog hoặc form để chỉnh sửa buổi học, ví dụ:
-        // JDialog editDialog = new JDialog();
-        // editDialog.setTitle("Chỉnh sửa buổi học");
-        // editDialog.setSize(400, 300);
-        // editDialog.setLocationRelativeTo(null);
-        // Thêm các thành phần để chỉnh sửa (ví dụ, TextField, ComboBox, Button, v.v...)
-        // editDialog.setVisible(true);
+    class ButtonEditorBuoi extends DefaultCellEditor {
+
+        private JButton button;
+        private String label;
+        private boolean clicked;
+        private String action;
+        private JTable table;
+
+        public ButtonEditorBuoi(JButton button, String action, JTable table) {
+            super(new JTextField());
+            this.button = button;
+            this.action = action;
+            this.table = table;
+            button.addActionListener(e -> performAction());
+        }
+
+        private void performAction() {
+            int row = table.getSelectedRow(); // Lấy dòng hiện tại
+            Object id = table.getValueAt(row, 0); // (Nếu cần thêm ID, bạn phải truyền qua API)
+            long idBuoi = Long.parseLong(id.toString());
+            BuoiHoc buoiHoc;
+            if ("Cập nhật".equals(action)) {
+
+                try {
+                    buoiHoc = buoiHocService.loadApiGetBuoiHoc(accessTokenLogin, idBuoi);
+                    showDialogBuoi(buoiHoc);
+
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } else if ("Xóa".equals(action)) {
+                // Xử lý nút "Delete"
+                int confirm = JOptionPane.showConfirmDialog(button, "Bạn có chắc muốn Buổi học : " + idBuoi + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        // Gọi API để xóa lớp (thêm hàm deleteLopHoc nếu cần)
+                        buoiHoc = buoiHocService.loadApiDeleteBuoiHoc(accessTokenLogin, idBuoi);
+                        JOptionPane.showMessageDialog(button, "Đã xóa buổi " + idBuoi);
+
+                        showCatalogBuoiHoc(buoiHoc.getLopHoc().getIdLopHoc());
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            label = value != null ? value.toString() : "";
+            button.setText(label);
+            clicked = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            clicked = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            clicked = false;
+            return super.stopCellEditing();
+        }
     }
 
     public void exportToPDF(HoaDon hoaDon, ArrayList<ThanhToan> listTT) throws DocumentException, IOException {
@@ -2661,7 +3140,7 @@ public class Menu extends javax.swing.JFrame {
             }
 
             Document document = new Document();
-            String fileName = "hoa_don_" + lop.getIdLopHoc() + ".pdf";
+            String fileName = "Lop_hoc_" + lop.getIdLopHoc() + ".pdf";
             PdfWriter.getInstance(document, new FileOutputStream(fileName));
             document.open();
             Font font = new Font(BaseFont.HELVETICA, 12, Font.BOLD);
@@ -2672,7 +3151,7 @@ public class Menu extends javax.swing.JFrame {
             document.add(new Paragraph("Ngay Ket Thuc: " + lop.getNgayKT()));
             document.add(new Paragraph(" "));
             // Thêm bảng danh sách thanh toán
-            PdfPTable table = new PdfPTable(3); // Bảng có 3 cột: ID, Học viên, Lớp học
+            PdfPTable table = new PdfPTable(5); // Bảng có 3 cột: ID, Học viên, Lớp học
             table.addCell("ID Hoc Vien");
             table.addCell("Hoc Vien");
             table.addCell("So dien thoai");
@@ -2819,7 +3298,12 @@ public class Menu extends javax.swing.JFrame {
         btnLoadTest.setPreferredSize(new Dimension(120, 40)); // Kích thước nút
         btnLoadTest.setBackground(new Color(0, 153, 0)); // Màu nền xanh lá
         btnLoadTest.setForeground(Color.WHITE); // Màu chữ trắng
-        btnLoadTest.setFont(new Font("Arial", Font.BOLD, 14)); // Kiểu chữ
+
+        JButton btnBuoiHoc = new JButton("Quản lí buổi học");
+        btnBuoiHoc.setPreferredSize(new Dimension(120, 40)); // Kích thước nút
+        btnBuoiHoc.setBackground(new Color(0, 153, 0)); // Màu nền xanh lá
+        btnBuoiHoc.setForeground(Color.WHITE); // Màu chữ trắng
+        btnBuoiHoc.setFont(new Font("Arial", Font.BOLD, 14)); // Kiểu chữ
 
 // Nút Hủy
         JButton btnCancel = new JButton("Hủy");
@@ -2830,6 +3314,7 @@ public class Menu extends javax.swing.JFrame {
 
         buttonPanel.add(btnSaveLop);
         buttonPanel.add(btnLoadTest);
+        buttonPanel.add(btnBuoiHoc);
         buttonPanel.add(btnCancel);
 
         dialogLop.add(buttonPanel, BorderLayout.SOUTH);
@@ -2852,6 +3337,10 @@ public class Menu extends javax.swing.JFrame {
 //              JOptionPane.showMessageDialog(null, "Hiện dialog Lop!"+ lop.getIdLopHoc(), "Thông báo", JOptionPane.WARNING_MESSAGE);
             showCatalogTableTest(lop.getIdLopHoc());
         });
+        btnBuoiHoc.addActionListener(e -> {
+//              JOptionPane.showMessageDialog(null, "Hiện dialog Lop!"+ lop.getIdLopHoc(), "Thông báo", JOptionPane.WARNING_MESSAGE);
+            showCatalogBuoiHoc(lop.getIdLopHoc());
+        });
 
         // Xử lý nút hủy
         btnCancel.addActionListener(e -> dialogLop.dispose());
@@ -2860,25 +3349,24 @@ public class Menu extends javax.swing.JFrame {
         dialogLop.setVisible(true);
     }
 
-// Tạo ComboBox chung
-    private <T> JComboBox<T> taoComboBox(ArrayList<T> danhSach, Function<T, String> hienThi) {
-        JComboBox<T> comboBox = new JComboBox<>();
-        for (T item : danhSach) {
-            comboBox.addItem(item);
-        }
-        comboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    setText(hienThi.apply((T) value));
-                }
-                return this;
-            }
-        });
-        return comboBox;
-    }
-
+//// Tạo ComboBox chung
+//    private <T> JComboBox<T> taoComboBox(ArrayList<T> danhSach, Function<T, String> hienThi) {
+//        JComboBox<T> comboBox = new JComboBox<>();
+//        for (T item : danhSach) {
+//            comboBox.addItem(item);
+//        }
+//        comboBox.setRenderer(new DefaultListCellRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//                if (value != null) {
+//                    setText(hienThi.apply((T) value));
+//                }
+//                return this;
+//            }
+//        });
+//        return comboBox;
+//    }
     private boolean themLopHoc(
             String token, LopHoc lop, JTextField txtTenLopHoc, JTextField txtSoHocVien,
             JDateChooser dateChooserNgayBD, JDateChooser dateChooserNgayKT,
@@ -2970,7 +3458,6 @@ public class Menu extends javax.swing.JFrame {
 //        }
 //        return selectedSkills;
 //    }
-
     private boolean themKhoa(String token, JLabel lblDisplayImageKhoa, JTextField txtTenKhoaHoc, JTextField txtGiaTien, JDateChooser dateChooser, JTextField txtSoBuoi, JTextArea txtMoTa, JCheckBox chkTrangThai, Long id, String img) {
         String tenKhoaHoc = txtTenKhoaHoc.getText().trim();
         String giaTien = txtGiaTien.getText().trim();
@@ -2998,7 +3485,6 @@ public class Menu extends javax.swing.JFrame {
 //            JOptionPane.showMessageDialog(null, "Kĩ năng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 //            return false;
 //        }
-
         Date currentDate = new Date();
         if (thoiGianDienRa.before(currentDate)) {
             JOptionPane.showMessageDialog(null, "Thời gian diễn ra phải là ngày trong tương lai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3773,6 +4259,178 @@ public class Menu extends javax.swing.JFrame {
                 "Doanh Thu Theo Khóa", // Tiêu đề
                 "Khóa", // Trục X
                 "Doanh Thu (VNĐ)", // Trục Y
+                dataset, // Dữ liệu
+                PlotOrientation.VERTICAL,
+                false, // Hiển thị chú thích
+                true, // Hiển thị tooltips
+                false // Không tạo URL
+        );
+
+        // Hiển thị biểu đồ vào JPanel
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(jPnSoDo.getSize());
+        jPnSoDo.removeAll(); // Xóa nội dung cũ
+        jPnSoDo.setLayout(new BorderLayout());
+        jPnSoDo.add(chartPanel, BorderLayout.CENTER);
+        jPnSoDo.revalidate(); // Làm mới giao diện
+        jPnSoDo.repaint();
+    }
+
+    private Map<String, Float> diemtheoBuoi(Long idLop) {
+        Map<String, Float> DiemTrungBinhTheoBuoi = new TreeMap<>(); // Đổi kiểu dữ liệu thành Float để lưu điểm trung bình
+        try {
+            // Lấy danh sách các buổi học đã hoàn thành cho lớp này
+            ArrayList<BuoiHoc> listBuoiDone = (ArrayList<BuoiHoc>) buoiHocService.getAllBuoiByLopApi(accessTokenLogin, idLop);
+
+            if (listBuoiDone != null) {
+                // Duyệt qua danh sách các buổi học
+                for (BuoiHoc buoi : listBuoiDone) {
+                    // Lấy danh sách kết quả học viên cho buổi học này
+                    ArrayList<TienTrinh> LISTkqt = (ArrayList<TienTrinh>) diemSoService.getAllTienTrinhByBuoiApi(accessTokenLogin, buoi.getIdBuoiHoc());
+
+                    // Tính điểm trung bình cho buổi này
+                    if (LISTkqt != null && !LISTkqt.isEmpty()) {
+                        int tongDiem = 0;
+                        int soHocVien = 0;
+
+                        // Duyệt qua các kết quả học viên để tính điểm trung bình
+                        for (TienTrinh tienTrinh : LISTkqt) {
+                            // Giả sử có một phương thức để lấy điểm (ví dụ: getCauDung())
+                            tongDiem += tienTrinh.getCauDung();  // Lấy điểm của học viên
+                            soHocVien++;  // Đếm số học viên
+                        }
+
+                        // Tính điểm trung bình của buổi học
+                        if (soHocVien > 0) {
+                            // Tính điểm trung bình
+                            float diemTrungBinh = (float) tongDiem / soHocVien;
+
+                            // Định dạng điểm trung bình ra 2 chữ số thập phân
+                            String diemTrungBinhFormatted = String.format("%.2f", diemTrungBinh);
+
+                            // Lưu điểm vào Map, chuyển đổi giá trị thành kiểu Float từ String đã định dạng
+                            DiemTrungBinhTheoBuoi.put(buoi.getIdBuoiHoc().toString(), Float.parseFloat(diemTrungBinhFormatted));
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return DiemTrungBinhTheoBuoi;  // Trả về bản đồ điểm trung bình theo buổi
+    }
+
+    private Map<String, Float> diemtheoHocVien(Long idLop) {
+        Map<String, Float> diemTrungBinhTheoHocvien = new TreeMap<>(); // Đổi kiểu dữ liệu thành Float để lưu điểm trung bình
+        try {
+            // Lấy danh sách các buổi học đã hoàn thành cho lớp này
+            ArrayList<HocVien> listHocVien = (ArrayList<HocVien>) lopHocService.getAllHocVienByLopApi(accessTokenLogin, idLop);
+
+            if (listHocVien != null) {
+                // Duyệt qua danh sách các buổi học
+                for (HocVien hocVien : listHocVien) {
+                    // Lấy danh sách kết quả học viên cho buổi học này
+                    ArrayList<TienTrinh> LISTkqt = (ArrayList<TienTrinh>) diemSoService.getAllTienTrinhByHocVienApi(accessTokenLogin, hocVien.getIdUser());
+
+                    // Tính điểm trung bình cho buổi này
+                    if (LISTkqt != null && !LISTkqt.isEmpty()) {
+                        int tongDiem = 0;
+                        int soHocVien = 0;
+
+                        // Duyệt qua các kết quả học viên để tính điểm trung bình
+                        for (TienTrinh tienTrinh : LISTkqt) {
+                            // Giả sử có một phương thức để lấy điểm (ví dụ: getCauDung())
+                            tongDiem += tienTrinh.getCauDung();  // Lấy điểm của học viên
+                            soHocVien++;  // Đếm số học viên
+                        }
+
+                        // Tính điểm trung bình của buổi học
+                        if (soHocVien > 0) {
+                            // Tính điểm trung bình
+                            float diemTrungBinh = (float) tongDiem / soHocVien;
+
+                            // Định dạng điểm trung bình ra 2 chữ số thập phân
+                            String diemTrungBinhFormatted = String.format("%.2f", diemTrungBinh);
+
+                            // Lưu điểm vào Map, chuyển đổi giá trị thành kiểu Float từ String đã định dạng
+                            diemTrungBinhTheoHocvien.put(hocVien.getHoTen(), Float.parseFloat(diemTrungBinhFormatted));
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return diemTrungBinhTheoHocvien;
+    }
+
+    private Map<String, Float> diemTesttheoHocVien(Long idHocVien) {
+        Map<String, Float> diemTrungBinhTheoHocvien = new TreeMap<>(); // Đổi kiểu dữ liệu thành Float để lưu điểm trung bình
+        try {
+            // Lấy danh sách các kết quả test của học viên
+            ArrayList<KetQuaTest> listKetQuaTest = (ArrayList<KetQuaTest>) diemSoService.getAllKetQuaByHocVienApi(accessTokenLogin, idHocVien);
+
+            if (listKetQuaTest != null && !listKetQuaTest.isEmpty()) {
+                // Duyệt qua danh sách các kết quả test
+                for (KetQuaTest ketQuaTest : listKetQuaTest) {
+                    // Lấy điểm test của học viên trong từng kết quả
+                    float diemTest = ketQuaTest.getDiemTest();
+
+                    // Định dạng điểm với 2 chữ số thập phân
+                    String diemTrungBinhFormatted = String.format("%.2f", diemTest);
+
+                    // Lưu điểm vào Map, với tên học viên làm key và điểm đã định dạng làm value
+                    diemTrungBinhTheoHocvien.put(ketQuaTest.getBaiTest().getLopHoc().getTenLopHoc(), Float.parseFloat(diemTrungBinhFormatted));
+                }
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return diemTrungBinhTheoHocvien; // Trả về Map chứa điểm test theo học viên
+    }
+
+    private Map<String, Float> diemTesttheoLop(Long idLop) {
+        Map<String, Float> diemTrungBinhTheoHocvien = new TreeMap<>(); // Đổi kiểu dữ liệu thành Float để lưu điểm trung bình
+        try {
+            // Lấy danh sách các kết quả test của học viên
+            ArrayList<KetQuaTest> listKetQuaTest = (ArrayList<KetQuaTest>) diemSoService.getAllketQuaTestByLopApi(accessTokenLogin, idLop);
+
+            if (listKetQuaTest != null && !listKetQuaTest.isEmpty()) {
+                // Duyệt qua danh sách các kết quả test
+                for (KetQuaTest ketQuaTest : listKetQuaTest) {
+                    // Lấy điểm test của học viên trong từng kết quả
+                    float diemTest = ketQuaTest.getDiemTest();
+
+                    // Định dạng điểm với 2 chữ số thập phân
+                    String diemTrungBinhFormatted = String.format("%.2f", diemTest);
+
+                    // Lưu điểm vào Map, với tên học viên làm key và điểm đã định dạng làm value
+                    diemTrungBinhTheoHocvien.put(ketQuaTest.getHocVien().getHoTen(), Float.parseFloat(diemTrungBinhFormatted));
+                }
+            }
+        } catch (Exception ex) {
+            // Ghi log nếu có lỗi xảy ra
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return diemTrungBinhTheoHocvien; // Trả về Map chứa điểm test theo học viên
+    }
+
+    private void veSoDoTheoDiem(JPanel jPnSoDo, Map<String, Float> doanhThuTheoKhoa, String tenChart, String trucX) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Thêm dữ liệu vào dataset
+        for (Map.Entry<String, Float> entry : doanhThuTheoKhoa.entrySet()) {
+            dataset.addValue(entry.getValue(), "Điểm số", trucX + entry.getKey());
+        }
+
+        // Tạo biểu đồ
+        JFreeChart chart = ChartFactory.createBarChart(
+                tenChart, // Tiêu đề
+                trucX, // Trục X
+                "Điểm trung bình", // Trục Y
                 dataset, // Dữ liệu
                 PlotOrientation.VERTICAL,
                 false, // Hiển thị chú thích
@@ -4974,6 +5632,9 @@ public class Menu extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jBtDiemSoMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jBtDiemSoMouseEntered(evt);
+            }
         });
 
         jBtSoHocVien.setText("Số học viên");
@@ -5031,14 +5692,14 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
-        jComBaiTap.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+        jComBaiTap.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Học Viên", "Theo Buổi Học", " " }));
         jComBaiTap.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jComBaiTapMouseClicked(evt);
             }
         });
 
-        jComBaiTest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Khóa" }));
+        jComBaiTest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Theo Lớp", "Theo Học Viên" }));
         jComBaiTest.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jComBaiTestMouseClicked(evt);
@@ -5329,16 +5990,34 @@ public class Menu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Mã học viên phải là số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-       
-        
-//         ThanhToan tt= hoaDonService.loadApi(accessTokenLogin, Long.parseLong(idHocVien));
-        
+        if (idLopOutClass == -1l) {
+            JOptionPane.showMessageDialog(this, "Chưa chọn lớp học!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            Long idHocVienLong = Long.parseLong(idHocVien);
+            ThanhToan tt = hoaDonService.loadApiFindThanhToanByLop(accessTokenLogin, idLopOutClass, idHocVienLong);
+            String toString = tt.getIdTT().toString();
+            System.out.println("thanhToan: " + toString);
+
+            if (tt != null) {
+                JOptionPane.showMessageDialog(this, "Học viên đã đăng ký ở lớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "ID học viên không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         try {
             ThanhToan thanhToan = hoaDonService.loadApiCreateThanhToan(accessTokenLogin, idLopOutClass, Long.parseLong(idHocVien));
             JOptionPane.showMessageDialog(null, "Bạn đã đăng ký cho học viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             LoadTableHocVien(idLopOutClass);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Lớp đầy hoặc đã có học viên trong lớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Học viên không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jBtThemHocVienMouseClicked
@@ -5579,6 +6258,43 @@ public class Menu extends javax.swing.JFrame {
     private void jBtDiemSoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtDiemSoMouseClicked
         // TODO add your handling code here:
         closeMenu();
+        ArrayList<HocVien> listHocVien = null;
+        ArrayList<BuoiHoc> litstBuoiHoc = null;
+        String selectedOption = jComBaiTap.getSelectedItem().toString();
+        String idLop = JOptionPane.showInputDialog("Vui lòng nhập ID lớp muốn vẽ sơ đồ:");
+        if (idLop == null || idLop.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "ID khóa không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng lại nếu ID khóa rỗng
+        }
+        if (!idLop.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "ID phải là số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng lại nếu ID không phải là số
+        }
+        if ("Theo Học Viên".equals(selectedOption)) {
+            try {
+                // Tính toán dữ liệu thống kê theo tháng
+                listHocVien = (ArrayList<HocVien>) lopHocService.getAllHocVienByLopApi(accessTokenLogin, Long.parseLong(idLop));
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Map<String, Float> diemSoTheoHocVien = diemtheoHocVien(Long.parseLong(idLop));
+
+            // Vẽ sơ đồ theo tháng
+            veSoDoTheoDiem(jPnSoDo, diemSoTheoHocVien, "Sơ đồ tính điểm trung bình theo học viên", "");
+        } else if ("Theo Buổi Học".equals(selectedOption)) {
+            try {
+                // Tính toán dữ liệu thống kê theo năm
+                litstBuoiHoc = (ArrayList<BuoiHoc>) buoiHocService.getAllBuoiByLopApi(accessTokenLogin, Long.parseLong(idLop));
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Map<String, Float> diemSoTheoBuoi = diemtheoBuoi(Long.parseLong(idLop));
+
+            // Vẽ sơ đồ theo năm
+            veSoDoTheoDiem(jPnSoDo, diemSoTheoBuoi, "Sơ đồ tính điểm trung bình theo buổi học", "Buổi học");
+        }
+        jBnExportPDF.setEnabled(true);
+
     }//GEN-LAST:event_jBtDiemSoMouseClicked
 
     private void jComBaiTapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComBaiTapMouseClicked
@@ -5589,6 +6305,42 @@ public class Menu extends javax.swing.JFrame {
     private void jButDiemTestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButDiemTestMouseClicked
         // TODO add your handling code here:
         closeMenu();
+        ArrayList<HocVien> listHocVien = null;
+        ArrayList<BuoiHoc> litstBuoiHoc = null;
+        String selectedOption = jComBaiTest.getSelectedItem().toString();
+        String idLop = JOptionPane.showInputDialog("Vui lòng nhập ID đối tượng theo tiêu chí muốn vẽ sơ đồ:");
+        if (idLop == null || idLop.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "ID khóa không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng lại nếu ID khóa rỗng
+        }
+        if (!idLop.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "ID phải là số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng lại nếu ID không phải là số
+        }
+        if ("Theo Học Viên".equals(selectedOption)) {
+            try {
+                // Tính toán dữ liệu thống kê theo tháng
+//                listHocVien = (ArrayList<HocVien>) lopHocService.getAllHocVienByLopApi(accessTokenLogin, Long.parseLong(idLop));
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Map<String, Float> diemSoTheoHocVien = diemTesttheoHocVien(Long.parseLong(idLop));
+
+            // Vẽ sơ đồ theo tháng
+            veSoDoTheoDiem(jPnSoDo, diemSoTheoHocVien, "Sơ đồ tính điểm trung bình theo học viên", "");
+        } else if ("Theo Lớp".equals(selectedOption)) {
+            try {
+                // Tính toán dữ liệu thống kê theo năm
+//                litstBuoiHoc = (ArrayList<BuoiHoc>) buoiHocService.getAllBuoiByLopApi(accessTokenLogin, Long.parseLong(idLop));
+            } catch (Exception ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Map<String, Float> diemSoTheoBuoi = diemTesttheoLop(Long.parseLong(idLop));
+
+            // Vẽ sơ đồ theo năm
+            veSoDoTheoDiem(jPnSoDo, diemSoTheoBuoi, "Sơ đồ tính điểm test theo lớp học", "Lớp học");
+        }
+        jBnExportPDF.setEnabled(true);
     }//GEN-LAST:event_jButDiemTestMouseClicked
 
     private void jComBaiTestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComBaiTestMouseClicked
@@ -5665,6 +6417,10 @@ public class Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
 //        closeMenu();
     }//GEN-LAST:event_jPnSoDoMouseMoved
+
+    private void jBtDiemSoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtDiemSoMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jBtDiemSoMouseEntered
 
     /**
      * @param args the command line arguments

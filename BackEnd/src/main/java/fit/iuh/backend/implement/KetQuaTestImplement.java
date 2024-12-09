@@ -38,5 +38,10 @@ public class KetQuaTestImplement implements KetQuaTestService {
         return KQTRepo.findByBaiTest(idBaiTest);
     }
 
+    @Override
+    public List<KetQuaTest> findKetQuaTestByLop(Long idLop) {
+        return KQTRepo.findByLop(idLop);
+    }
+
 
 }

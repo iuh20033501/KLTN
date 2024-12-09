@@ -1760,6 +1760,7 @@
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jBtDiemSoMouseClicked"/>
+                    <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jBtDiemSoMouseEntered"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="jBtSoHocVien">
@@ -1835,9 +1836,10 @@
                 <Component class="javax.swing.JComboBox" name="jComBaiTap">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="Theo L&#x1edb;p"/>
-                        <StringItem index="1" value="Theo Kh&#xf3;a"/>
+                      <StringArray count="3">
+                        <StringItem index="0" value="Theo H&#x1ecd;c Vi&#xea;n"/>
+                        <StringItem index="1" value="Theo Bu&#x1ed5;i H&#x1ecd;c"/>
+                        <StringItem index="2" value=" "/>
                       </StringArray>
                     </Property>
                   </Properties>
@@ -1853,7 +1855,7 @@
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="2">
                         <StringItem index="0" value="Theo L&#x1edb;p"/>
-                        <StringItem index="1" value="Theo Kh&#xf3;a"/>
+                        <StringItem index="1" value="Theo H&#x1ecd;c Vi&#xea;n"/>
                       </StringArray>
                     </Property>
                   </Properties>

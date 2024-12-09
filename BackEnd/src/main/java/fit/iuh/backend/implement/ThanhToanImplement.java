@@ -43,8 +43,8 @@ public class ThanhToanImplement implements ThanhToanService {
     }
 
     @Override
-    public List<ThanhToan> finfByIdLopAndHV(Long idLop,Long idHV) {
-        return thanhToanRepo.findByIdLopIdHV(idLop,idHV);
+    public ThanhToan finfByIdLopAndHV(Long idLop,Long idHV) {
+        return thanhToanRepo.findByIdLopIdHV(idLop,idHV,TrangThaiThanhToan.DONE,TrangThaiThanhToan.WAIT);
     }
 
     @Override

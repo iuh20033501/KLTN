@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface TienTrinhRepo extends JpaRepository<TienTrinh,Long> {
-    @Query("select tt from TienTrinh  tt join hocvien hv on tt.hocVien.idUser= hv.idUser where tt.hocVien.idUser=:id")
+    @Query("select tt from TienTrinh  tt join hocvien hv on tt.hocVien.idUser= hv.idUser where tt.hocVien.idUser=:id ")
     List<TienTrinh> getByIdHV (@Param("id") Long idHV);
     @Query("select tt from TienTrinh  tt join BaiTap bt on tt.baiTap.idBaiTap= bt.idBaiTap where tt.baiTap.idBaiTap=:id")
     List<TienTrinh> getByIdBT (@Param("id") Long idBT);
@@ -19,6 +19,7 @@ public interface TienTrinhRepo extends JpaRepository<TienTrinh,Long> {
 
     @Query("select tt from TienTrinh tt join tt.baiTap.buoiHoc.lopHoc lop where tt.hocVien.idUser =:idHocVien AND lop.idLopHoc =:idLop")
     List<TienTrinh> getByIdHocVienIdLop(@Param("idHocVien") Long idHV, @Param("idLop") Long idLop);
-
+    @Query("select tt from TienTrinh tt join tt.baiTap bt join bt.buoiHoc bh where bh.idBuoiHoc = :id ")
+    List<TienTrinh> getByIdBuoi(@Param("id") Long idBuoi);
 
 }

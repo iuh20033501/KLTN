@@ -30,6 +30,11 @@ public class KhoaHocImplement implements KhoaHocService {
     }
 
     @Override
+    public List<KhoaHoc> getAllTrue() {
+        return khoaHocRepo.getListAllTrue();
+    }
+
+    @Override
     public List<KhoaHoc> getListKhoaYear(String year) {
         return khoaHocRepo.findKhoaHocByYear(year);
     }
@@ -43,4 +48,5 @@ public class KhoaHocImplement implements KhoaHocService {
     public List<KhoaHoc> getListKhoaActiveTrueLikeName(String name) {
         return khoaHocRepo.getListActiveTrue(name);
     }
+
 }

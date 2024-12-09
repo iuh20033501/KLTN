@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Enum.ChucVu;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
+import com.mycompany.destop.Modul.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -197,5 +198,37 @@ public class TaiKhoanService {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
         }
     }
+//     public List<User> callFindGVTrueTKApi(String token) throws Exception {
+//        String profileUrl = "http://localhost:8081/giangVien/findAllLamViec"; // URL chính xác của API
+//         URL url = new URL(profileUrl);
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//        // Cấu hình GET request với JWT token trong header
+//        conn.setRequestMethod("GET");
+//        conn.setRequestProperty("Authorization", "Bearer " + token);
+//
+//        int responseCode = conn.getResponseCode();
+//        if (responseCode == HttpURLConnection.HTTP_OK) {
+//            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+//                StringBuilder response = new StringBuilder();
+//                String responseLine;
+//                while ((responseLine = br.readLine()) != null) {
+//                    response.append(responseLine.trim());
+//                }
+//
+//                // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+//                Gson gson = new GsonBuilder()
+//                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+//                        .create();
+//
+//                // Chuyển đổi chuỗi JSON thành danh sách TaiKhoanLogin
+//                Type listType = new TypeToken<List<User>>() {
+//                }.getType();
+//                return gson.fromJson(response.toString(), listType);
+//            }
+//        } else {
+//            throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+//        }
+//    }
 
 }

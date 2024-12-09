@@ -300,4 +300,9 @@ public class BaiTestController {
         KetQuaTest ketQuaTest = ketQuaTestService.findByBTandHV(idHocVien,idBaiTest);
         return ketQuaTest;
     }
+    @GetMapping("/getKetQuaByLop/{idLop}")
+    public List<KetQuaTest> getKetQuaByLop (@PathVariable Long idLop){
+        List<KetQuaTest> list = ketQuaTestService.findKetQuaTestByLop(idLop);
+        return list;
+    }
 }
