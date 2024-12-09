@@ -4,7 +4,6 @@
   import CircularProgress from 'react-native-circular-progress-indicator';
   import http from '@/utils/http';
   import AsyncStorage from '@react-native-async-storage/async-storage';
-  import PagerView from 'react-native-pager-view';
 
   interface Class {
     idLopHoc: number;

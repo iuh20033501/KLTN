@@ -56,7 +56,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
             if (response.status === 200) {
                 const { accessToken } = response.data;
                 await AsyncStorage.setItem('accessToken', accessToken);
-    
+                await AsyncStorage.setItem('userPassword', password);
                 const profileResponse = await http.get("auth/profile", {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });

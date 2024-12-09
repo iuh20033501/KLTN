@@ -35,6 +35,7 @@ import ResultTeacherScreen from '@/components/screens/result/resultTeacherScreen
 import ResultTeacherDetailScreen from '@/components/screens/result/resultTeacherDetailScreen';
 import ResultStudentScreen from '@/components/screens/result/resultStudentScreen';
 import ResultStudentDetailScreen from '@/components/screens/result/resultStudentDetailScreen';
+import TeacherEditProfileScreen from '@/components/screens/editProfileScreen/teacherProfileScreen';
 type RootStackParamList = {
   HomeScreen: undefined;
   LoginScreen:undefined;
@@ -43,6 +44,7 @@ type RootStackParamList = {
   ChangePassword: undefined;
   ResetPassword:undefined;
   EditProfileScreen:undefined;
+  TeacherEditProfileScreen:undefined;
   CourseRegistrationScreen:undefined;
   PaymentScreen:undefined;
   ScheduleScreen: undefined;
@@ -75,6 +77,7 @@ export default function App() {
       <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
+      <Stack.Screen name="TeacherEditProfileScreen" component={TeacherEditProfileScreen} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="CourseRegistrationScreen" component={CourseRegistrationScreen} />
       <Stack.Screen name="PaymentScreen" component={PaymentScreen} />

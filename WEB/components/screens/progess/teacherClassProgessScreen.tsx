@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http'; 
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function TeacherClassProgessScreen() {
   const [progress, setProgress] = useState(0);
@@ -55,9 +56,11 @@ export default function TeacherClassProgessScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchProgressData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchProgressData();
+    }, [])
+  );
 
   if (loading) {
     return (

@@ -71,20 +71,36 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     }
   };
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
-  useEffect(() => {
-    if (user && user.u && user.u.idUser) {
-      getStudentClass(user.u.idUser);
-    }
-  }, [user]);
   useFocusEffect(
     React.useCallback(() => {
-      getUserInfo();
+      const fetchUserData = async () => {
+        await getUserInfo();
+      };
+  
+      fetchUserData();
     }, [])
   );
-
+  
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      console.log('DashboardScreen focused, refetching user info...');
+      await getUserInfo();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+  
+  useEffect(() => {
+    const fetchClassData = async () => {
+      if (user && user.u && user.u.idUser) {
+        console.log('Fetching class info for user:', user.u.idUser);
+        await getStudentClass(user.u.idUser);
+      }
+    };
+  
+    fetchClassData();
+  }, [user]); 
+  
   const parseCvEnum = (cvEnum: string): string => {
     switch (cvEnum) {
       case 'STUDENT':
@@ -303,7 +319,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 navigation.navigate('ResultStudentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
               }}>
                 <AntDesign name="linechart" size={24} color="black" />
-                <Text style={styles.featureText}>Xem điểm bài test</Text>
+                <Text style={styles.featureText}>Xem điểm</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
@@ -317,14 +333,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                   navigation.navigate('BillScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                 }}>
                 <MaterialIcons name="attach-money" size={24} color="black" />
-                <Text style={styles.featureText}>Tra cứu công nợ</Text>
+                <Text style={styles.featureText}>Tra cứu hóa đơn</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
                   navigation.navigate('PaymentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                 }}>
                 <AntDesign name="creditcard" size={24} color="black" />
-                <Text style={styles.featureText}>Thanh toán trực tuyến</Text>
+                <Text style={styles.featureText}>Thanh toán khóa học</Text>
               </TouchableOpacity>
             </>
           )}

@@ -15,8 +15,6 @@ import {
     Modal,
 } from 'react-native';
 
-
-
 export default function ChangePassword({navigation}: {navigation: any}) {
     const [confirmOldPassword, setConfirmOldPassword] = useState('');
     const [password, setPassword] = useState('');
