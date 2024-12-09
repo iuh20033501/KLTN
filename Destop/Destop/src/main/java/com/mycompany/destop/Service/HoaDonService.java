@@ -594,7 +594,52 @@ public class HoaDonService {
     }
 
     public ThanhToan loadApiCreateThanhToan(String token, Long idLop, Long idHocVien) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/createCoKiemTra/" + idLop + "/" + idHocVien;
+        String apiUrl = "http://localhost:8081/thanhToan/create/" + idLop + "/" + idHocVien;
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
+
+                    // Chuyển đổi JSON trả về thành đối tượng ThanhToan
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    return gson.fromJson(response.toString(), ThanhToan.class);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Không tìm thấy lớp học hoặc học viên.");
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+     public ThanhToan loadApiFindThanhToanByLop(String token, Long idLop, Long idHocVien) throws Exception {
+        String apiUrl = "http://localhost:8081/thanhToan/findByIdLopAndHV/" + idLop + "/" + idHocVien;
         HttpURLConnection conn = null;
 
         try {

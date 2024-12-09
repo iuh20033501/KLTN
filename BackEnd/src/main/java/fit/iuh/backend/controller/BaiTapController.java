@@ -306,5 +306,10 @@ public class BaiTapController {
         }
         return null;
     }
+    @GetMapping("/getTienTrinhofBuoi/{idBuoi}")
+    public List<TienTrinh> getListTienTrihofBuoi(@PathVariable Long idBuoi){
+        List<TienTrinh> tt = tienTrinhService.findByIdBuoi(idBuoi);
+        return  tt;
+    }
 
 }

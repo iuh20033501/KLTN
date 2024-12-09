@@ -12,4 +12,5 @@ public interface KetQuaTestService {
     KetQuaTest findByBTandHV(Long idHocvien,Long idBaiTest);
     List<KetQuaTest> findKetQuaTestByHV (Long idHocVien);
     List<KetQuaTest> findKetQuaTestByBT (Long idBaiTest);
+    List<KetQuaTest> findKetQuaTestByLop (Long idLop);
 }

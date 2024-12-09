@@ -2,9 +2,13 @@ package fit.iuh.backend.implement;
 
 import fit.iuh.backend.enumclass.TrangThaiThanhToan;
 import fit.iuh.backend.moudel.HoaDon;
+import fit.iuh.backend.moudel.HocVienLopHoc;
+import fit.iuh.backend.moudel.HocVienLopHocKey;
 import fit.iuh.backend.moudel.ThanhToan;
 import fit.iuh.backend.repository.HoaDonRepo;
+import fit.iuh.backend.repository.HocVienLopHocRepo;
 import fit.iuh.backend.repository.ThanhToanRepo;
+import fit.iuh.backend.service.HocVienLopHocService;
 import fit.iuh.backend.service.ThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +24,8 @@ public class ThanhToanImplement implements ThanhToanService {
     private ThanhToanRepo thanhToanRepo;
     @Autowired
     private HoaDonRepo hoaDonRepo;
+    @Autowired
+    private HocVienLopHocRepo hocVienLopHocRepo;
 
     @Override
     public ThanhToan createThanhToan(ThanhToan thanhToan) {
@@ -34,6 +40,11 @@ public class ThanhToanImplement implements ThanhToanService {
     @Override
     public List<ThanhToan> finfByIdLop(Long idLop) {
         return thanhToanRepo.findByIdLop(idLop);
+    }
+
+    @Override
+    public ThanhToan finfByIdLopAndHV(Long idLop,Long idHV) {
+        return thanhToanRepo.findByIdLopIdHV(idLop,idHV,TrangThaiThanhToan.DONE,TrangThaiThanhToan.WAIT);
     }
 
     @Override
@@ -63,6 +74,8 @@ public class ThanhToanImplement implements ThanhToanService {
         HoaDon hd =hoaDonRepo.findById(idHoaDon).orElseThrow(()->new RuntimeException("hoa đơn not found "));
 
         thanhToan.setHoaDon(hd);
+        HocVienLopHocKey key = new HocVienLopHocKey(thanhToan.getNguoiThanhToan(),thanhToan.getLopHoc());
+        hocVienLopHocRepo.save(new HocVienLopHoc(key,true));
         return thanhToanRepo.save(thanhToan);
     }
     @Override

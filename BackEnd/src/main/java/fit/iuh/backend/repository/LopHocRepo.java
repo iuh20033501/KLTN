@@ -1,5 +1,6 @@
 package fit.iuh.backend.repository;
 
+import fit.iuh.backend.enumclass.TrangThaiLop;
 import fit.iuh.backend.moudel.LopHoc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,5 +28,9 @@ public interface LopHocRepo extends JpaRepository<LopHoc, Long> {
 
     @Query("SELECT l FROM LopHoc l JOIN l.giangVien gv WHERE gv.hoTen LIKE %:name%")
     List<LopHoc> getListLopLikenameGiaoVien(@Param("name") String name);
+    @Query("SELECT l FROM LopHoc l WHERE l.trangThai=:trangThai")
+    List<LopHoc> getListByTrangThai(@Param("trangThai")  TrangThaiLop trangThai);
+    @Query("SELECT l FROM LopHoc l WHERE l.trangThai IN :trangThais")
+    List<LopHoc> getListByTrangThaiInList(@Param("trangThais") List<TrangThaiLop> trangThais);
 
 }

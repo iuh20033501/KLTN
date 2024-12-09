@@ -10,23 +10,24 @@ import java.util.List;
 
 @Repository
 public interface BuoiHocRepo extends JpaRepository<BuoiHoc,Long> {
-    @Query("select bh from BuoiHoc bh join LopHoc  lop on bh.lopHoc.idLopHoc= lop.idLopHoc where bh.lopHoc.idLopHoc =:id")
+    @Query("select bh from BuoiHoc bh join LopHoc  lop on bh.lopHoc.idLopHoc= lop.idLopHoc where bh.lopHoc.idLopHoc =:id and bh.trangThai= TRUE")
     List<BuoiHoc> getBuoiTheoLop (@Param("id") Long id);
     @Query("SELECT bh FROM BuoiHoc bh " +
             "JOIN bh.lopHoc lop " +
             "JOIN HocVienLopHoc bhhv ON lop.idLopHoc = bhhv.key.lopHoc.idLopHoc " +
-            "WHERE bhhv.key.hocVien.idUser =:id " +
+            "WHERE bh.trangThai= TRUE and bhhv.key.hocVien.idUser =:id " +
             "ORDER BY bh.ngayHoc ASC")
     List<BuoiHoc> getBuoiHocTheoIdHocVien(@Param("id") Long id);
 
-    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE")
+    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE and bh.trangThai= TRUE")
     List<BuoiHoc> getBuoiDaHoc();
-    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE AND bh.lopHoc.idLopHoc=:idLop")
+    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE AND bh.lopHoc.idLopHoc=:idLop and bh.trangThai= TRUE")
     List<BuoiHoc> getBuoiDaHocTheoLop(@Param("idLop") Long id);
 
 //    @Query("select bh from BuoiHoc bh where bh.ngayHoc < CURRENT_DATE AND bh.=:idHV")
 //    List<BuoiHoc> getBuoiDaHocTheoLop(@Param("idHV") Long id);
-
+@Query("select bh from BuoiHoc bh  where bh.trangThai=true")
+List<BuoiHoc> getAllTrue ();
 
 
 

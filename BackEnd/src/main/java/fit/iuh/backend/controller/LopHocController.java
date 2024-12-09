@@ -128,6 +128,10 @@ public class LopHocController {
     public List<LopHoc> findAll (){
         return  lopHocService.findAll();
     }
+    @GetMapping("/getAllTrue")
+    public List<LopHoc> getAllTrue (){
+        return  lopHocService.findAllTrue();
+    }
 //    @Operation(
 //            summary = "update lớp",
 //            description = """

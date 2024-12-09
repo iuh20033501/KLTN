@@ -18,5 +18,8 @@ public interface KhoaHocRepo extends JpaRepository<KhoaHoc,Long> {
     List<KhoaHoc> getListLikeTen(@Param("name") String name);
     @Query("SELECT khoa FROM KhoaHoc khoa WHERE khoa.trangThai= true and khoa.tenKhoaHoc LIKE %:name%")
     List<KhoaHoc> getListActiveTrue(String name);
+    @Query("SELECT khoa FROM KhoaHoc khoa WHERE khoa.trangThai= true")
+    List<KhoaHoc> getListAllTrue();
+
 
 }

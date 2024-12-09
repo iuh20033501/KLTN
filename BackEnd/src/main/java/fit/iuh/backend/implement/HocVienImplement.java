@@ -1,6 +1,9 @@
 package fit.iuh.backend.implement;
 
+import fit.iuh.backend.enumclass.ChucVu;
+import fit.iuh.backend.moudel.User;
 import fit.iuh.backend.repository.HocVienRepo;
+import fit.iuh.backend.repository.TaiKhoanRepo;
 import fit.iuh.backend.service.HocVienService;
 import fit.iuh.backend.moudel.HocVien;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import java.util.Optional;
 public class HocVienImplement implements HocVienService {
     @Autowired
     private HocVienRepo hocVienRepo;
+    @Autowired
+    private TaiKhoanRepo taiKhoanRepo;
 
     @Override
     public Optional<HocVien> findByIdHocVien(Long id) {
@@ -31,5 +36,10 @@ public class HocVienImplement implements HocVienService {
     @Override
     public List<HocVien> getAll() {
         return hocVienRepo.findAll();
+    }
+
+    @Override
+    public List<User> getListHocVienDangHoc() {
+        return taiKhoanRepo.findUserByTaiKhoanEnableTrue(ChucVu.STUDENT);
     }
 }

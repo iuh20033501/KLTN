@@ -44,6 +44,10 @@ public class KhoaHocController {
     public List<KhoaHoc> findAll (){
         return  khoaHocService.getAll();
     }
+    @GetMapping("/getAllTrue")
+    public List<KhoaHoc> findAllTrue (){
+        return  khoaHocService.getAllTrue();
+    }
 
     @GetMapping("/getListActiveTrueLikeName/{name}")
     public List<KhoaHoc> findActiveTrueLikeName(@PathVariable("name") String name){

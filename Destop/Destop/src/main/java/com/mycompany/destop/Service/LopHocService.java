@@ -11,6 +11,7 @@ import com.mycompany.destop.DTO.CreateLopDTO;
 import com.mycompany.destop.DTO.SigninDTO;
 import com.mycompany.destop.Modul.BaiTest;
 import com.mycompany.destop.Modul.BuoiHoc;
+import com.mycompany.destop.Modul.HocVien;
 import com.mycompany.destop.Modul.KhoaHoc;
 import com.mycompany.destop.Modul.LopHoc;
 import com.mycompany.destop.Modul.TaiKhoanLogin;
@@ -71,8 +72,9 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
-    public List<LopHoc> getAllLopHocByIdKhoaApi(String token,Long idKhoa) throws Exception {
-        String profileUrl = "http://localhost:8081/lopHoc/getByKhoa/"+idKhoa; // Đảm bảo URL này đúng
+
+    public List<LopHoc> getAllLopHocTrueApi(String token) throws Exception {
+        String profileUrl = "http://localhost:8081/lopHoc/getAllTrue"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -107,8 +109,46 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
+
+    public List<LopHoc> getAllLopHocByIdKhoaApi(String token, Long idKhoa) throws Exception {
+        String profileUrl = "http://localhost:8081/lopHoc/getByKhoa/" + idKhoa; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        try {
+            // Cấu hình GET request với JWT token trong header
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+
+                    // Sử dụng Gson để chuyển đổi JSON thành danh sách LopHoc
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    Type listType = new TypeToken<List<LopHoc>>() {
+                    }.getType();
+                    return gson.fromJson(response.toString(), listType); // Trả về danh sách LopHoc
+                }
+            } else {
+                throw new Exception("Không thể gọi API lớp học, mã phản hồi: " + responseCode);
+            }
+        } catch (IOException e) {
+            throw new Exception("Lỗi khi kết nối tới API: " + e.getMessage());
+        } finally {
+            conn.disconnect(); // Đảm bảo đóng kết nối
+        }
+    }
+
     public List<LopHoc> getAllLopHocByIdGVApi(String token, Long idGV) throws Exception {
-        String profileUrl = "http://localhost:8081/lopHoc/getByGv/"+idGV; // Đảm bảo URL này đúng
+        String profileUrl = "http://localhost:8081/lopHoc/getByGv/" + idGV; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -143,8 +183,9 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
+
     public List<LopHoc> getAllLopHocLikeNameApi(String token, String name) throws Exception {
-        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameLop/"+name; // Đảm bảo URL này đúng
+        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameLop/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -179,8 +220,9 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
-     public List<LopHoc> getAllLopHocLikeNameGVApi(String token, String name) throws Exception {
-        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameGV/"+name; // Đảm bảo URL này đúng
+
+    public List<LopHoc> getAllLopHocLikeNameGVApi(String token, String name) throws Exception {
+        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameGV/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -215,8 +257,9 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
-      public List<LopHoc> getAllLopHocLikeNameKhoaApi(String token, String name) throws Exception {
-        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameKhoa/"+name; // Đảm bảo URL này đúng
+
+    public List<LopHoc> getAllLopHocLikeNameKhoaApi(String token, String name) throws Exception {
+        String profileUrl = "http://localhost:8081/lopHoc/getLikeNameKhoa/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -621,8 +664,9 @@ public class LopHocService {
             }
         }
     }
-      public List<BuoiHoc> getAllBuoiHocByLopApi(String token, Long idLop) throws Exception {
-        String profileUrl = "http://localhost:8081/buoihoc/getbuoiHocByLop/"+idLop; // Đảm bảo URL này đúng
+
+    public List<BuoiHoc> getAllBuoiHocByLopApi(String token, Long idLop) throws Exception {
+        String profileUrl = "http://localhost:8081/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -640,13 +684,16 @@ public class LopHocService {
                         response.append(responseLine.trim());
                     }
 
-                    // Sử dụng Gson để chuyển đổi JSON thành danh sách LopHoc
+                    // In ra phản hồi từ API
+                    System.out.println("Response from API: " + response.toString()); // In ra phản hồi
+
+                    // Sử dụng Gson để chuyển đổi JSON thành danh sách BuoiHoc
                     Gson gson = new GsonBuilder()
                             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                             .create();
                     Type listType = new TypeToken<List<BuoiHoc>>() {
                     }.getType();
-                    return gson.fromJson(response.toString(), listType); // Trả về danh sách LopHoc
+                    return gson.fromJson(response.toString(), listType); // Trả về danh sách BuoiHoc
                 }
             } else {
                 throw new Exception("Không thể gọi API lớp học, mã phản hồi: " + responseCode);
@@ -657,7 +704,8 @@ public class LopHocService {
             conn.disconnect(); // Đảm bảo đóng kết nối
         }
     }
-       public BuoiHoc getBuoiHocById(String token, Long id) throws Exception {
+
+    public BuoiHoc getBuoiHocById(String token, Long id) throws Exception {
         String apiUrl = "http://localhost:8081/buoihoc/getBuoiById/" + id; // URL endpoint của API xóa lớp học
         HttpURLConnection conn = null;
 
@@ -702,8 +750,9 @@ public class LopHocService {
             }
         }
     }
-        public LopHoc CreateBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8081/buoihoc/createBuoiHoc/"+ idLop; // URL API
+
+    public LopHoc CreateBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
+        String apiUrl = "http://localhost:8081/buoihoc/createBuoiHoc/" + idLop; // URL API
         HttpURLConnection conn = null;
 
         try {
@@ -756,4 +805,40 @@ public class LopHocService {
         }
     }
 
+    public List<HocVien> getAllHocVienByLopApi(String token, Long idLop) throws Exception {
+        String profileUrl = "http://localhost:8081/lopHoc/getByLop/" + idLop; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        try {
+            // Cấu hình GET request với JWT token trong header
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+
+                    // Sử dụng Gson để chuyển đổi JSON thành danh sách LopHoc
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    Type listType = new TypeToken<List<HocVien>>() {
+                    }.getType();
+                    return gson.fromJson(response.toString(), listType); // Trả về danh sách LopHoc
+                }
+            } else {
+                throw new Exception("Không thể gọi API lớp học, mã phản hồi: " + responseCode);
+            }
+        } catch (IOException e) {
+            throw new Exception("Lỗi khi kết nối tới API: " + e.getMessage());
+        } finally {
+            conn.disconnect(); // Đảm bảo đóng kết nối
+        }
+    }
 }
