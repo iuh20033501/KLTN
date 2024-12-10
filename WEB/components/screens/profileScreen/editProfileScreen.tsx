@@ -14,6 +14,7 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState('');
+    const [role, setRole] = useState('');
 
     const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -64,7 +65,6 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
 
         return true;
     };
-console.log(selectedAvatar)
     const handleUpdate = async () => {
         if (!validateForm()) {
             return;
@@ -75,7 +75,10 @@ console.log(selectedAvatar)
             const formattedBirthday = formatDateForServer(birthday);
             const token = await AsyncStorage.getItem('accessToken');
             const imageToUpload = selectedAvatar
-            const response = await http.put(`hocvien/update/${user.u.idUser}`, {
+            const apiEndpoint = role === 'STUDENT' 
+            ? `hocvien/update/${user.u.idUser}` 
+            : `giangVien/update/${user.u.idUser}`;
+            const response = await http.put(apiEndpoint, {
                 idUser: user.u.idUser,
                 hoTen: user.u.hoTen,
                 sdt: phone,
@@ -124,6 +127,7 @@ console.log(selectedAvatar)
                     setGender(userData.u.gioiTinh === true ? 'Nam' : 'Nữ');
                     setUser(userData);
                     setSelectedAvatar(userData.u.image);
+                    setRole(userData.cvEnum)
                 } else {
                     setErrorMessage('Lấy thông tin người dùng thất bại.');
                     setErrorModalVisible(true);

@@ -5,7 +5,6 @@ import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, Modal } from 'react-native';
 import StudentClassProgressScreen from '../progess/studentClassProgessScreen';
-import StudentClassAssignmentProgressScreen from '../progess/studentClassAssignmentProgessScreen';
 import TeacherClassProgessScreen from '../progess/teacherClassProgessScreen';
 
 const DashboardScreen = ({ navigation }: { navigation: any }) => {
@@ -376,7 +375,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.sectionTitle}>Tiến độ học tập</Text>
                 <View style={styles.classList}>
                  <StudentClassProgressScreen></StudentClassProgressScreen>
-                 <StudentClassAssignmentProgressScreen></StudentClassAssignmentProgressScreen>
+                 {/* <StudentClassAssignmentProgressScreen></StudentClassAssignmentProgressScreen> */}
                 </View>
               </View>
             </>

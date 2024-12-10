@@ -255,14 +255,20 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 headers: { Authorization: `Bearer ${token}` },
             });
             const fetchedDocuments = response.data;
-
-            setDocuments((prevDocuments) => [
-                ...prevDocuments,
-                ...fetchedDocuments.map((doc: Document) => ({
-                    ...doc,
-                    sessionId, // Thêm ID buổi học
-                })),
-            ]);
+    
+            setDocuments((prevDocuments) => {
+                // Loại bỏ tài liệu cũ của sessionId hiện tại trước khi thêm tài liệu mới
+                const updatedDocuments = prevDocuments.filter(
+                    (doc) => doc.sessionId !== sessionId
+                );
+                return [
+                    ...updatedDocuments,
+                    ...fetchedDocuments.map((doc: Document) => ({
+                        ...doc,
+                        sessionId,
+                    })),
+                ];
+            });
         } catch (error) {
             console.error(`Failed to fetch documents for session ${sessionId}:`, error);
         }
@@ -324,8 +330,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
+    
             const newDocuments = documentsToUpload.filter((doc) => doc.isNew);
-            setDocuments([]);
     
             for (const document of newDocuments) {
                 if (!document.linkLoad) continue;
@@ -349,7 +355,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                         linkLoad: uploadedLink,
                         trangThai: document.trangThai,
                     };
-                        const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
+                    const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     if (response.status === 200) {
@@ -359,14 +365,14 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     } else {
                         console.error('Failed to create document on the server');
                     }
-    
                 } catch (uploadError) {
                     console.error(`Error uploading or saving document: ${document.tenTaiLieu}`, uploadError);
                 }
             }
+    
+            // Gọi fetchDocuments sau khi thêm tài liệu để cập nhật danh sách
             await fetchDocuments(sessionId);
             setMessageModalVisible(true);
-    
         } catch (error) {
             console.error('Error while submitting documents:', error);
             setMessageText('Lỗi: Không thể thêm tài liệu. Vui lòng thử lại.');
@@ -565,14 +571,14 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                         {documents.filter((doc) => doc.sessionId === session.idBuoiHoc && doc.trangThai).length > 0 ? (
                                             <View style={styles.assignmentList}>
                                                 {documents
-                                                    .filter((doc) => doc.trangThai && doc.sessionId === session.idBuoiHoc)
-                                                    .map((doc, index) => (
-                                                        <View key={index} style={styles.assignmentItemContainer}>
+                                                     .filter((doc) => doc.trangThai && doc.sessionId === session.idBuoiHoc)
+                                                     .map((doc) => (
+                                                        <View key={doc.idTaiLieu} style={styles.assignmentItemContainer}>
                                                             <TouchableOpacity style={styles.assignmentItem}>
                                                                 <Icon name="file-document-outline" size={20} color="#00405d" />
                                                                 <Text
                                                                     style={styles.assignmentText}
-                                                                    onPress={() => handleOpenDocument(doc.linkLoad)} // Gọi hàm với Key
+                                                                    onPress={() => handleOpenDocument(doc.linkLoad)} 
                                                                 >
                                                                     {doc.tenTaiLieu}
                                                                 </Text>
