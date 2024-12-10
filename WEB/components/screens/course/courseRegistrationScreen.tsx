@@ -33,6 +33,12 @@ type DaySchedule = {
   gioHoc: string;
   gioKetThuc: string;
 }
+
+type ValidPayment = {
+  tenLopHoc: string;
+  idLopHoc: number;
+  moTa: string;
+};
 const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const { idUser, nameUser } = route.params;
   const [loading, setLoading] = useState(true);
@@ -54,6 +60,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
   const [nextStepModalVisible, setNextStepModalVisible] = useState(false);
   const [studentInClass, setStudentInClass] = useState(Number);
   const [classSchedule, setClassSchedule] = useState<DaySchedule[]>([]);
+  const [validPayments, setValidPayments] = useState<ValidPayment[]>([]);
 
   useEffect(() => {
     fetchCourses();
@@ -88,12 +95,21 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
       if (response.status === 200) {
         setPayments(response.data);
         console.log(response.data)
+        const filteredPayments: ValidPayment[] = response.data
+        .filter((payment: Payment) => payment.trangThai === 'DONE' || payment.trangThai === 'WAIT')
+        .map((payment: Payment) => ({
+          idLopHoc: payment.lopHoc.idLopHoc,
+          moTa: payment.lopHoc.moTa,
+          tenLopHoc:payment.lopHoc.tenLopHoc
+        }));
+
+      setValidPayments(filteredPayments);
       }
     } catch (error) {
       console.error('Error fetching payments:', error);
     }
   };
-
+ 
 
   const fetchClasses = async (courseId: number) => {
     try {
@@ -138,57 +154,112 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
     return 0;
   };
 
-  const fetchClassSchedule = async (classId: number) => {
+  const fetchClassSchedule = async (classId: number): Promise<DaySchedule[]> => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (!token) {
         console.error('Token không tồn tại');
-        return;
+        return [];
       }
-
+  
       const response = await http.get(`buoihoc/getbuoiHocByLop/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (response.status === 200) {
-        setClassSchedule(response.data);
+        setClassSchedule(response.data)
+        return response.data;
       }
     } catch (error) {
       console.error('Lỗi khi lấy lịch học của lớp:', error);
     }
+    return [];
   };
-
+  const checkScheduleConflict = async (
+    availableClassId: number,
+    availableClassMoTa: string
+  ): Promise<{ conflict: boolean; details?: { moTa: string; gioHoc: string; gioKetThuc: string; tenLopHoc: string } }> => {
+    try {
+      const availableClassSchedules = await fetchClassSchedule(availableClassId);
+      const firstAvailableSchedule = availableClassSchedules[0]; 
+      if (!firstAvailableSchedule) return { conflict: false };
+  
+      const { gioHoc: availGioHoc, gioKetThuc: availGioKetThuc } = firstAvailableSchedule;
+  
+      for (const payment of validPayments) {
+        const registeredClassSchedules = await fetchClassSchedule(payment.idLopHoc);
+        const firstRegisteredSchedule = registeredClassSchedules[0]; 
+        if (!firstRegisteredSchedule) continue;
+  
+        const { gioHoc: regGioHoc, gioKetThuc: regGioKetThuc } = firstRegisteredSchedule;
+  
+        if (payment.moTa === availableClassMoTa) {
+          if (regGioHoc === availGioHoc || regGioKetThuc === availGioKetThuc) {
+            return {
+              conflict: true,
+              details: {
+                moTa: payment.moTa,
+                gioHoc: regGioHoc,
+                gioKetThuc: regGioKetThuc,
+                tenLopHoc: payment.tenLopHoc,
+              },
+            };
+          }
+        }
+      }
+  
+      return { conflict: false };
+    } catch (error) {
+      console.error("Error while checking schedule conflict:", error);
+      return { conflict: false };
+    }
+  };
+  
+  
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
     fetchClasses(course.idKhoaHoc);
   };
 
-
-
-
-  
   const handleClassSelect = async (classItem: Class) => {
+    try {
+      const result = await checkScheduleConflict(classItem.idLopHoc, classItem.moTa);
   
-    const isAlreadyPaid = payments.some(
-      (payment) =>
-        payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
-        (payment.trangThai === 'WAIT' || payment.trangThai === 'DONE')
-    );
+      if (result.conflict) {
+        const { moTa, gioHoc, gioKetThuc, tenLopHoc } = result.details || {};
+        setResultMessage(
+          `Lớp học này trùng lịch với lớp đã đăng ký. \nTên lớp: ${tenLopHoc}\nMô tả: ${moTa}\nGiờ học: ${gioHoc} - ${gioKetThuc}`
+        );
+        setResultModalVisible(true);
+        return;
+      }
   
-    if (isAlreadyPaid) {
-      setResultMessage("Bạn đã đăng ký khóa học này rồi");
-      setResultModalVisible(true);
-      return;
+  
+      const isAlreadyPaid = payments.some(
+        (payment) =>
+          payment.lopHoc.khoaHoc.idKhoaHoc === selectedCourse?.idKhoaHoc &&
+          (payment.trangThai === 'WAIT' || payment.trangThai === 'DONE')
+      );
+  
+      if (isAlreadyPaid) {
+        setResultMessage("Bạn đã đăng ký khóa học này rồi");
+        setResultModalVisible(true);
+        return;
+      }
+  
+      const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc);
+      setStudentInClass(currentStudentCount);
+  
+      const classSchedules = await fetchClassSchedule(classItem.idLopHoc);
+      setClassSchedule(classSchedules);
+  
+      setSelectedClass(classItem);
+      setModalVisible(false);
+      setClassDetailModalVisible(true);
+    } catch (error) {
+      console.error("Lỗi khi chọn lớp học:", error);
     }
-  
-    const currentStudentCount = await fetchCurrentStudentCount(classItem.idLopHoc);
-    setStudentInClass(currentStudentCount);
-    await fetchClassSchedule(classItem.idLopHoc);
-    setSelectedClass(classItem);
-    setModalVisible(false);
-    setClassDetailModalVisible(true);
   };
-
   const handleClassRegister = async () => {
     if (!selectedClass) return;
     const classStartDate = new Date(selectedClass.ngayBD);

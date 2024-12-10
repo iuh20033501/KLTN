@@ -127,7 +127,7 @@ export default function StudentClassProgressScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.iconButton} onPress={handleClassPrevious}>
-        <Icon name="chevron-back-outline" size={30} color="#00405d" />
+        <Icon name="chevron-back-outline" size={30} color="black" />
       </TouchableOpacity>
 
       <View style={styles.contentContainer}>

@@ -191,6 +191,29 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         }
     };
 
+    const fetchAssignmentProgress = async (assignmentId: number): Promise<boolean> => {
+        try {
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) {
+            console.error('Token không tồn tại');
+            return false;
+          }
+      
+          const response = await http.get(`baitap/getTienTrinhofBT/${assignmentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          if (response.status === 200 && Array.isArray(response.data)) {
+            return response.data.length > 0; 
+          }
+          return false;
+        } catch (error) {
+          console.error(`Lỗi khi lấy tiến trình bài tập ${assignmentId}:`, error);
+          return false;
+        }
+      };
+      
+
     const confirmDeleteAssignment = (assignmentId: number, assignmentName: string, sessionId: number) => {
         setSelectedAssignment({ id: assignmentId, name: assignmentName, sessionId });
         setConfirmModalVisible(true);
@@ -224,26 +247,37 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
     const deleteAssignment = async () => {
         if (!selectedAssignment) return;
         const { id, sessionId } = selectedAssignment;
-
+      
         try {
-            const token = await AsyncStorage.getItem('accessToken');
-            if (!token) {
-                console.error('No token found');
-                return;
-            }
-
-            await deleteImagesForAssignment(id);
-            await http.get(`baitap/deleteBtap/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            fetchAssignments(sessionId);
+          const hasProgress = await fetchAssignmentProgress(id);
+      
+          if (hasProgress) {
+            setMessageText(`Bài tập "${selectedAssignment.name}" đã có tiến trình học viên.\n Không thể xóa.`);
+            setMessageModalVisible(true);
+            return;
+          }      
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) {
+            console.error('No token found');
+            return;
+          }
+      
+          await deleteImagesForAssignment(id);
+          await http.get(`baitap/deleteBtap/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchAssignments(sessionId);      
+          setMessageText('Xóa bài tập thành công.');
         } catch (error) {
-            console.error(`Failed to delete assignment ${id}:`, error);
+          console.error(`Failed to delete assignment ${id}:`, error);
+          setMessageText('Lỗi: Không thể xóa bài tập. Vui lòng thử lại.');
         } finally {
-            setConfirmModalVisible(false);
-            setSelectedAssignment(null);
+          setMessageModalVisible(true);
+          setConfirmModalVisible(false);
+          setSelectedAssignment(null);
         }
-    };
+      };
+      
     const fetchDocuments = async (sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -257,7 +291,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
             const fetchedDocuments = response.data;
     
             setDocuments((prevDocuments) => {
-                // Loại bỏ tài liệu cũ của sessionId hiện tại trước khi thêm tài liệu mới
                 const updatedDocuments = prevDocuments.filter(
                     (doc) => doc.sessionId !== sessionId
                 );
@@ -370,7 +403,6 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 }
             }
     
-            // Gọi fetchDocuments sau khi thêm tài liệu để cập nhật danh sách
             await fetchDocuments(sessionId);
             setMessageModalVisible(true);
         } catch (error) {

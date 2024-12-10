@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Sử dụng thư viện react-native-vector-icons
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
 interface ProgressData {
   className: string;
@@ -100,7 +100,7 @@ export default function TeacherClassProgessScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.iconButton} onPress={handlePrevious}>
-        <Icon name="chevron-back-outline" size={30} color="#00405d" />
+        <Icon name="chevron-back-outline" size={30} color="black" />
       </TouchableOpacity>
 
       <View style={styles.contentContainer}>
@@ -114,7 +114,7 @@ export default function TeacherClassProgessScreen() {
       </View>
 
       <TouchableOpacity style={styles.iconButton} onPress={handleNext}>
-        <Icon name="chevron-forward-outline" size={30} color="#00405d" />
+        <Icon name="chevron-forward-outline" size={30} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#00405d',
+    color: 'black',
     marginBottom: 20,
   },
   progressContainer: {

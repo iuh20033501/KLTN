@@ -53,11 +53,11 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
     }, []);
     useEffect(() => {
         if (addQuestionModalVisible) {
-            setCorrectAnswerId(answers[0]?.idCauTraLoi); // Mặc định đáp án A là đúng
+            setCorrectAnswerId(answers[0]?.idCauTraLoi); 
             setAnswers((prevAnswers) =>
                 prevAnswers.map((answer, index) => ({
                     ...answer,
-                    ketQua: index === 0, // Đáp án A mặc định đúng
+                    ketQua: index === 0, 
                 }))
             );
         }
@@ -105,8 +105,35 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
             return [];
         }
     };
+    const checkProgressForAssignment = async (assignmentId: number): Promise<boolean> => {
+        try {
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) {
+            console.error('No token found');
+            return false;
+          }
+      
+          const response = await http.get(`baitap/getTienTrinhofBT/${assignmentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          // Nếu tồn tại tiến trình, trả về true
+          return Array.isArray(response.data) && response.data.length > 0;
+        } catch (error) {
+          console.error(`Failed to fetch progress for assignment ${assignmentId}:`, error);
+          return false;
+        }
+      };
+      
 
-    const openEditModal = (question: Question) => {
+    const openEditModal = async (question: Question) => {
+        const hasProgress = await checkProgressForAssignment(assignmentId);
+
+        if (hasProgress) {
+          setErrorMessage(`Bài tập này đã có tiến trình học viên. \nKhông thể chỉnh sửa câu hỏi.`);
+          setErrorModalVisible(true);
+          return;
+        }
         setSelectedQuestion(question);
         setQuestionText(question.noiDung || "");
         setExplanationText(question.loiGiai || "");
@@ -131,7 +158,14 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
         setAddQuestionModalVisible(true);
     };
 
-    const confirmDeleteQuestion = (question: Question) => {
+    const confirmDeleteQuestion = async (question: Question) => {
+        const hasProgress = await checkProgressForAssignment(assignmentId);
+
+        if (hasProgress) {
+          setErrorMessage(`Bài tập này đã có tiến trình học viên.\n Không thể xóa câu hỏi.`);
+          setErrorModalVisible(true);
+          return;
+        }
         setSelectedQuestion(question);
         setConfirmModalVisible(true);
     };
