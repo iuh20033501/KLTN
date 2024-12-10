@@ -68,9 +68,9 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
     const handleDateChange = (date: Date | null) => {
         if (date) {
             const startOfWeek = calculateStartOfWeek(date);
-            setSelectedDate(startOfWeek); 
-            fetchWeeklySchedule(startOfWeek); 
-            setIsDatePickerOpen(false); 
+            setSelectedDate(startOfWeek);
+            fetchWeeklySchedule(startOfWeek);
+            setIsDatePickerOpen(false);
         }
     };
 
@@ -153,7 +153,12 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                         </TouchableOpacity>
                     </View>
                 </View>
-
+                <View style={styles.legendContainer}>
+                    <View style={[styles.legendBox, { backgroundColor: '#f0f0f0' }]} />
+                    <Text style={styles.legendText}>Học trực tiếp</Text>
+                    <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
+                    <Text style={styles.legendText}>Học trực tuyến</Text>
+                </View>
                 <View style={styles.scheduleTable}>
                     <View style={styles.row}>
                         {scheduleByDay.map((day, index) => (
@@ -183,12 +188,7 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                         ))}
                     </View>
                 </View>
-                <View style={styles.legendContainer}>
-                    <View style={[styles.legendBox, { backgroundColor: '#f0f0f0' }]} />
-                    <Text style={styles.legendText}>Học trực tiếp</Text>
-                    <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
-                    <Text style={styles.legendText}>Học trực tuyến</Text>
-                </View>
+
                 <Modal
                     visible={isDatePickerOpen}
                     transparent
@@ -201,15 +201,15 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                                 selected={selectedDate}
                                 onChange={handleDateChange}
                                 inline
-                                locale={vi} 
+                                locale={vi}
                                 dateFormat="dd/MM/yyyy"
 
                             />
-                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsDatePickerOpen(false)}>
-                            <Text style={styles.closeButtonText}>Đóng</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={() => setIsDatePickerOpen(false)}>
+                                <Text style={styles.closeButtonText}>Đóng</Text>
+                            </TouchableOpacity>
                         </View>
-                       
+
                     </View>
                 </Modal>
             </View>
@@ -222,8 +222,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 400,
         height: 990,
-        paddingVertical: 200,
-
     },
     overlayContainer: {
         flex: 1,
@@ -266,11 +264,12 @@ const styles = StyleSheet.create({
     dayColumn: {
         width: 140,
         padding: 10,
-        height:250,
         borderWidth: 1,
         borderColor: '#ddd',
         marginRight: 10,
         alignItems: 'center',
+        flexGrow: 1,
+        flexShrink: 1,
     },
     dayHeader: {
         fontWeight: 'bold',
@@ -284,6 +283,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         marginBottom: 10,
         alignItems: 'flex-start',
+        flex: 1,
+
     },
     noClass: {
         color: 'grey',
@@ -325,13 +326,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#00405d',
         marginBottom: 5,
-        paddingBottom:10
+        paddingBottom: 10
     },
     legendContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 20,
+        marginBottom: 20,
     },
     legendBox: {
         width: 20,
@@ -345,6 +346,7 @@ const styles = StyleSheet.create({
         color: '#00405d',
         fontWeight: 'bold',
         marginRight: 15,
+
     },
     modalContainer: {
         flex: 1,
@@ -354,12 +356,12 @@ const styles = StyleSheet.create({
     },
     datePickerWrapper: {
         padding: 20,
-        borderRadius: 10,  
+        borderRadius: 10,
     },
     datePickerWrapperHeader: {
-        width:200,
+        width: 200,
         padding: 20,
-        borderRadius: 10,  
+        borderRadius: 10,
     },
     closeButton: {
         marginTop: 20,
@@ -370,7 +372,7 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontWeight: 'bold',
-        textAlign:'center'
+        textAlign: 'center'
     },
     dateButton: {
         padding: 10,

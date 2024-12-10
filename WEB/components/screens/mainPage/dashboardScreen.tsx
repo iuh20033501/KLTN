@@ -6,6 +6,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, Modal } from 'react-native';
 import StudentClassProgressScreen from '../progess/studentClassProgessScreen';
 import TeacherClassProgessScreen from '../progess/teacherClassProgessScreen';
+import WeeklyScheduleTotal from '../schedule/studentScheduleTotal';
+import WeeklyExamSchedule from '../schedule/studentExamScheduleTotal';
+import TeacherScheduleTotalScreen from '../schedule/teacherScheduleTotal';
+import TeacherWeeklyExamSchedule from '../schedule/teacherExamScheduleTotal';
 
 const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -214,14 +218,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch dạy trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><TeacherScheduleTotalScreen></TeacherScheduleTotalScreen></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch gác thi trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><TeacherWeeklyExamSchedule></TeacherWeeklyExamSchedule></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
@@ -246,14 +250,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch học trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><WeeklyScheduleTotal></WeeklyScheduleTotal></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch thi trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><WeeklyExamSchedule></WeeklyExamSchedule></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>

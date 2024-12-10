@@ -177,7 +177,12 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
                         </TouchableOpacity>
                     </View>
                 </View>
-
+                <View style={styles.legendContainer}>
+                    <View style={[styles.legendBox, { backgroundColor: '#f0f0f0' }]} />
+                    <Text style={styles.legendText}>Học trực tiếp</Text>
+                    <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
+                    <Text style={styles.legendText}>Học trực tuyến</Text>
+                </View>
                 <View style={styles.scheduleTable}>
                     <View style={styles.row}>
                         {scheduleByDay.map((day, index) => (
@@ -237,7 +242,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 400,
         height: 990,
-        paddingVertical: 200,
 
     },
     overlayContainer: {
@@ -281,11 +285,13 @@ const styles = StyleSheet.create({
     dayColumn: {
         width: 140,
         padding: 10,
-        height:250,
+        flexGrow: 1,
+        flexShrink: 1, 
         borderWidth: 1,
         borderColor: '#ddd',
         marginRight: 10,
         alignItems: 'center',
+      
     },
     dayHeader: {
         fontWeight: 'bold',
@@ -299,6 +305,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         marginBottom: 10,
         alignItems: 'flex-start',
+        flex: 1, 
     },
     noClass: {
         color: 'grey',
@@ -346,7 +353,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 20,
+        marginBottom: 20,
     },
     legendBox: {
         width: 20,
