@@ -92,7 +92,7 @@ export default function ChangePassword({ navigation }: { navigation: any }) {
             secureTextEntry={!isPasswordVisible2}
           />
           <TouchableOpacity onPress={() => setIsPasswordVisible2(!isPasswordVisible2)} style={styles.eyeIcon}>
-              <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={20} color="gray" />
+              <FontAwesome name={isPasswordVisible2 ? 'eye-slash' : 'eye'} size={20} color="gray" />
             </TouchableOpacity>
         </View>
         <View style={styles.inputContainer}>
@@ -104,7 +104,7 @@ export default function ChangePassword({ navigation }: { navigation: any }) {
             secureTextEntry={!isPasswordVisible3}
           />
           <TouchableOpacity onPress={() => setIsPasswordVisible3(!isPasswordVisible3)} style={styles.eyeIcon}>
-              <FontAwesome name={isPasswordVisible ? 'eye-slash' : 'eye'} size={20} color="gray" />
+              <FontAwesome name={isPasswordVisible3 ? 'eye-slash' : 'eye'} size={20} color="gray" />
             </TouchableOpacity>
           <Text style={styles.termsText}>
             Mã OTP gồm 6 chữ số sẽ được gửi về số điện thoại đang liên kết với tài khoản học viên

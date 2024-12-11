@@ -72,27 +72,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
       getUserInfo();
     }, [])
 );
-const getAvatarUri = () => {
-  if (!selectedAvatar) return null;
-  if (selectedAvatar.startsWith("data:image")) {
-    return selectedAvatar;
-  }
-  const defaultMimeType = "image/png";
-  let mimeType = defaultMimeType;
-  if (/^\/9j/.test(selectedAvatar)) {
-    mimeType = "image/jpeg";
-  } else if (/^iVBOR/.test(selectedAvatar)) {
-    mimeType = "image/png";
-  } else if (/^R0lGOD/.test(selectedAvatar)) {
-    mimeType = "image/gif"; 
-  } else if (/^Qk/.test(selectedAvatar)) {
-    mimeType = "image/bmp"; 
-  } else if (/^UklGR/.test(selectedAvatar)) {
-    mimeType = "image/webp"; 
-  }
 
-  return `data:${mimeType};base64,${selectedAvatar}`;
-};
 
   return (
     <View style={styles.container}>
@@ -111,7 +91,7 @@ const getAvatarUri = () => {
                 image : user?.u?.i
               })}
             >
-              <Image source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/avatar/1.png')} style={styles.avatar} /> 
+              <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/1.png')} style={styles.avatar} /> 
             </TouchableOpacity>
             
             <View style={styles.userInfo}>

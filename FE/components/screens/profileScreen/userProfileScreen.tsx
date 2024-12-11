@@ -40,7 +40,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
    
 
     useEffect(() => {
-        getUserInfo(); // Lấy thông tin người dùng khi màn hình được tải
+        getUserInfo(); 
     }, []);
 
     const vietHoaRole = (role: string): string => {
@@ -64,27 +64,6 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
         );
     }
 
-    const getAvatarUri = () => {
-        if (!selectedAvatar) return null;
-        if (selectedAvatar.startsWith("data:image")) {
-          return selectedAvatar;
-        }
-        const defaultMimeType = "image/png";
-        let mimeType = defaultMimeType;
-        if (/^\/9j/.test(selectedAvatar)) {
-          mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
-        } else if (/^iVBOR/.test(selectedAvatar)) {
-          mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
-        } else if (/^R0lGOD/.test(selectedAvatar)) {
-          mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
-        } else if (/^Qk/.test(selectedAvatar)) {
-          mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
-        } else if (/^UklGR/.test(selectedAvatar)) {
-          mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
-        }
-    
-        return `data:${mimeType};base64,${selectedAvatar}`;
-      };
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -93,10 +72,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Tùy chọn người dùng</Text>
             </View>
-
-            {/* Hiển thị avatar */}
-            <Image source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/avatar/1.png')} style={styles.image} />
-
+            <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/1.png')} style={styles.image} />
             <View style={styles.userInfoContainer}>
                 <Text style={styles.username}>{user?.u?.hoTen}</Text>
                 <Text style={styles.phone}>{vietHoaRole(user?.cvEnum)}</Text>

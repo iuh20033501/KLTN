@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import http from "@/utils/http";
 import * as ImagePicker from 'expo-image-picker';
+import { uploadFileToS3, deleteFileFromS3 } from '../client/s3Client';
 
 export default function DetailProfileScreen({ navigation }: { navigation: any }) {
   const [phone, setPhone] = useState('');
@@ -17,6 +18,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState('');
+  const [originalAvatar, setOriginalAvatar] = useState('');
 
   const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
   const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -31,7 +33,6 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     const [day, month, year] = dateString.split('/');
     return `${year}-${month}-${day}`;
   };
-
 
   const validateForm = () => {
     if (!phone.trim()) {
@@ -78,6 +79,19 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       const formattedBirthday = formatDateForServer(birthday);
       const token = await AsyncStorage.getItem('accessToken');
 
+      let avatarUrl = selectedAvatar || null;
+      if (selectedAvatar && selectedAvatar !== originalAvatar) {
+        if (originalAvatar) {
+          const oldFileName = originalAvatar.split('/').pop();
+          if (oldFileName) {
+            await deleteFileFromS3(`avatars/${oldFileName}`);
+          }
+        }
+        const fileBlob = await fetch(selectedAvatar).then((res) => res.blob());
+        const fileName = `avatars/avatar-${user.u.idUser}-${Date.now()}.png`;
+        avatarUrl = await uploadFileToS3(fileBlob, fileName);
+      }
+
       const response = await http.put(`hocvien/update/${user.u.idUser}`, {
         idUser: user.u.idUser,
         hoTen: user.u.hoTen,
@@ -85,7 +99,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
         email: email,
         ngaySinh: formattedBirthday,
         gioiTinh: genderValue,
-        image: selectedAvatar
+        image: avatarUrl
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,6 +117,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
       Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin');
     }
   };
+
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -121,6 +136,7 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
           setBirthday(formatDate(userData.u.ngaySinh || ''));
           setGender(userData.u.gioiTinh === true ? 'Nam' : 'Nữ');
           setSelectedAvatar(userData.u.image);
+          setOriginalAvatar(userData.u.image);
           setUser(userData);
         } else {
           console.error('Lấy thông tin người dùng thất bại.');
@@ -154,51 +170,21 @@ export default function DetailProfileScreen({ navigation }: { navigation: any })
     setSelectedDate(currentDate);
     setBirthday(formatDate(currentDate.toISOString().split('T')[0]));
   };
-  const pickImage = async (useLibrary: boolean) => {
-    let result = null;
-    if (useLibrary) {
-        result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            base64: true,
-            quality: 1,
-        });
-    } else {
-        await ImagePicker.requestCameraPermissionsAsync();
-        result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            base64: true,
-            quality: 1,
-        });
-    }
 
-    if (result && !result.canceled) {
-        const base64String: string = result.assets[0].base64 || '';
-        setSelectedAvatar(base64String);
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        base64: true,
+        quality: 1,
+    });
 
+    if (!result.canceled) {
+        const uri = result.assets[0].uri;
+        setSelectedAvatar(uri);
     }
 };
 
-const getAvatarUri = () => {
-  if (!selectedAvatar) return null;
-  if (selectedAvatar.startsWith("data:image")) {
-    return selectedAvatar;
-  }
-  const defaultMimeType = "image/png";
-  let mimeType = defaultMimeType;
-  if (/^\/9j/.test(selectedAvatar)) {
-    mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
-  } else if (/^iVBOR/.test(selectedAvatar)) {
-    mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
-  } else if (/^R0lGOD/.test(selectedAvatar)) {
-    mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
-  } else if (/^Qk/.test(selectedAvatar)) {
-    mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
-  } else if (/^UklGR/.test(selectedAvatar)) {
-    mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
-  }
-
-  return `data:${mimeType};base64,${selectedAvatar}`;
-};
 
   return (
     <View style={styles.container}>
@@ -210,8 +196,8 @@ const getAvatarUri = () => {
       </View>
 
       <View style={styles.avatarSection}>
-        <Image source={selectedAvatar ? {  uri: getAvatarUri() } : require('../../../image/avatar/1.png')} style={styles.avatar} />
-        <TouchableOpacity onPress={() => pickImage(true)}>
+        <Image source={selectedAvatar ? { uri: selectedAvatar } : require('../../../image/avatar/1.png')} style={styles.avatar} />
+        <TouchableOpacity onPress={() => pickImage()}>
           <Text style={styles.editAvatarText}>Đổi ảnh đại diện</Text>
         </TouchableOpacity>
       </View>
