@@ -57,13 +57,13 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
         return;
       }
 
-      const classResponse = await http.get(`/hocvien/getByHV/${idUser}`, {
+      const classResponse = await http.get(`hocvien/getByHV/${idUser}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const enrolledClasses = classResponse.data.filter((classInfo: any) => classInfo.trangThai === "FULL");
       const lessonPromises = enrolledClasses.map((classInfo: any) =>
-        http.get(`/buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+        http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
           params: { startDate: startDate.toISOString().split('T')[0] },
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -71,9 +71,8 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
       const lessonResponses = await Promise.all(lessonPromises);
       const lessonData = lessonResponses.flatMap((response) => response.data);
 
-      // Lấy lịch thi của các lớp
       const examPromises = enrolledClasses.map((classInfo: any) =>
-        http.get(`/baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
+        http.get(`baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
       );

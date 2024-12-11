@@ -35,7 +35,7 @@ export default function ProgressScreen({ navigation, route }: { navigation: any;
         return;
       }
 
-      const classesResponse = await http.get(`/hocvien/getByHV/${idUser}`, {
+      const classesResponse = await http.get(`hocvien/getByHV/${idUser}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -43,16 +43,16 @@ export default function ProgressScreen({ navigation, route }: { navigation: any;
 
       const progressPromises = classes.map(async (classItem: any) => {
         try {
-          const classProgressResponse = await http.get(`/buoihoc/getBuoiDaHoc/${classItem.idLopHoc}`, {
+          const classProgressResponse = await http.get(`buoihoc/getBuoiDaHoc/${classItem.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const classTotalResponse = await http.get(`/buoihoc/getbuoiHocByLop/${classItem.idLopHoc}`, {
+          const classTotalResponse = await http.get(`buoihoc/getbuoiHocByLop/${classItem.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const assignmentCompletedResponse = await http.get(`/baitap/getTienTrinh/${idUser}/${classItem.idLopHoc}`, {
+          const assignmentCompletedResponse = await http.get(`baitap/getTienTrinh/${idUser}/${classItem.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const assignmentTotalResponse = await http.get(`/baitap/getBaiTapofLop/${classItem.idLopHoc}`, {
+          const assignmentTotalResponse = await http.get(`baitap/getBaiTapofLop/${classItem.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
