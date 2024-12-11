@@ -25,21 +25,24 @@ export default function StudentClassProgressScreen() {
       setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       if (!token) throw new Error('Token không tồn tại');
-
+  
       const profileResponse = await http.get('/auth/profile', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userId = profileResponse.data.u?.idUser;
       if (!userId) throw new Error('Không tìm thấy idUser');
-
+  
       const classesResponse = await http.get(`/hocvien/getByHV/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      const classList = classesResponse.data || [];
+  
+      const classList = (classesResponse.data || []).filter(
+        (lop: { trangThai: string }) => lop.trangThai === "FULL"
+      );
+  
       const classProgress: ProgressData[] = [];
       const assignmentProgress: ProgressData[] = [];
-
+  
       for (const lop of classList) {
         try {
           const classTotalResponse = await http.get(`/buoihoc/getbuoiHocByLop/${lop.idLopHoc}`, {
@@ -48,11 +51,11 @@ export default function StudentClassProgressScreen() {
           const classCompletedResponse = await http.get(`/buoihoc/getBuoiDaHoc/${lop.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
+  
           const assignmentTotalResponse = await http.get(`/baitap/getBaiTapofLop/${lop.idLopHoc}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
+  
           let assignmentCompleted = 0;
           try {
             const assignmentCompletedResponse = await http.get(
@@ -64,18 +67,18 @@ export default function StudentClassProgressScreen() {
             console.warn(`Không tìm thấy tiến trình cho lớp học: ${lop.tenLopHoc}.`, apiError);
             assignmentCompleted = 0;
           }
-
+  
           const classTotal = classTotalResponse.data.length || 0;
           const classCompleted = classCompletedResponse.data.length || 0;
           const assignmentTotal = assignmentTotalResponse.data.length || 0;
-
+  
           classProgress.push({
             className: lop.tenLopHoc || 'Không rõ',
             progress: classTotal > 0 ? Math.round((classCompleted / classTotal) * 100) : 0,
             completed: classCompleted,
             total: classTotal,
           });
-
+  
           assignmentProgress.push({
             className: lop.tenLopHoc || 'Không rõ',
             progress: assignmentTotal > 0 ? Math.round((assignmentCompleted / assignmentTotal) * 100) : 0,
@@ -86,7 +89,7 @@ export default function StudentClassProgressScreen() {
           console.error(`Lỗi khi tải dữ liệu cho lớp học: ${lop.tenLopHoc}`, innerError);
         }
       }
-
+  
       setProgressData({ classProgress, assignmentProgress });
     } catch (error) {
       console.error('Error fetching progress data:', error);
@@ -95,7 +98,7 @@ export default function StudentClassProgressScreen() {
       setLoading(false);
     }
   };
-
+  
   useFocusEffect(
     React.useCallback(() => {
       fetchProgressData();

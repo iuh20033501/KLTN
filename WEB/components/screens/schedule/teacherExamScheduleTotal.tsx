@@ -30,7 +30,10 @@ const TeacherWeeklyExamSchedule = () => {
             const classesResponse = await http.get(`lopHoc/getByGv/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            const enrolledClasses = classesResponse.data;
+    
+            const enrolledClasses = classesResponse.data.filter(
+                (classInfo: { trangThai: string }) => classInfo.trangThai === "FULL"
+            );
             const examsPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
                 http.get(`baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -41,11 +44,14 @@ const TeacherWeeklyExamSchedule = () => {
             const startOfWeek = calculateStartOfWeek(new Date());
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
             const weeklyExams = allExams.filter((exam: { ngayBD: string }) => {
                 const examDate = new Date(exam.ngayBD);
-                return examDate >= startOfWeek && examDate <= endOfWeek;
+                const startOfWeekMidnight = new Date(startOfWeek.toISOString().split('T')[0]);
+                const endOfWeekMidnight = new Date(endOfWeek.toISOString().split('T')[0]);
+                endOfWeekMidnight.setDate(endOfWeekMidnight.getDate() + 1);
+                return examDate >= startOfWeekMidnight && examDate < endOfWeekMidnight;
             });
-
             setTotalExams(weeklyExams.length);
         } catch (error) {
             console.error('Failed to fetch weekly exams:', error);

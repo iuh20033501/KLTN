@@ -4,31 +4,31 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const ElectroBill = ({ bill, paymentDetails }: { bill: any; paymentDetails: any }) => {
-    const contentRef = useRef<HTMLDivElement>(null);
+    // const contentRef = useRef<HTMLDivElement>(null);
 
-    const handleExportPDF = async () => {
-        if (!contentRef.current) {
-            console.error('Content ref is not set');
-            return;
-        }
+    // const handleExportPDF = async () => {
+    //     if (!contentRef.current) {
+    //         console.error('Content ref is not set');
+    //         return;
+    //     }
 
-        try {
-            const canvas = await html2canvas(contentRef.current);
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
+    //     try {
+    //         const canvas = await html2canvas(contentRef.current);
+    //         const imgData = canvas.toDataURL('image/png');
+    //         const pdf = new jsPDF();
 
-            pdf.addImage(imgData, 'PNG', 10, 10, 190,0); // Điều chỉnh kích thước ảnh trong PDF
-            pdf.save(`hoa_don_${bill.idHoaDon}.pdf`);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-        }
-    };
+    //         pdf.addImage(imgData, 'PNG', 10, 10, 190,0); // Điều chỉnh kích thước ảnh trong PDF
+    //         pdf.save(`hoa_don_${bill.idHoaDon}.pdf`);
+    //     } catch (error) {
+    //         console.error('Error generating PDF:', error);
+    //     }
+    // };
 
     const payerInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0].nguoiThanhToan : {};
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <div ref={contentRef}>
+            {/* <div ref={contentRef}> */}
                 <View style={styles.logoContainer}>
                     <Image source={require('../../../image/efy.png')} style={styles.logo} />
                 </View>
@@ -109,10 +109,10 @@ const ElectroBill = ({ bill, paymentDetails }: { bill: any; paymentDetails: any 
                         <Text style={styles.signatureName}>{bill.nguoiLap.hoTen || 'Không xác định'}</Text>
                     </View>
                 </View>
-            </div>
+            {/* </div>
             <TouchableOpacity style={styles.exportButton} onPress={handleExportPDF}>
                 <Text style={styles.exportButtonText}>Xuất PDF</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </ScrollView>
     );
 };

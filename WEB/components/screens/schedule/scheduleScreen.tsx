@@ -9,10 +9,11 @@ import { vi } from 'date-fns/locale';
 interface ClassInfo {
     idLopHoc: number;
     tenLopHoc: string;
-    trangThai: string
+    trangThai: string;
 }
 
 interface DaySchedule {
+    type: 'class'; 
     chuDe: string;
     idBuoiHoc: number;
     ngayHoc: string;
@@ -23,9 +24,21 @@ interface DaySchedule {
     hocOnl: boolean;
 }
 
+interface ExamSchedule {
+    lopHoc: any;
+    type: 'exam'; 
+    idTest: number;
+    ngayBD: string;
+    ngayKT: string;
+    thoiGianLamBai: number;
+    loaiTest: string;
+    xetDuyet: boolean;
+    trangThai: boolean;
+}
+
 export default function ScheduleScreen({ navigation, route }: { navigation: any, route: any }) {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>([]);
+    const [weekSchedule, setWeekSchedule] = useState<(DaySchedule | ExamSchedule)[]>([]);
     const { idUser, nameUser } = route.params;
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
@@ -43,17 +56,51 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                 console.error('No token found');
                 return;
             }
-            const response = await http.get(`buoihoc/getByHocVien/${idUser}`, {
-                params: {
-                    startDate: startDate.toISOString().split('T')[0],
-                },
+
+            const classesResponse = await http.get(`hocvien/getByHV/${idUser}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const fullClasses = response.data.filter((schedule: DaySchedule) => schedule.lopHoc.trangThai === "FULL");
-            setWeekSchedule(fullClasses);
-            console.log(response.data);
+
+            const enrolledClasses = classesResponse.data;
+            if (enrolledClasses.length === 0) {
+                setWeekSchedule([]);
+                return;
+            }
+            const schedulesPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
+                http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+                    params: {
+                        startDate: startDate.toISOString().split('T')[0],
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+            );
+            const schedulesResponses = await Promise.all(schedulesPromises);
+            const allSchedules = schedulesResponses.flatMap((response) => response.data);
+            const fullClasses = allSchedules.filter(
+                (schedule: DaySchedule) => schedule.lopHoc.trangThai === "FULL"
+            );
+            const examsPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
+                http.get(`baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+            );
+            const examsResponses = await Promise.all(examsPromises);
+            const allExams = examsResponses.flatMap((response) => response.data);
+            const approvedExams = allExams.filter(
+                (exam: ExamSchedule) => exam.trangThai && exam.xetDuyet
+            );
+            const combinedSchedule = [
+                ...fullClasses.map((schedule) => ({ ...schedule, type: 'class' })),
+                ...approvedExams.map((exam) => ({ ...exam, type: 'exam' })),
+            ];
+
+            setWeekSchedule(combinedSchedule);
         } catch (error) {
             console.error('Failed to fetch weekly schedule:', error);
         }
@@ -89,15 +136,41 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
         }
         return days;
     };
-
+    function getExamTypeLabel(loaiTest: string): string {
+        switch (loaiTest) {
+            case 'GK':
+                return 'Bài giữa kỳ';
+            case 'CK':
+                return 'Bài cuối kỳ';
+            default:
+                return 'Bài kiểm tra khác';
+        }
+    }
     const daysOfWeek = getDaysOfWeek(selectedDate);
     const scheduleByDay = daysOfWeek.map((day) => {
         const dayString = day.toISOString().split('T')[0];
         return {
             date: day,
-            classes: weekSchedule.filter((schedule) => schedule.ngayHoc.startsWith(dayString)),
+            classes: weekSchedule.filter((schedule) => {
+                if (schedule.type === 'class') {
+                    return (schedule as DaySchedule).ngayHoc.startsWith(dayString);
+                }
+                if (schedule.type === 'exam') {
+                    return (schedule as ExamSchedule).ngayBD.startsWith(dayString);
+                }
+                return false;
+            }),
         };
     });
+
+
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
 
     const handlePreviousWeek = () => {
         const newDate = new Date(selectedDate);
@@ -158,36 +231,64 @@ export default function ScheduleScreen({ navigation, route }: { navigation: any,
                     <Text style={styles.legendText}>Học trực tiếp</Text>
                     <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
                     <Text style={styles.legendText}>Học trực tuyến</Text>
+                    <View style={[styles.legendBox, { backgroundColor: '#EEE8AA' }]} />
+                    <Text style={styles.legendText}>Lịch thi</Text>
                 </View>
                 <View style={styles.scheduleTable}>
-                    <View style={styles.row}>
-                        {scheduleByDay.map((day, index) => (
-                            <View key={index} style={styles.dayColumn}>
-                                <Text style={styles.dayHeader}>
-                                    {day.date.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
-                                </Text>
-                                {day.classes.length > 0 ? (
-                                    day.classes.map((classInfo) => (
-                                        <View
-                                            key={classInfo.idBuoiHoc}
-                                            style={[
-                                                styles.classBox,
-                                                { backgroundColor: classInfo.hocOnl === true ? '#d0ebff' : '#f0f0f0' }
-                                            ]}
-                                        >
-                                            <Text style={styles.textColumn}>Chủ đề: {classInfo.chuDe}</Text>
-                                            <Text style={styles.textColumn}>Giờ: {classInfo.gioHoc} - {classInfo.gioKetThuc}</Text>
-                                            <Text style={styles.textColumn}>Lớp: {classInfo.lopHoc.tenLopHoc}</Text>
-                                            <Text style={styles.textColumn}>Phòng: {classInfo.noiHoc}</Text>
-                                        </View>
-                                    ))
-                                ) : (
-                                    <Text style={styles.noClass}>Không có lớp</Text>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                </View>
+    <View style={styles.row}>
+        {scheduleByDay.map((day, index) => (
+            <View key={index} style={styles.dayColumn}>
+                <Text style={styles.dayHeader}>
+                    {day.date.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+                </Text>
+                    {day.classes.length > 0 ? (
+                     day.classes.map((classInfo) => (
+                        <View
+                            key={`${classInfo.type}-${classInfo.type === 'class' ? (classInfo as DaySchedule).idBuoiHoc : (classInfo as ExamSchedule).idTest}`}
+                            style={[
+                                styles.classBox,
+                                { backgroundColor: classInfo.type === 'exam' ? '#EEE8AA' : (classInfo as DaySchedule).hocOnl ? '#d0ebff' : '#f0f0f0' }
+                            ]}
+                        >
+                            {classInfo.type === 'class' ? (
+                                <>
+                                    <Text style={styles.textColumn}>Chủ đề: {(classInfo as DaySchedule).chuDe}</Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as DaySchedule).gioHoc} - {(classInfo as DaySchedule).gioKetThuc}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Lớp: {(classInfo as DaySchedule).lopHoc.tenLopHoc}</Text>
+                                    <Text style={styles.textColumn}>Phòng: {(classInfo as DaySchedule).noiHoc}</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={styles.textColumn}>
+                                        Loại thi: {getExamTypeLabel((classInfo as ExamSchedule).loaiTest)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Lớp: {(classInfo as ExamSchedule).lopHoc.tenLopHoc}</Text>
+                                    <Text style={styles.textColumn}>
+                                        Ngày bắt đầu: {formatDate((classInfo as ExamSchedule).ngayBD)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as ExamSchedule).ngayBD.substring(11, 16)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Ngày kết thúc: {formatDate((classInfo as ExamSchedule).ngayKT)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as ExamSchedule).ngayKT.substring(11, 16)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Thời gian: {(classInfo as ExamSchedule).thoiGianLamBai} phút</Text>
+                                </>
+                            )}
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.noClass}>Không có lịch</Text>
+                )}
+            </View>
+        ))}
+    </View>
+</View>
 
                 <Modal
                     visible={isDatePickerOpen}
@@ -262,29 +363,32 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     dayColumn: {
-        width: 140,
+        width: 140, 
         padding: 10,
         borderWidth: 1,
         borderColor: '#ddd',
         marginRight: 10,
         alignItems: 'center',
+        backgroundColor: '#ffffff', 
+        borderRadius: 10,
         flexGrow: 1,
         flexShrink: 1,
     },
     dayHeader: {
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 5,
+        marginBottom: 10, 
+        color: '#00405d', 
     },
     classBox: {
-        paddingVertical: 5,
-        paddingHorizontal: 5,
-        borderRadius: 5,
+        padding: 10, 
+        borderRadius: 10,
         backgroundColor: '#f0f0f0',
-        marginBottom: 10,
-        alignItems: 'flex-start',
-        flex: 1,
-
+        marginBottom: 15, 
+        alignItems: 'flex-start', 
+        borderWidth: 1, 
+        borderColor: '#ccc', 
+        width: '100%',
     },
     noClass: {
         color: 'grey',

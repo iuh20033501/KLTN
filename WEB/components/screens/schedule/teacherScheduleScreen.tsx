@@ -12,22 +12,34 @@ interface ClassInfo {
     trangThai: string;
 }
 
-interface TeachingSession {
-    [x: string]: any;
+interface DaySchedule {
+    type: 'class'; 
     chuDe: string;
     idBuoiHoc: number;
     ngayHoc: string;
     gioHoc: string;
     gioKetThuc: string;
+    lopHoc: ClassInfo;
     noiHoc: string;
     hocOnl: boolean;
 }
 
+interface ExamSchedule {
+    lopHoc: any;
+    type: 'exam'; 
+    idTest: number;
+    ngayBD: string;
+    ngayKT: string;
+    thoiGianLamBai: number;
+    loaiTest: string;
+    xetDuyet: boolean;
+    trangThai: boolean;
+}
+
 export default function TeacherScheduleScreen({ navigation, route }: { navigation: any, route: any }) {
-    const { idUser, nameUser } = route.params; 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [classList, setClassList] = useState<ClassInfo[]>([]);
-    const [weekSchedule, setWeekSchedule] = useState<TeachingSession[]>([]);
+    const [weekSchedule, setWeekSchedule] = useState<(DaySchedule | ExamSchedule)[]>([]);
+    const { idUser, nameUser } = route.params;
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const calculateStartOfWeek = (date: string | number | Date) => {
@@ -37,24 +49,6 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
         return new Date(selectedDay.setDate(diff));
     };
 
-    const fetchClassList = async () => {
-        try {
-            const token = await AsyncStorage.getItem('accessToken');
-            if (!token) {
-                console.error('No token found');
-                return;
-            }
-            const response = await http.get(`lopHoc/getByGv/${idUser}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setClassList(response.data);
-        } catch (error) {
-            console.error('Failed to fetch class list:', error);
-        }
-    };
-
     const fetchWeeklySchedule = async (startDate: Date) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -62,37 +56,61 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
                 console.error('No token found');
                 return;
             }
-            
-            const sessionPromises = classList.map(async (classInfo) => {
-                const response = await http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+
+            const classesResponse = await http.get(`lopHoc/getByGv/${idUser}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const enrolledClasses = classesResponse.data;
+            if (enrolledClasses.length === 0) {
+                setWeekSchedule([]);
+                return;
+            }
+            const schedulesPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
+                http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+                    params: {
+                        startDate: startDate.toISOString().split('T')[0],
+                    },
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                });
-                return response.data;
-            });
-
-            const sessions = await Promise.all(sessionPromises);
-            const allSessions = sessions.flat().filter((session: TeachingSession) => 
-                session.ngayHoc >= startDate.toISOString().split('T')[0]
+                })
             );
-            setWeekSchedule(allSessions);
+            const schedulesResponses = await Promise.all(schedulesPromises);
+            const allSchedules = schedulesResponses.flatMap((response) => response.data);
+            const fullClasses = allSchedules.filter(
+                (schedule: DaySchedule) => schedule.lopHoc.trangThai === "FULL"
+            );
+            const examsPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
+                http.get(`baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+            );
+            const examsResponses = await Promise.all(examsPromises);
+            const allExams = examsResponses.flatMap((response) => response.data);
+            const approvedExams = allExams.filter(
+                (exam: ExamSchedule) => exam.trangThai && exam.xetDuyet
+            );
+            const combinedSchedule = [
+                ...fullClasses.map((schedule) => ({ ...schedule, type: 'class' })),
+                ...approvedExams.map((exam) => ({ ...exam, type: 'exam' })),
+            ];
+
+            setWeekSchedule(combinedSchedule);
         } catch (error) {
             console.error('Failed to fetch weekly schedule:', error);
         }
     };
 
     useEffect(() => {
-        fetchClassList();
+        const startOfWeek = calculateStartOfWeek(new Date());
+        setSelectedDate(startOfWeek);
+        fetchWeeklySchedule(startOfWeek);
     }, []);
-
-    useEffect(() => {
-        if (classList.length > 0) {
-            const startOfWeek = calculateStartOfWeek(new Date());
-            setSelectedDate(startOfWeek);
-            fetchWeeklySchedule(startOfWeek);
-        }
-    }, [classList]);
 
     const handleDateChange = (date: Date | null) => {
         if (date) {
@@ -118,15 +136,41 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
         }
         return days;
     };
-
+    function getExamTypeLabel(loaiTest: string): string {
+        switch (loaiTest) {
+            case 'GK':
+                return 'Bài giữa kỳ';
+            case 'CK':
+                return 'Bài cuối kỳ';
+            default:
+                return 'Bài kiểm tra khác';
+        }
+    }
     const daysOfWeek = getDaysOfWeek(selectedDate);
     const scheduleByDay = daysOfWeek.map((day) => {
         const dayString = day.toISOString().split('T')[0];
         return {
             date: day,
-            classes: weekSchedule.filter((schedule) => schedule.ngayHoc.startsWith(dayString)),
+            classes: weekSchedule.filter((schedule) => {
+                if (schedule.type === 'class') {
+                    return (schedule as DaySchedule).ngayHoc.startsWith(dayString);
+                }
+                if (schedule.type === 'exam') {
+                    return (schedule as ExamSchedule).ngayBD.startsWith(dayString);
+                }
+                return false;
+            }),
         };
     });
+
+
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
 
     const handlePreviousWeek = () => {
         const newDate = new Date(selectedDate);
@@ -140,6 +184,10 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
         newDate.setDate(newDate.getDate() + 7);
         setSelectedDate(newDate);
         fetchWeeklySchedule(newDate);
+    };
+
+    const toggleDatePicker = () => {
+        setIsDatePickerOpen(!isDatePickerOpen);
     };
 
     return (
@@ -162,6 +210,7 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
                             <TouchableOpacity style={styles.dateButton} onPress={() => setIsDatePickerOpen(true)}>
                                 <Text style={styles.buttonText}>{selectedDate.toLocaleDateString('vi-VN')}</Text>
                             </TouchableOpacity>
+
                         </View>
                         <TouchableOpacity style={styles.backButton2} onPress={handleCurrentWeek}>
                             <Text style={styles.backButtonText2}>Hiện tại</Text>
@@ -182,36 +231,65 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
                     <Text style={styles.legendText}>Học trực tiếp</Text>
                     <View style={[styles.legendBox, { backgroundColor: '#d0ebff' }]} />
                     <Text style={styles.legendText}>Học trực tuyến</Text>
+                    <View style={[styles.legendBox, { backgroundColor: '#EEE8AA' }]} />
+                    <Text style={styles.legendText}>Lịch thi</Text>
                 </View>
                 <View style={styles.scheduleTable}>
-                    <View style={styles.row}>
-                        {scheduleByDay.map((day, index) => (
-                            <View key={index} style={styles.dayColumn}>
-                                <Text style={styles.dayHeader}>
-                                    {day.date.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
-                                </Text>
-                                {day.classes.length > 0 ? (
-                                    day.classes.map((classInfo) => (
-                                        <View
-                                            key={classInfo.idBuoiHoc}
-                                            style={[
-                                                styles.classBox,
-                                                { backgroundColor: classInfo.hocOnl ? '#d0ebff' : '#f0f0f0' },
-                                            ]}
-                                        >
-                                            <Text style={styles.textColumn}>Chủ đề: {classInfo.chuDe}</Text>
-                                            <Text style={styles.textColumn}>Giờ: {classInfo.gioHoc} - {classInfo.gioKetThuc}</Text>
-                                            <Text style={styles.textColumn}>Lớp: {classInfo.lopHoc.tenLopHoc}</Text>
-                                            <Text style={styles.textColumn}>Phòng: {classInfo.noiHoc}</Text>
-                                        </View>
-                                    ))
-                                ) : (
-                                    <Text style={styles.noClass}>Không có buổi dạy</Text>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                </View>
+    <View style={styles.row}>
+        {scheduleByDay.map((day, index) => (
+            <View key={index} style={styles.dayColumn}>
+                <Text style={styles.dayHeader}>
+                    {day.date.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+                </Text>
+                    {day.classes.length > 0 ? (
+                     day.classes.map((classInfo) => (
+                        <View
+                            key={`${classInfo.type}-${classInfo.type === 'class' ? (classInfo as DaySchedule).idBuoiHoc : (classInfo as ExamSchedule).idTest}`}
+                            style={[
+                                styles.classBox,
+                                { backgroundColor: classInfo.type === 'exam' ? '#EEE8AA' : (classInfo as DaySchedule).hocOnl ? '#d0ebff' : '#f0f0f0' }
+                            ]}
+                        >
+                            {classInfo.type === 'class' ? (
+                                <>
+                                    <Text style={styles.textColumn}>Chủ đề: {(classInfo as DaySchedule).chuDe}</Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as DaySchedule).gioHoc} - {(classInfo as DaySchedule).gioKetThuc}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Lớp: {(classInfo as DaySchedule).lopHoc.tenLopHoc}</Text>
+                                    <Text style={styles.textColumn}>Phòng: {(classInfo as DaySchedule).noiHoc}</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={styles.textColumn}>
+                                        Loại thi: {getExamTypeLabel((classInfo as ExamSchedule).loaiTest)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Lớp: {(classInfo as ExamSchedule).lopHoc.tenLopHoc}</Text>
+                                    <Text style={styles.textColumn}>
+                                        Ngày bắt đầu: {formatDate((classInfo as ExamSchedule).ngayBD)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as ExamSchedule).ngayBD.substring(11, 16)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Ngày kết thúc: {formatDate((classInfo as ExamSchedule).ngayKT)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>
+                                        Giờ: {(classInfo as ExamSchedule).ngayKT.substring(11, 16)}
+                                    </Text>
+                                    <Text style={styles.textColumn}>Thời gian: {(classInfo as ExamSchedule).thoiGianLamBai} phút</Text>
+                                </>
+                            )}
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.noClass}>Không có lịch</Text>
+                )}
+            </View>
+        ))}
+    </View>
+</View>
+
                 <Modal
                     visible={isDatePickerOpen}
                     transparent
@@ -226,23 +304,25 @@ export default function TeacherScheduleScreen({ navigation, route }: { navigatio
                                 inline
                                 locale={vi}
                                 dateFormat="dd/MM/yyyy"
+
                             />
                             <TouchableOpacity style={styles.closeButton} onPress={() => setIsDatePickerOpen(false)}>
                                 <Text style={styles.closeButtonText}>Đóng</Text>
                             </TouchableOpacity>
                         </View>
+
                     </View>
                 </Modal>
             </View>
         </ImageBackground>
     );
 }
+
 const styles = StyleSheet.create({
     background: {
         flex: 1,
         paddingHorizontal: 400,
         height: 990,
-
     },
     overlayContainer: {
         flex: 1,
@@ -283,29 +363,32 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     dayColumn: {
-        width: 140,
+        width: 140, 
         padding: 10,
-        flexGrow: 1,
-        flexShrink: 1, 
         borderWidth: 1,
         borderColor: '#ddd',
         marginRight: 10,
         alignItems: 'center',
-      
+        backgroundColor: '#ffffff', 
+        borderRadius: 10,
+        flexGrow: 1,
+        flexShrink: 1,
     },
     dayHeader: {
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 5,
+        marginBottom: 10, 
+        color: '#00405d', 
     },
     classBox: {
-        paddingVertical: 5,
-        paddingHorizontal: 5,
-        borderRadius: 5,
+        padding: 10, 
+        borderRadius: 10,
         backgroundColor: '#f0f0f0',
-        marginBottom: 10,
-        alignItems: 'flex-start',
-        flex: 1, 
+        marginBottom: 15, 
+        alignItems: 'flex-start', 
+        borderWidth: 1, 
+        borderColor: '#ccc', 
+        width: '100%',
     },
     noClass: {
         color: 'grey',
@@ -347,7 +430,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#00405d',
         marginBottom: 5,
-        paddingBottom:10
+        paddingBottom: 10
     },
     legendContainer: {
         flexDirection: 'row',
@@ -367,6 +450,7 @@ const styles = StyleSheet.create({
         color: '#00405d',
         fontWeight: 'bold',
         marginRight: 15,
+
     },
     modalContainer: {
         flex: 1,
@@ -376,12 +460,12 @@ const styles = StyleSheet.create({
     },
     datePickerWrapper: {
         padding: 20,
-        borderRadius: 10,  
+        borderRadius: 10,
     },
     datePickerWrapperHeader: {
-        width:200,
+        width: 200,
         padding: 20,
-        borderRadius: 10,  
+        borderRadius: 10,
     },
     closeButton: {
         marginTop: 20,
@@ -392,7 +476,7 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontWeight: 'bold',
-        textAlign:'center'
+        textAlign: 'center'
     },
     dateButton: {
         padding: 10,
@@ -405,6 +489,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-
-

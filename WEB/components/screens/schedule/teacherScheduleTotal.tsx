@@ -26,17 +26,19 @@ const TeacherScheduleTotalScreen = () => {
             const profileResponse = await http.get('auth/profile', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            const id  = profileResponse.data.u.idUser;
+            const id = profileResponse.data.u.idUser;
             const classesResponse = await http.get(`lopHoc/getByGv/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            const enrolledClasses = classesResponse.data;
+    
+            const enrolledClasses = classesResponse.data.filter(
+                (classInfo: { trangThai: string }) => classInfo.trangThai === "FULL"
+            );
             const schedulesPromises = enrolledClasses.map((classInfo: { idLopHoc: number }) =>
                 http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
             );
-
             const schedulesResponses = await Promise.all(schedulesPromises);
             const allSchedules = schedulesResponses.flatMap((response) => response.data);
             const startOfWeek = calculateStartOfWeek(new Date());

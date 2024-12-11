@@ -21,19 +21,19 @@ export default function TeacherClassProgessScreen() {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (!token) return;
-
+  
       const profileResponse = await http.get('/auth/profile', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userId = profileResponse.data.u.idUser;
-
+  
       const classesResponse = await http.get(`/lopHoc/getByGv/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      const classList = classesResponse.data;
+      const classList = classesResponse.data.filter(
+        (lop: { trangThai: string }) => lop.trangThai === "FULL"
+      );
       const progressData: ProgressData[] = [];
-
       for (const lop of classList) {
         const totalResponse = await http.get(`/buoihoc/getbuoiHocByLop/${lop.idLopHoc}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -41,11 +41,9 @@ export default function TeacherClassProgessScreen() {
         const completedResponse = await http.get(`/buoihoc/getBuoiDaHoc/${lop.idLopHoc}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         const total = totalResponse.data.length;
         const completed = completedResponse.data.length;
         const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
-
         progressData.push({
           className: lop.tenLopHoc || 'Không rõ',
           progress,
@@ -53,7 +51,6 @@ export default function TeacherClassProgessScreen() {
           total,
         });
       }
-
       setClassProgress(progressData);
     } catch (error) {
       console.error('Error fetching progress data:', error);
@@ -61,7 +58,6 @@ export default function TeacherClassProgessScreen() {
       setLoading(false);
     }
   };
-
   useFocusEffect(
     React.useCallback(() => {
       fetchProgressData();
