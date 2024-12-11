@@ -324,28 +324,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
     return <Text>Đang tải khóa học...</Text>;
   }
 
-  const getImageCourseUri = (imageData: string) => {
-    if (!imageData) return null;
-    if (imageData.startsWith("data:image")) {
-      return imageData;
-    }
-    const defaultMimeType = "image/png";
-    let mimeType = defaultMimeType;
-
-    if (/^\/9j/.test(imageData)) {
-      mimeType = "image/jpeg";
-    } else if (/^iVBOR/.test(imageData)) {
-      mimeType = "image/png";
-    } else if (/^R0lGOD/.test(imageData)) {
-      mimeType = "image/gif";
-    } else if (/^Qk/.test(imageData)) {
-      mimeType = "image/bmp";
-    } else if (/^UklGR/.test(imageData)) {
-      mimeType = "image/webp";
-    }
-
-    return `data:${mimeType};base64,${imageData}`;
-  };
+ 
   return (
     <ImageBackground source={require('../../../image/bglogin.png')} style={styles.background}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('DashboardScreen')}>
@@ -359,7 +338,7 @@ const CourseRegistrationScreen = ({ navigation, route }: { navigation: any, rout
           {courses.map((course) => (
             <View key={course.idKhoaHoc} style={styles.courseCard}>
               <Image
-                source={course.image ? { uri: getImageCourseUri(course.image) } : require('../../../image/efy.png')}
+                source={course.image ? course.image : require('../../../image/efy.png')}
                 style={styles.courseImage}
               />
               <View style={styles.infoContainer}>
