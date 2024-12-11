@@ -131,27 +131,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     return <Text>Không tìm thấy thông tin người dùng.</Text>;
   }
 
-  const getAvatarUri = () => {
-    if (!selectedAvatar) return null;
-    if (selectedAvatar.startsWith("data:image")) {
-      return selectedAvatar;
-    }
-    const defaultMimeType = "image/png";
-    let mimeType = defaultMimeType;
-    if (/^\/9j/.test(selectedAvatar)) {
-      mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
-    } else if (/^iVBOR/.test(selectedAvatar)) {
-      mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
-    } else if (/^R0lGOD/.test(selectedAvatar)) {
-      mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
-    } else if (/^Qk/.test(selectedAvatar)) {
-      mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
-    } else if (/^UklGR/.test(selectedAvatar)) {
-      mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
-    }
-
-    return `data:${mimeType};base64,${selectedAvatar}`;
-  };
+  
   return (
     <ImageBackground
       source={require('../../../image/bglogin.png')}
@@ -179,7 +159,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
             <Image
               style={styles.profileImageHeader}
-              source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')}
+              source={selectedAvatar ? selectedAvatar : require('../../../image/efy.png')}
             />
           </TouchableOpacity>
         </View>
@@ -188,7 +168,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.studentOverviewContainer}>
           <View style={styles.studentInfoCard}>
             <View style={styles.studentImageContainer}>
-              <Image style={styles.studentImage} source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')} />
+              <Image style={styles.studentImage} source={selectedAvatar ? selectedAvatar : require('../../../image/efy.png')} />
               <Text style={{ fontSize: 18 }}>{parseCvEnum(user.cvEnum)}</Text>
             </View>
             <View style={styles.studentDetails}>

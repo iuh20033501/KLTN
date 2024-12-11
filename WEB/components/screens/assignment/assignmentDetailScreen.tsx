@@ -117,7 +117,6 @@ const AssignmentDetailScreen = ({ navigation, route }: { navigation: any, route:
             headers: { Authorization: `Bearer ${token}` },
           });
       
-          // Nếu tồn tại tiến trình, trả về true
           return Array.isArray(response.data) && response.data.length > 0;
         } catch (error) {
           console.error(`Failed to fetch progress for assignment ${assignmentId}:`, error);
