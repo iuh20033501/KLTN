@@ -41,7 +41,7 @@ public class ApiClient {
             .create();
 
     public JwtResponse callLoginApi(String username, String password) throws Exception {
-        String apiUrl = "http://localhost:8081/auth/noauth/signin"; // URL của API bạn cần gọi
+        String apiUrl = "http://18.141.201.212:8080/auth/noauth/signin"; // URL của API bạn cần gọi
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -81,7 +81,7 @@ public class ApiClient {
     }
 
     public SigninDTO callProfileApi(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/auth/profile"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/auth/profile"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -113,7 +113,7 @@ public class ApiClient {
 
     public ProfileDto signupApi(String token, SignupDto signupDto, int role) throws Exception {
         // URL của API
-        String signupUrl = "http://localhost:8081/auth/account/signup/" + role;
+        String signupUrl = "http://18.141.201.212:8080/auth/account/signup/" + role;
         URL url = new URL(signupUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -157,7 +157,7 @@ public class ApiClient {
 
     public NhanVien UpdateNhanVien(String token, Long nhanVienId, NhanVien nhanVien) throws Exception {
         // URL API
-        String updateUrl = "http://localhost:8081/nhanVien/update/" + nhanVienId;
+        String updateUrl = "http://18.141.201.212:8080/nhanVien/update/" + nhanVienId;
         URL url = new URL(updateUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -199,9 +199,53 @@ public class ApiClient {
             throw new Exception("Cập nhật thông tin thất bại, mã phản hồi: " + responseCode);
         }
     }
+ public GiangVien UpdateGiangVien(String token, Long giangVienId, GiangVien giangVien) throws Exception {
+        // URL API
+        String updateUrl = "http://18.141.201.212:8080/giangVien/update/" + giangVienId;
+        URL url = new URL(updateUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình PUT request
+        conn.setRequestMethod("PUT");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+        conn.setDoOutput(true);
+
+        // Cấu hình Gson với LocalDateAdapter
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+
+        // Chuyển đối tượng `NhanVien` thành JSON
+        String jsonInput = gson.toJson(giangVien);
+
+        // Gửi dữ liệu
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInput.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        // Kiểm tra phản hồi từ server
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            // Đọc phản hồi từ server
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Chuyển JSON phản hồi thành đối tượng `NhanVien`
+                return gson.fromJson(response.toString(), GiangVien.class);
+            }
+        } else {
+            throw new Exception("Cập nhật thông tin thất bại, mã phản hồi: " + responseCode);
+        }
+    }
 
     public String sendOTP(PhoneNumberDTO phoneNumberDTO) throws Exception {
-        String profileUrl = "http://localhost:8081/auth/noauth/send";
+        String profileUrl = "http://18.141.201.212:8080/auth/noauth/send";
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -242,7 +286,7 @@ public class ApiClient {
     }
 
     public TaiKhoanLogin getTaiKhoanBySDT(String soDienThoai) throws Exception {
-        String profileUrl = "http://localhost:8081/auth/noauth/findBySdt/" + soDienThoai; // Đảm bảo URL đúng
+        String profileUrl = "http://18.141.201.212:8080/auth/noauth/findBySdt/" + soDienThoai; // Đảm bảo URL đúng
         HttpURLConnection conn = (HttpURLConnection) new URL(profileUrl).openConnection();
 
         // Thiết lập GET request
@@ -274,7 +318,7 @@ public class ApiClient {
     }
 
     public TaiKhoanLogin callDeleteTaiKhoanApi(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/auth/deleteById/" + id; // URL API
+        String apiUrl = "http://18.141.201.212:8080/auth/deleteById/" + id; // URL API
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -310,7 +354,7 @@ public class ApiClient {
         }
     }
      public NhanVien findNhanVienById(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/nhanVien/findbyId/" + id; // URL API
+        String apiUrl = "http://18.141.201.212:8080/nhanVien/findbyId/" + id; // URL API
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -346,7 +390,7 @@ public class ApiClient {
         }
     }
      public GiangVien findGiangVienById(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/giangVien/findbyId/" + id; // URL API
+        String apiUrl = "http://18.141.201.212:8080/giangVien/findbyId/" + id; // URL API
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -383,7 +427,7 @@ public class ApiClient {
     }
 
     public TaiKhoanLogin getTaiKhoanByUserName(String username) throws Exception {
-        String profileUrl = "http://localhost:8081/auth/noauth/findByByUserName/" + username; // Đảm bảo URL đúng
+        String profileUrl = "http://18.141.201.212:8080/auth/noauth/findByByUserName/" + username; // Đảm bảo URL đúng
         HttpURLConnection conn = (HttpURLConnection) new URL(profileUrl).openConnection();
 
         // Thiết lập GET request
@@ -415,7 +459,7 @@ public class ApiClient {
     }
 
     public OTPResponseDTO verifyOTPFromClient(OTPRequestDTO otpRequestDTO) throws Exception {
-        String url = "http://localhost:8081/auth/noauth/validate"; // Đảm bảo URL này chính xác
+        String url = "http://18.141.201.212:8080/auth/noauth/validate"; // Đảm bảo URL này chính xác
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 
         // Thiết lập POST request
@@ -453,7 +497,7 @@ public class ApiClient {
     }
 
     public String resetPasswordFromClient(String token, String newPassword) throws Exception {
-        String url = "http://localhost:8081/auth/account/reset"; // Đảm bảo URL này chính xác
+        String url = "http://18.141.201.212:8080/auth/account/reset"; // Đảm bảo URL này chính xác
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 
         // Thiết lập POST request
@@ -494,7 +538,7 @@ public class ApiClient {
     }
 
     public boolean changePasswordFromClient(String token, ChangePassDTO passDTO) {
-        String url = "http://localhost:8081/auth/account/changePassDestop";
+        String url = "http://18.141.201.212:8080/auth/account/changePassDestop";
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 
@@ -530,7 +574,7 @@ public class ApiClient {
     }
 
     public List<User> getAllGiangVienLamViec(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/giangVien/findAllLamViec"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/giangVien/findAllLamViec"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 

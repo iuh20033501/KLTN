@@ -30,15 +30,18 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.JOptionPane;
+
 /**
-/**
+ * /**
  *
  * @author Windows 10
  */
 public class BuoiHocService {
-         private Gson gson = new Gson();
-          public List<BuoiHoc> getAllBuoiByLopApi(String token,Long idLop) throws Exception {
-        String profileUrl = "http://localhost:8081/buoihoc/getBuoiDaHoc/"+idLop; // Đảm bảo URL này đúng
+
+    private Gson gson = new Gson();
+
+    public List<BuoiHoc> getAllBuoiByLopApi(String token, Long idLop) throws Exception {
+        String profileUrl = "http://18.141.201.212:8080/buoihoc/getBuoiDaHoc/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -68,13 +71,47 @@ public class BuoiHocService {
         } else {
             throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
         }
-    } 
-        public BuoiHoc createBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8081/buoihoc/createBuoiHoc/" + idLop;
+    }
+
+    public List<BuoiHoc> getAllBuoiByLopAllApi(String token, Long idLop) throws Exception {
+        String profileUrl = "http://18.141.201.212:8080/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
+        URL url = new URL(profileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Cấu hình GET request với JWT token trong header
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                // Tạo đối tượng Gson với TypeAdapter cho LocalDate
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                        .create();
+
+                // Chuyển đổi chuỗi JSON thành danh sách TaiKhoanLogin
+                Type listType = new TypeToken<List<BuoiHoc>>() {
+                }.getType();
+                return gson.fromJson(response.toString(), listType);
+            }
+        } else {
+            throw new Exception("Không thể gọi API profile, mã phản hồi: " + responseCode);
+        }
+    }
+
+    public BuoiHoc createBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
+        String apiUrl = "http://localhost:8080/buoihoc/createBuoiHoc/" + idLop;
         HttpURLConnection conn = null;
 
         try {
-            // Mở kết nối đến API
+            // Mở kết nối đến APIf
             URL url = new URL(apiUrl);
             conn = (HttpURLConnection) url.openConnection();
 
@@ -87,15 +124,17 @@ public class BuoiHocService {
 
             // Chuyển đổi ngày sang định dạng ISO 8601
             CreateBuoiDTO buoiDTO = new CreateBuoiDTO();
-            SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            
-            if (buoiHoc.getNgayHoc()!= null) {
+            SimpleDateFormat isoDateFormat = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a");
+
+            if (buoiHoc.getNgayHoc() != null) {
                 buoiDTO.setNgayHoc(isoDateFormat.format(buoiHoc.getNgayHoc()));
                 buoiHoc.setNgayHoc(null);
+                buoiHoc.setLopHoc(null);
             }
             buoiDTO.setBuoiHoc(buoiHoc);
-
-            // Chuyển đối tượng CreateLopDTO sang JSON
+            System.out.println(buoiDTO.getNgayHoc());
+//            System.out.println(buoiHoc.getNgayHoc().toString());
+            // Chuyển đối tượng CreateBuoiDTO sang JSON
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                     .create();
@@ -124,7 +163,7 @@ public class BuoiHocService {
                     // Log phản hồi để kiểm tra
                     System.out.println("Phản hồi từ API: " + response);
 
-                    // Chuyển đổi JSON trả về thành đối tượng LopHoc
+                    // Chuyển đổi JSON trả về thành đối tượng BuoiHoc
                     return gson.fromJson(response.toString(), BuoiHoc.class);
                 }
             } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -140,8 +179,52 @@ public class BuoiHocService {
                     System.err.println("Lỗi từ API (400): " + errorResponse);
                     throw new Exception("Yêu cầu không hợp lệ: " + errorResponse);
                 }
+            } else {
+                throw new Exception("Lỗi không xác định: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    public BuoiHoc loadApiDeleteBuoiHoc(String token, Long id) throws Exception {
+        String apiUrl = "http://18.141.201.212:8080/buoihoc/deleteBuoiById/" + id;
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
+
+                    // Chuyển đổi JSON trả về thành đối tượng ThanhToan
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    return gson.fromJson(response.toString(), BuoiHoc.class);
+                }
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                throw new Exception("Không tìm thấy giảng viên hoặc khóa học.");
+                throw new Exception("Không tìm thấy thanh toán.");
             } else {
                 throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
             }
@@ -151,8 +234,9 @@ public class BuoiHocService {
             }
         }
     }
-     public BuoiHoc loadApiDeleteBuoiHoc(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/buoihoc/deleteBuoiById/" + id;
+
+    public BuoiHoc loadApiGetBuoiHoc(String token, Long id) throws Exception {
+        String apiUrl = "http://18.141.201.212:8080/buoihoc/getBuoiById/" + id;
         HttpURLConnection conn = null;
 
         try {
@@ -195,50 +279,5 @@ public class BuoiHocService {
                 conn.disconnect(); // Đóng kết nối
             }
         }
-    }    
-      public BuoiHoc loadApiGetBuoiHoc(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/buoihoc/getBuoiById/" + id;
-        HttpURLConnection conn = null;
-
-        try {
-            // Mở kết nối đến API
-            URL url = new URL(apiUrl);
-            conn = (HttpURLConnection) url.openConnection();
-
-            // Cấu hình kết nối
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
-            conn.setRequestProperty("Accept", "application/json");
-
-            // Kiểm tra mã phản hồi từ server
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Đọc dữ liệu JSON trả về
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        response.append(line.trim());
-                    }
-
-                    // Log phản hồi để kiểm tra
-                    System.out.println("Phản hồi từ API: " + response);
-
-                    // Chuyển đổi JSON trả về thành đối tượng ThanhToan
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                            .create();
-                    return gson.fromJson(response.toString(), BuoiHoc.class);
-                }
-            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                throw new Exception("Không tìm thấy thanh toán.");
-            } else {
-                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
-            }
-        } finally {
-            if (conn != null) {
-                conn.disconnect(); // Đóng kết nối
-            }
-        }
-    }    
+    }
 }

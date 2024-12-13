@@ -18,12 +18,12 @@ import java.util.function.Function;
 @Component
 public class JwtServiceImpl implements JwtService {
     //    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-    @Value("${jwt.secretKey}")
-    private String secretKey;
-    @Value("${jwt.lifetime}")
-    private long lifetime;
-    @Value("${jwt.lifetime-refresh}")
-    private long lifetimeRefresh;
+//    @Value("${jwt.secretKey}")
+    private String secretKey="984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf";
+//    @Value("7200000")
+    private long lifetime =7200000;
+//    @Value("7200000")
+    private long lifetimeRefresh=7200000;
 
     @Override
     public String generateToken(UserDetails userDetails) {

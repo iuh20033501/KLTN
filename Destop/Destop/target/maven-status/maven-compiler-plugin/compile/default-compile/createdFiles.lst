@@ -7,6 +7,7 @@ com\mycompany\destop\Screen\DangNhap$2.class
 com\mycompany\destop\Screen\Menu$26.class
 com\mycompany\destop\Screen\Menu$66.class
 com\mycompany\destop\Modul\HocVienLopHocKey.class
+com\mycompany\destop\Screen\Menu$86.class
 com\mycompany\destop\Modul\TaiKhoanLogin.class
 com\mycompany\destop\Screen\Menu$13.class
 com\mycompany\destop\Screen\Menu$73.class
@@ -21,6 +22,7 @@ com\mycompany\destop\Screen\Menu$1.class
 com\mycompany\destop\Modul\BuoiHoc.class
 com\mycompany\destop\Screen\Menu$19.class
 com\mycompany\destop\Screen\Menu$80.class
+com\mycompany\destop\Service\BuoiHocService$2.class
 com\mycompany\destop\Service\HoaDonService$4.class
 com\mycompany\destop\Screen\Menu$60.class
 com\mycompany\destop\Screen\Menu$39.class
@@ -45,6 +47,7 @@ com\mycompany\destop\Service\KhoaHocService$2.class
 com\mycompany\destop\Screen\Menu.class
 com\mycompany\destop\Screen\Menu$34.class
 com\mycompany\destop\Service\HoaDonService.class
+com\mycompany\destop\Screen\Menu$85.class
 com\mycompany\destop\Screen\Menu$74.class
 com\mycompany\destop\Screen\Menu$2.class
 com\mycompany\destop\Modul\HocVien.class
@@ -94,6 +97,7 @@ com\mycompany\destop\Screen\Menu$43.class
 com\mycompany\destop\Service\KhoaHocService$4.class
 com\mycompany\destop\Screen\Menu$10.class
 com\mycompany\destop\Modul\TienTrinh.class
+com\mycompany\destop\Service\DiemSoService$5.class
 com\mycompany\destop\Screen\Menu$30.class
 com\mycompany\destop\Service\ApiClient$1.class
 com\mycompany\destop\Service\HoaDonService$11.class
@@ -170,6 +174,7 @@ com\mycompany\destop\Service\LopHocService$4.class
 com\mycompany\destop\Modul\BaiTest.class
 com\mycompany\destop\Screen\Menu$41.class
 com\mycompany\destop\Screen\Menu$15.class
+com\mycompany\destop\Service\DiemSoService$6.class
 com\mycompany\destop\Service\HoaDonService$9.class
 com\mycompany\destop\Screen\Menu$38.class
 com\mycompany\destop\DTO\SigninDTO.class

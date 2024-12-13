@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,13 +31,45 @@ public class BuoiHocController {
             truyền đày đủ ngày học , giờ học, giờ kết thúc, noi học, chủ dề, và trang thái họcOnl;
     """
     )
+//    @PostMapping("/createBuoiHoc/{idLop}")
+//    public ResponseEntity<BuoiHoc> createBuoiHoc(@PathVariable Long idLop, @RequestBody CreateBuoiDTO craeteBuoiHoc){
+//      LopHoc lop= lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Buoi hoc not found"));
+//      BuoiHoc buoiCreate = new BuoiHoc();
+//        buoiCreate = craeteBuoiHoc.getBuoiHoc();
+//        buoiCreate.setLopHoc(lop);
+//        System.out.println("ngay Hoc"+craeteBuoiHoc.getNgayHoc());
+//        try {
+//            // Định dạng chuỗi ngày tháng ISO 8601
+//            SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//
+//            if (craeteBuoiHoc.getNgayHoc() != null) {
+//                Date ngay = isoDateFormat.parse(craeteBuoiHoc.getNgayHoc());
+//                buoiCreate.setNgayHoc(ngay);
+//            }
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 nếu định dạng ngày không hợp lệ
+//        }
+////        buoiCreate.setTrangThai(true);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(buoiHocService.createBuoiHoc(buoiCreate));
+//    }
     @PostMapping("/createBuoiHoc/{idLop}")
-    public ResponseEntity<BuoiHoc> createBuoiHoc(@PathVariable Long idLop, @RequestBody CreateBuoiDTO craeteBuoiHoc){
-      LopHoc lop= lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Buoi hoc not found"));
-      BuoiHoc buoiCreate = new BuoiHoc();
-        buoiCreate = craeteBuoiHoc.getBuoiHoc();
+    public ResponseEntity<BuoiHoc> createBuoiHoc(@PathVariable Long idLop, @RequestBody CreateBuoiDTO createBuoiHoc) {
+        System.out.println("Payload nhận được: " + createBuoiHoc.getNgayHoc());
+        LopHoc lop = lopHocService.findById(idLop).orElseThrow(() -> new RuntimeException("Lop hoc not found"));
+        BuoiHoc buoiCreate = createBuoiHoc.getBuoiHoc();
         buoiCreate.setLopHoc(lop);
-//        buoiCreate.setTrangThai(true);
+        try {
+            // Định dạng chuỗi ngày tháng ISO 8601
+            SimpleDateFormat isoDateFormat = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a");
+            if (createBuoiHoc.getNgayHoc() != null) {
+                Date ngayHoc = isoDateFormat.parse(createBuoiHoc.getNgayHoc());
+                buoiCreate.setNgayHoc(ngayHoc);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 nếu định dạng ngày không hợp lệ
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(buoiHocService.createBuoiHoc(buoiCreate));
     }
     @GetMapping("/getbuoiHocByLop/{idLop}")

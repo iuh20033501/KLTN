@@ -32,7 +32,7 @@ public class HoaDonService {
     private Gson gson = new Gson();
 
     public List<HoaDon> getAllHoaDonApi(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/getAll"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/hoaDon/getAll"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -64,7 +64,7 @@ public class HoaDonService {
         }
     }
     public List<HoaDon> getAllHoaDonThisYearApi(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/getAllThisYear"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/hoaDon/getAllThisYear"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -96,7 +96,7 @@ public class HoaDonService {
         }
     } 
      public List<HoaDon> getAllHoaDonInYearApi(String token,int year) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/baoCaoTheoNam/"+year; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/hoaDon/baoCaoTheoNam/"+year; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -128,7 +128,7 @@ public class HoaDonService {
         }
     } 
       public List<HoaDon> getAllHoaDonLikeNameApi(String token,String name) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/baoCaoTheoName/"+name; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/hoaDon/baoCaoTheoName/"+name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -160,7 +160,7 @@ public class HoaDonService {
         }
     } 
     public List<ThanhToan> getAllHThanhToanByLopThisYearApi(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/thanhToan/getAllThisYear"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/thanhToan/getAllThisYear"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -192,7 +192,7 @@ public class HoaDonService {
         }
     }
     public List<ThanhToan> getAllHThanhToanApi(String token) throws Exception {
-        String profileUrl = "http://localhost:8081/thanhToan/getAllThanhToanDone"; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/thanhToan/getAllThanhToanDone"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -225,7 +225,7 @@ public class HoaDonService {
     }
     
     public HoaDon getHoaDonByIdApi(String token, Long idHoaDon) throws Exception {
-        String profileUrl = "http://localhost:8081/hoaDon/getById/" + idHoaDon; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/hoaDon/getById/" + idHoaDon; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -257,7 +257,7 @@ public class HoaDonService {
         }
     }
       public List<ThanhToan> ThanhToanbyIdLopandDone(String token, Long idLop) throws Exception {
-        String profileUrl = "http://localhost:8081/thanhToan/findByIdLopDone/"+idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/thanhToan/findByIdLopDone/"+idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -289,7 +289,7 @@ public class HoaDonService {
         }
     }
         public List<ThanhToan> ThanhToanbyIdLopandWait(String token, Long idLop) throws Exception {
-        String profileUrl = "http://localhost:8081/thanhToan/findByIdLopWait/"+idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/thanhToan/findByIdLopWait/"+idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -321,7 +321,7 @@ public class HoaDonService {
         }
     }
          public List<ThanhToan> ThanhToanbyIdLopandCancel(String token, Long idLop) throws Exception {
-        String profileUrl = "http://localhost:8081/thanhToan/findByIdLopCancel/"+idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://18.141.201.212:8080/thanhToan/findByIdLopCancel/"+idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -353,7 +353,7 @@ public class HoaDonService {
         }
     }
     public HoaDon createHoaDonApi(String token, Long idNhanVien, ArrayList<Long> listIdThanhToan) throws Exception {
-        String createHoaDonUrl = "http://localhost:8081/hoaDon/create/" + idNhanVien; // Đảm bảo URL này đúng
+        String createHoaDonUrl = "http://18.141.201.212:8080/hoaDon/create/" + idNhanVien; // Đảm bảo URL này đúng
         URL url = new URL(createHoaDonUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -396,7 +396,7 @@ public class HoaDonService {
     }
 
     public List<ThanhToan> FindThanhToanByIdLop(String token, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/findByIdLop/" + idLop;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/findByIdLop/" + idLop;
         HttpURLConnection conn = null;
 
         try {
@@ -444,7 +444,7 @@ public class HoaDonService {
     }
 
     public List<Object[]> baoCaoNam(String token, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8081/hoaDon/baoCaoTheoNam";
+        String apiUrl = "http://18.141.201.212:8080/hoaDon/baoCaoTheoNam";
         HttpURLConnection conn = null;
 
         try {
@@ -498,7 +498,7 @@ public class HoaDonService {
     }
 
     public List<ThanhToan> FindThanhToanWaitByIdHocVien(String token, Long idHocVien) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/findByIdHocVienWait/" + idHocVien;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/findByIdHocVienWait/" + idHocVien;
         HttpURLConnection conn = null;
 
         try {
@@ -546,7 +546,7 @@ public class HoaDonService {
     }
 
     public List<ThanhToan> FindThanhToanByIdHoaDon(String token, Long idHoaDon) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/findByIdHD/" + idHoaDon;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/findByIdHD/" + idHoaDon;
         HttpURLConnection conn = null;
 
         try {
@@ -594,7 +594,7 @@ public class HoaDonService {
     }
 
     public ThanhToan loadApiCreateThanhToan(String token, Long idLop, Long idHocVien) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/create/" + idLop + "/" + idHocVien;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/createCoKiemTra/" + idLop + "/" + idHocVien;
         HttpURLConnection conn = null;
 
         try {
@@ -639,7 +639,7 @@ public class HoaDonService {
         }
     }
      public ThanhToan loadApiFindThanhToanByLop(String token, Long idLop, Long idHocVien) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/findByIdLopAndHV/" + idLop + "/" + idHocVien;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/findByIdLopAndHV/" + idLop + "/" + idHocVien;
         HttpURLConnection conn = null;
 
         try {
@@ -685,7 +685,7 @@ public class HoaDonService {
     }
 
     public List<ThanhToan> loadApiUploadThanhToanByLop(String token, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/uploadByLop/" + idLop;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/uploadByLop/" + idLop;
         HttpURLConnection conn = null;
 
         try {
@@ -733,7 +733,52 @@ public class HoaDonService {
     }
 
     public ThanhToan loadApiDeleteThanhToan(String token, Long id) throws Exception {
-        String apiUrl = "http://localhost:8081/thanhToan/delete/" + id;
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/delete/" + id;
+        HttpURLConnection conn = null;
+
+        try {
+            // Mở kết nối đến API
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Cấu hình kết nối
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token); // Gửi token xác thực
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Kiểm tra mã phản hồi từ server
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Đọc dữ liệu JSON trả về
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+
+                    // Log phản hồi để kiểm tra
+                    System.out.println("Phản hồi từ API: " + response);
+
+                    // Chuyển đổi JSON trả về thành đối tượng ThanhToan
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+                    return gson.fromJson(response.toString(), ThanhToan.class);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Không tìm thấy thanh toán.");
+            } else {
+                throw new Exception("Lỗi khi gọi API, mã phản hồi: " + responseCode);
+            }
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); // Đóng kết nối
+            }
+        }
+    }
+ public ThanhToan loadApigetThanhToanById(String token, Long id) throws Exception {
+        String apiUrl = "http://18.141.201.212:8080/thanhToan/findById/" + id;
         HttpURLConnection conn = null;
 
         try {
@@ -778,4 +823,6 @@ public class HoaDonService {
         }
     }
 
+
 }
+

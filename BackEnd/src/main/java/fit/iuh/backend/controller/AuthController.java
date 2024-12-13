@@ -8,9 +8,7 @@ import fit.iuh.backend.enumclass.ChucVu;
 import fit.iuh.backend.jwt.JwtRequest;
 import fit.iuh.backend.jwt.JwtResponse;
 import fit.iuh.backend.jwt.RefreshTokenRequest;
-import fit.iuh.backend.moudel.KhoaHoc;
-import fit.iuh.backend.moudel.TaiKhoanLogin;
-import fit.iuh.backend.moudel.User;
+import fit.iuh.backend.moudel.*;
 import fit.iuh.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.Id;
@@ -43,7 +41,12 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private KhoaHocService khoaHocService;
-
+    @Autowired
+    private LopHocService lopHocService;
+    @Autowired
+    private NhanVienService nhanVienService;
+    @Autowired
+    private GiangVienService giangVieService;
 
     @Operation(
             summary = "Gửi thông tin tạo tài khoản",
@@ -230,7 +233,7 @@ public class AuthController {
         return tKhoan;
     }
     @Operation(
-            summary = "láy all khoa học",
+            summary = "láy all khoa học ",
             description = """ 
            lấy all khóa học ko cần token
     """
@@ -239,7 +242,56 @@ public class AuthController {
     public List<KhoaHoc> getAllKhoa(){
         return khoaHocService.getAll();
     }
-
+    @Operation(
+            summary = "láy all khoa học trang thai True",
+            description = """ 
+           lấy all khóa học ko cần token
+    """
+    )
+    @GetMapping("/noauth/findAllKhoaTrue")
+    public List<KhoaHoc> getAllKhoaTrue(){
+        return khoaHocService.getAllTrue();
+    }
+    @Operation(
+            summary = "láy all lớp học",
+            description = """ 
+           lấy all lớp học ko cần token
+    """
+    )
+    @GetMapping("/noauth/getAllLop")
+    public List<LopHoc> findAllLop (){
+        return  lopHocService.findAll();
+    }
+    @Operation(
+            summary = "láy all lớp học trang thái wait và full",
+            description = """ 
+           lấy all lớp học ko cần token
+    """
+    )
+    @GetMapping("/noauth/getAllLopTrue")
+    public List<LopHoc> findAllLopTrue (){
+        return  lopHocService.findAllTrue();
+    }
+    @Operation(
+            summary = "láy all nhân viên",
+            description = """ 
+           lấy all nhân viên học ko cần token
+    """
+    )
+    @GetMapping("/noauth/getAllNhanVien")
+    public List<NhanVien> findAllNhanVien (){
+        return  nhanVienService.findAlL();
+    }
+    @Operation(
+            summary = "láy all giảng viên",
+            description = """ 
+           lấy all giảng viên ko cần token
+    """
+    )
+    @GetMapping("/noauth/getAllGiangVien")
+    public List<GiangVien> findAll (){
+        return  giangVieService.findAll();
+    }
     @GetMapping("/findTKhoan/{name}")
     public List<TaiKhoanLogin> getAllTKhoanLikeName(@PathVariable String name){
         return tkService.getListLikeName(name);

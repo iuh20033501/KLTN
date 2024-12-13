@@ -446,7 +446,7 @@
                           <Component id="jLabelMenuTK" min="-2" pref="929" max="-2" attributes="0"/>
                           <EmptySpace min="38" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jScrollPaneTK" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="jTextSearchTK" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -474,7 +474,7 @@
                               <Component id="jTextSearchTK" min="-2" pref="32" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" min="-2" pref="450" max="-2" attributes="0"/>
+                          <Component id="jScrollPaneTK" min="-2" pref="450" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -490,7 +490,7 @@
                     <Property name="text" type="java.lang.String" value="T&#xe0;i Kho&#x1ea3;n"/>
                   </Properties>
                 </Component>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+                <Container class="javax.swing.JScrollPane" name="jScrollPaneTK">
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                   </AuxValues>
@@ -1158,7 +1158,7 @@
                                   <Component id="jBtThemLop" min="-2" pref="123" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jScrollPane2" pref="616" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane2" pref="726" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
@@ -1836,10 +1836,9 @@
                 <Component class="javax.swing.JComboBox" name="jComBaiTap">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="3">
+                      <StringArray count="2">
                         <StringItem index="0" value="Theo H&#x1ecd;c Vi&#xea;n"/>
                         <StringItem index="1" value="Theo Bu&#x1ed5;i H&#x1ecd;c"/>
-                        <StringItem index="2" value=" "/>
                       </StringArray>
                     </Property>
                   </Properties>
@@ -1870,6 +1869,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="ExportPDF"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jBnExportPDFMouseClicked"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

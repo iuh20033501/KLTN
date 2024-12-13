@@ -122,6 +122,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>BackEnd</finalName>
 	</build>
 
 </project>
