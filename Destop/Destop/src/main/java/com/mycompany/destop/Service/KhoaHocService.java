@@ -31,7 +31,7 @@ public class KhoaHocService {
     private Gson gson = new Gson();
 
     public List<KhoaHoc> getAllKhoaHocApi(String token) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/khoahoc/getAll"; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/khoahoc/getAll"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -63,7 +63,7 @@ public class KhoaHocService {
         }
     }
     public List<KhoaHoc> getAllTrueKhoaHocApi(String token) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/khoahoc/getAllTrue"; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/khoahoc/getAllTrue"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -95,7 +95,7 @@ public class KhoaHocService {
         }
     }
      public List<KhoaHoc> getAllKhoaHocActiveTrue(String token,String name) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/khoahoc/getListActiveTrueLikeName/"+name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/khoahoc/getListActiveTrueLikeName/"+name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -127,7 +127,7 @@ public class KhoaHocService {
         }
     }
      public List<KhoaHoc> getAllKhoaHocLikeName(String token,String name) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/khoahoc/getListLikeName/"+name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/khoahoc/getListLikeName/"+name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -159,7 +159,7 @@ public class KhoaHocService {
         }
     }
      public List<KhoaHoc> getAllKhoaHocInYear(String token,String year) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/khoahoc/getListInYear/"+year; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/khoahoc/getListInYear/"+year; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -192,7 +192,7 @@ public class KhoaHocService {
     }
 
     public KhoaHoc loadKhoaHocById(String token, Long idKhoa) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/khoahoc/findKhoa/" + idKhoa; // URL API với tham số ID
+        String apiUrl = "http://54.169.251.110:8081/khoahoc/findKhoa/" + idKhoa; // URL API với tham số ID
         HttpURLConnection conn = null;
 
         try {
@@ -236,7 +236,7 @@ public class KhoaHocService {
     }
     
     public KhoaHoc deleteKhoaHocApi(String token, Long idKhoa) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/khoahoc/xoaKhoa/" + idKhoa; // URL API với tham số ID
+        String apiUrl = "http://54.169.251.110:8081/khoahoc/xoaKhoa/" + idKhoa; // URL API với tham số ID
         HttpURLConnection conn = null;
 
         try {
@@ -280,7 +280,7 @@ public class KhoaHocService {
     }
 
     public Boolean createKhoaHocFromClient(String token, KhoaHoc khoaHoc) throws Exception {
-        String url = "http://18.141.201.212:8080/khoahoc/create"; // Đảm bảo URL này chính xác
+        String url = "http://54.169.251.110:8081/khoahoc/create"; // Đảm bảo URL này chính xác
         HttpURLConnection conn = null;
         
         try {

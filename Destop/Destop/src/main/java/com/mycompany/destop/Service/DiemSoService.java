@@ -32,7 +32,7 @@ import javax.swing.JOptionPane;
 public class DiemSoService {
      private Gson gson = new Gson();
       public List<TienTrinh> getAllTienTrinhByHocVienApi(String token,Long idHocVien) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/baitap/getTienTrinhofHV/"+idHocVien; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/baitap/getTienTrinhofHV/"+idHocVien; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -64,7 +64,7 @@ public class DiemSoService {
         }
     } 
       public List<TienTrinh> getAllTienTrinhByBuoiApi(String token,Long idBuoi) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/baitap/getTienTrinhofBuoi/"+idBuoi; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/baitap/getTienTrinhofBuoi/"+idBuoi; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -96,7 +96,7 @@ public class DiemSoService {
         }
     } 
     public List<KetQuaTest> getAllketQuaTestByLopApi(String token,Long idLop) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/baitest/getKetQuaByLop/"+idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/baitest/getKetQuaByLop/"+idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         // Cấu hình GET request với JWT token trong header
@@ -127,7 +127,7 @@ public class DiemSoService {
         }
     } 
    public List<KetQuaTest> getAllKetQuaByHocVienApi(String token,Long idHocVien) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/baitest/getKetQuaByHV/"+idHocVien; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/baitest/getKetQuaByHV/"+idHocVien; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -159,7 +159,7 @@ public class DiemSoService {
         }
     } 
    public List<BaiTap> getAllBaiTapByBuoiApi(String token,Long idBuoi) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/baitap/getBaiTapofBuoiTrue/"+idBuoi; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/baitap/getBaiTapofBuoiTrue/"+idBuoi; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -191,7 +191,7 @@ public class DiemSoService {
         }
     } 
    public List<TaiLieu> getAllTaiLieuByBuoiApi(String token,Long idBuoi) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/taiLieu/getTaiLieuByBuoi/"+idBuoi; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/taiLieu/getTaiLieuByBuoi/"+idBuoi; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 

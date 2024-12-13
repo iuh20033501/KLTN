@@ -37,7 +37,7 @@ public class LopHocService {
     private Gson gson = new Gson();
 
     public List<LopHoc> getAllLopHocApi(String token) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getAll"; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getAll"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -74,7 +74,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocTrueApi(String token) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getAllTrue"; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getAllTrue"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -111,7 +111,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocByIdKhoaApi(String token, Long idKhoa) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getByKhoa/" + idKhoa; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getByKhoa/" + idKhoa; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -148,7 +148,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocByIdGVApi(String token, Long idGV) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getByGv/" + idGV; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getByGv/" + idGV; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -185,7 +185,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocLikeNameApi(String token, String name) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getLikeNameLop/" + name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getLikeNameLop/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -222,7 +222,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocLikeNameGVApi(String token, String name) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getLikeNameGV/" + name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getLikeNameGV/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -259,7 +259,7 @@ public class LopHocService {
     }
 
     public List<LopHoc> getAllLopHocLikeNameKhoaApi(String token, String name) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getLikeNameKhoa/" + name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getLikeNameKhoa/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -296,7 +296,7 @@ public class LopHocService {
     }
 
     public LopHoc UpdateLopHoc(String token, LopHoc lopHoc, Long idKhoa, Long idGV, Long idLop) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/lopHoc/create/" + idKhoa + "/" + idGV + "/" + idLop; // URL API
+        String apiUrl = "http://54.169.251.110:8081/lopHoc/create/" + idKhoa + "/" + idGV + "/" + idLop; // URL API
         HttpURLConnection conn = null;
 
         try {
@@ -350,7 +350,7 @@ public class LopHocService {
     }
 
     public LopHoc createLopHoc(String token, LopHoc lopHoc, Long idKhoa, Long idGV) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/lopHoc/createLopDestop/" + idKhoa + "/" + idGV;
+        String apiUrl = "http://54.169.251.110:8081/lopHoc/createLopDestop/" + idKhoa + "/" + idGV;
         HttpURLConnection conn = null;
 
         try {
@@ -436,7 +436,7 @@ public class LopHocService {
     }
 
     public LopHoc loadLopHocById(String token, Long idLop) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/lopHoc/getLop/" + idLop; // URL API với tham số ID
+        String apiUrl = "http://54.169.251.110:8081/lopHoc/getLop/" + idLop; // URL API với tham số ID
         HttpURLConnection conn = null;
 
         try {
@@ -480,7 +480,7 @@ public class LopHocService {
     }
 
     public List<BaiTest> loadBaiTestByIdLopxetTuyenFalse(String token, Long idLop) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/baitest/getBaiTestofLopXetFalse/" + idLop; // URL API với tham số ID
+        String apiUrl = "http://54.169.251.110:8081/baitest/getBaiTestofLopXetFalse/" + idLop; // URL API với tham số ID
         HttpURLConnection conn = null;
 
         try {
@@ -526,7 +526,7 @@ public class LopHocService {
     }
 
     public Boolean aceptBaiTestByIdLopxetTuyenFalse(String token, List<Long> list) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/baitest/AceptBaiTestofLopXetFalse"; // URL API
+        String apiUrl = "http://54.169.251.110:8081/baitest/AceptBaiTestofLopXetFalse"; // URL API
         HttpURLConnection conn = null;
 
         try {
@@ -573,7 +573,7 @@ public class LopHocService {
     }
 
     public Boolean CancelBaiTestofLopXetFalse(String token, List<Long> list) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/baitest/CancelBaiTestofLopXetFalse"; // URL API
+        String apiUrl = "http://54.169.251.110:8081/baitest/CancelBaiTestofLopXetFalse"; // URL API
         HttpURLConnection conn = null;
 
         try {
@@ -620,7 +620,7 @@ public class LopHocService {
     }
 
     public LopHoc deleteLopHoc(String token, Long id) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/lopHoc/delete/" + id; // URL endpoint của API xóa lớp học
+        String apiUrl = "http://54.169.251.110:8081/lopHoc/delete/" + id; // URL endpoint của API xóa lớp học
         HttpURLConnection conn = null;
 
         try {
@@ -666,7 +666,7 @@ public class LopHocService {
     }
 
     public List<BuoiHoc> getAllBuoiHocByLopApi(String token, Long idLop) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -706,7 +706,7 @@ public class LopHocService {
     }
 
     public BuoiHoc getBuoiHocById(String token, Long id) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/buoihoc/getBuoiById/" + id; // URL endpoint của API xóa lớp học
+        String apiUrl = "http://54.169.251.110:8081/buoihoc/getBuoiById/" + id; // URL endpoint của API xóa lớp học
         HttpURLConnection conn = null;
 
         try {
@@ -752,7 +752,7 @@ public class LopHocService {
     }
 
     public BuoiHoc CreateBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/buoihoc/createBuoiHoc/" + idLop; // URL API
+        String apiUrl = "http://54.169.251.110:8081/buoihoc/createBuoiHoc/" + idLop; // URL API
         HttpURLConnection conn = null;
 
         try {
@@ -806,7 +806,7 @@ public class LopHocService {
     }
 
     public List<HocVien> getAllHocVienByLopApi(String token, Long idLop) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/lopHoc/getByLop/" + idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/lopHoc/getByLop/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 

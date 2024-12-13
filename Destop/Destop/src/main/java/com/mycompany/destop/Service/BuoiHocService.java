@@ -41,7 +41,7 @@ public class BuoiHocService {
     private Gson gson = new Gson();
 
     public List<BuoiHoc> getAllBuoiByLopApi(String token, Long idLop) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/buoihoc/getBuoiDaHoc/" + idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/buoihoc/getBuoiDaHoc/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -74,7 +74,7 @@ public class BuoiHocService {
     }
 
     public List<BuoiHoc> getAllBuoiByLopAllApi(String token, Long idLop) throws Exception {
-        String profileUrl = "http://18.141.201.212:8080/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.169.251.110:8081/buoihoc/getbuoiHocByLop/" + idLop; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -107,7 +107,7 @@ public class BuoiHocService {
     }
 
     public BuoiHoc createBuoiHoc(String token, BuoiHoc buoiHoc, Long idLop) throws Exception {
-        String apiUrl = "http://localhost:8080/buoihoc/createBuoiHoc/" + idLop;
+        String apiUrl = "http://54.169.251.110:8081/buoihoc/createBuoiHoc/" + idLop;
         HttpURLConnection conn = null;
 
         try {
@@ -190,7 +190,7 @@ public class BuoiHocService {
     }
 
     public BuoiHoc loadApiDeleteBuoiHoc(String token, Long id) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/buoihoc/deleteBuoiById/" + id;
+        String apiUrl = "http://54.169.251.110:8081/buoihoc/deleteBuoiById/" + id;
         HttpURLConnection conn = null;
 
         try {
@@ -236,7 +236,7 @@ public class BuoiHocService {
     }
 
     public BuoiHoc loadApiGetBuoiHoc(String token, Long id) throws Exception {
-        String apiUrl = "http://18.141.201.212:8080/buoihoc/getBuoiById/" + id;
+        String apiUrl = "http://54.169.251.110:8081/buoihoc/getBuoiById/" + id;
         HttpURLConnection conn = null;
 
         try {
