@@ -51,6 +51,18 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
     const validateFullName = (name: string) => {
         return name.trim() !== '';
     };
+    const calculateAge = (birthday: string) => {
+        const today = new Date();
+        const birthDate = new Date(birthday);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+    
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+    
+        return age;
+    };
 
     const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
     const validatePhoneNumber = (phone: string) => {
@@ -109,8 +121,10 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
             } else if (!formattedBirthday) {
                 setErrorMessage('Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng dd/mm/yyyy.');
                 isValid = false;
+            }  else if (formattedBirthday && calculateAge(formattedBirthday) < 11) {
+                setErrorMessage('Người dùng phải trên 11 tuổi.');
+                isValid = false;
             }
-
             if (isValid) {
                 try {
                     const response = await http.post('auth/noauth/send', { phone });
@@ -154,7 +168,6 @@ export default function SignUpScreen({ navigation }: { navigation: any }) {
                     if (response.status === 200) {
                         console.log(response.data);
                         signToken = response.data.accessToken; 
-                        console.log(signToken)
                         await handleSubmit(); 
                     } else {
                         setErrorMessage('Xác thực otp thất bại');

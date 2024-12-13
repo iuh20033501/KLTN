@@ -31,6 +31,18 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
         return `${year}-${month}-${day}`;
     };
 
+    const calculateAge = (birthday: string) => {
+        const today = new Date();
+        const birthDate = new Date(birthday);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+    
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+    
+        return age;
+    };
     const validateForm = () => {
         if (!phone.trim()) {
             setErrorMessage('Số điện thoại không được để trống');
@@ -63,6 +75,13 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
             setErrorModalVisible(true);
             return false;
         }
+        const formattedBirthday = formatDateForServer(birthday);
+    if (formattedBirthday && calculateAge(formattedBirthday) < 11) {
+        setErrorMessage('Tuổi không được dưới 11');
+        setErrorModalVisible(true);
+        return false;
+    }
+
 
         return true;
     };
