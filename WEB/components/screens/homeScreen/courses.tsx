@@ -11,7 +11,7 @@ type Course = {
   soBuoi: string;
   image: string;
 };
-const CoursesComponent = () => {
+const CoursesComponent = ({navigation}: {navigation: any}) => {
   const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
@@ -54,7 +54,8 @@ const CoursesComponent = () => {
                 <Text style={styles.description}>{item.moTa}</Text>
                 <Text style={styles.details}>Thời lượng: {item.thoiGianDienRa} tháng</Text>
                 <Text style={styles.details}>Số buổi: {item.soBuoi} buổi/tuần</Text>
-                <TouchableOpacity style={styles.enrollButton}>
+                <TouchableOpacity style={styles.enrollButton}
+                 onPress={() => navigation.navigate('SignUpScreen')}>
                   <Text style={styles.enrollButtonText}>Tìm hiểu khóa học này</Text>
                 </TouchableOpacity>
               </View>

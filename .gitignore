@@ -4,3 +4,4 @@ WEB/config/AWSConfig.ts
 WEB/.env
 FE/components/screens/client/s3Client.tsx
 FE/components/screens/config/AWSConfig.ts
+WEB/config/openaiConfig.ts
