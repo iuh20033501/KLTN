@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 16,
     borderRadius: 8,
-    width: '90%',
+    width: '60%',
     maxHeight: '80%',
   },
   title: {
