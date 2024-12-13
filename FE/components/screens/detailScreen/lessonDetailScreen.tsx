@@ -14,14 +14,29 @@ interface LessonInfo {
   lopHoc: {
     idLopHoc: number;
     tenLopHoc: string;
+    trangThai: string;
   };
   noiHoc: string;
   hocOnl: boolean;
 }
 
+interface ExamInfo {
+  idTest: number;
+  ngayBD: string;
+  ngayKT: string;
+  thoiGianLamBai: number;
+  loaiTest: string;
+  xetDuyet: boolean;
+  trangThai: boolean;
+  lopHoc: {
+    tenLopHoc: string;
+  };
+}
+
 export default function LessonDetailScreen({ navigation, route }: { navigation: any; route: any }) {
   const { idUser } = route.params;
   const [lessons, setLessons] = useState<LessonInfo[]>([]);
+  const [exams, setExams] = useState<ExamInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -33,7 +48,7 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
     return new Date(selectedDay.setDate(diff));
   };
 
-  const fetchWeeklyLessons = async (startDate: Date) => {
+  const fetchWeeklyData = async (startDate: Date) => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
@@ -42,20 +57,36 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
         return;
       }
 
-      const response = await http.get(`/buoihoc/getByHocVien/${idUser}`, {
-        params: { startDate: startDate.toISOString().split('T')[0] },
+      const classResponse = await http.get(`hocvien/getByHV/${idUser}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.status === 200) {
-        setLessons(response.data);
-      } else {
-        console.error('Không tìm thấy dữ liệu buổi học');
-        setLessons([]);
-      }
+      const enrolledClasses = classResponse.data.filter((classInfo: any) => classInfo.trangThai === "FULL");
+      const lessonPromises = enrolledClasses.map((classInfo: any) =>
+        http.get(`buoihoc/getbuoiHocByLop/${classInfo.idLopHoc}`, {
+          params: { startDate: startDate.toISOString().split('T')[0] },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
+      const lessonResponses = await Promise.all(lessonPromises);
+      const lessonData = lessonResponses.flatMap((response) => response.data);
+
+      const examPromises = enrolledClasses.map((classInfo: any) =>
+        http.get(`baitest/getBaiTestofLopTrue/${classInfo.idLopHoc}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
+      const examResponses = await Promise.all(examPromises);
+      const examData = examResponses
+        .flatMap((response) => response.data)
+        .filter((exam: ExamInfo) => exam.trangThai && exam.xetDuyet);
+
+      setLessons(lessonData);
+      setExams(examData);
     } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu buổi học:', error);
+      console.error('Lỗi khi lấy dữ liệu:', error);
       setLessons([]);
+      setExams([]);
     } finally {
       setLoading(false);
     }
@@ -64,14 +95,14 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
   useEffect(() => {
     const startOfWeek = calculateStartOfWeek(new Date());
     setSelectedDate(startOfWeek);
-    fetchWeeklyLessons(startOfWeek);
+    fetchWeeklyData(startOfWeek);
   }, [idUser]);
 
   const handleDateChange = (event: any, date?: Date) => {
     if (date) {
       const startOfWeek = calculateStartOfWeek(date);
       setSelectedDate(startOfWeek);
-      fetchWeeklyLessons(startOfWeek);
+      fetchWeeklyData(startOfWeek);
     }
     setIsDatePickerVisible(false);
   };
@@ -80,23 +111,22 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 7);
     setSelectedDate(newDate);
-    fetchWeeklyLessons(newDate);
+    fetchWeeklyData(newDate);
   };
 
   const handleNextWeek = () => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 7);
     setSelectedDate(newDate);
-    fetchWeeklyLessons(newDate);
+    fetchWeeklyData(newDate);
   };
 
   const handleCurrentWeek = () => {
     const currentWeekStart = calculateStartOfWeek(new Date());
     setSelectedDate(currentWeekStart);
-    fetchWeeklyLessons(currentWeekStart);
+    fetchWeeklyData(currentWeekStart);
   };
 
-  // Get the lessons only for the selected week
   const startOfWeek = calculateStartOfWeek(selectedDate);
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(endOfWeek.getDate() + 6);
@@ -104,6 +134,11 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
   const filteredLessons = lessons.filter((lesson) => {
     const lessonDate = new Date(lesson.ngayHoc);
     return lessonDate >= startOfWeek && lessonDate <= endOfWeek;
+  });
+
+  const filteredExams = exams.filter((exam) => {
+    const examDate = new Date(exam.ngayBD);
+    return examDate >= startOfWeek && examDate <= endOfWeek;
   });
 
   if (loading) {
@@ -114,10 +149,9 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back-outline" size={24} color="black" />
+          <Icon name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
-        
-        <Text style={styles.headerText}>Lịch học</Text>
+        <Text style={styles.headerText}>Lịch học và thi</Text>
       </View>
 
       <View style={styles.datePickerContainer}>
@@ -125,15 +159,14 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
           <Text style={styles.buttonText}>{selectedDate.toLocaleDateString('vi-VN')}</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.datePickerContainer}>
-      
         <TouchableOpacity style={styles.navigationButton} onPress={handlePreviousWeek}>
           <Text style={styles.navigationButtonText}>{"<"}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navigationButton} onPress={handleCurrentWeek}>
           <Text style={styles.navigationButtonText}>Tuần hiện tại</Text>
         </TouchableOpacity>
-       
         <TouchableOpacity style={styles.navigationButton} onPress={handleNextWeek}>
           <Text style={styles.navigationButtonText}>{">"}</Text>
         </TouchableOpacity>
@@ -148,59 +181,57 @@ export default function LessonDetailScreen({ navigation, route }: { navigation: 
         />
       )}
 
-      {filteredLessons.length === 0 ? (
-        <View style={styles.noLessonsContainer}>
-          <Text style={styles.noLessonsText}>Không có lịch học trong tuần này</Text>
+      {filteredLessons.length === 0 && filteredExams.length === 0 ? (
+        <View >
+          <Text >Không có lịch học hoặc lịch thi trong tuần này</Text>
         </View>
       ) : (
-        filteredLessons.map((lesson) => (
-          <View
-            key={lesson.idBuoiHoc}
-            style={[
-              styles.lessonInfo,
-              { backgroundColor: lesson.hocOnl ? '#d0ebff' : '#f0f0f0' },
-            ]}
-          >
-            <Text style={styles.lessonDate}>
-              {new Date(lesson.ngayHoc).toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric' })}
-            </Text>
-            <Text style={styles.lessonCode}>{lesson.lopHoc.tenLopHoc}</Text>
-            <Text style={styles.lessonTitle}>{lesson.chuDe}</Text>
-
-            <View style={styles.lessonDetail}>
-              <View style={styles.timeContainer}>
-                <Icon name="time-outline" size={16} color="gray" />
-                <Text style={styles.timeText}>
-                  {lesson.gioHoc} - {lesson.gioKetThuc}
-                </Text>
-              </View>
-              <View style={styles.roomContainer}>
-                <Icon name="location-outline" size={16} color="gray" />
-                <Text style={styles.roomText}>{lesson.noiHoc}</Text>
-              </View>
+        <>
+          {filteredLessons.map((lesson) => (
+            <View
+              key={lesson.idBuoiHoc}
+              style={[styles.lessonInfo, { backgroundColor: lesson.hocOnl ? '#d0ebff' : '#f0f0f0' }]}>
+              <Text style={styles.lessonDate}>{new Date(lesson.ngayHoc).toLocaleDateString('vi-VN', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'numeric',
+              })}</Text>
+              <Text style={styles.lessonCode}>{lesson.lopHoc.tenLopHoc}</Text>
+              <Text style={styles.lessonTitle}>{lesson.chuDe}</Text>
+              <Text style={styles.lessonTime}>{lesson.gioHoc} - {lesson.gioKetThuc}</Text>
             </View>
+          ))}
 
-            <View style={styles.teacherContainer}>
-              <Icon name="person-outline" size={16} color="gray" />
-              <Text style={styles.teacherText}>{lesson.hocOnl ? 'Giáo viên trực tuyến' : 'Giáo viên trực tiếp'}</Text>
+          {filteredExams.map((exam) => (
+            <View key={exam.idTest} style={styles.examInfo}>
+              <Text style={styles.examDate}>Bài thi bắt đầu: {new Date(exam.ngayBD).toLocaleDateString('vi-VN', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'numeric',
+                })}{' '}
+                {new Date(exam.ngayBD).toLocaleTimeString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+              <Text style={styles.examDate}>Bài thi kết thúc: {new Date(exam.ngayKT).toLocaleDateString('vi-VN', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'numeric',
+                })}{' '}
+                {new Date(exam.ngayKT).toLocaleTimeString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+              <Text style={styles.lessonCode}>{exam.loaiTest === 'GK' ? 'Giữa kỳ' : 'Cuối kỳ'}</Text>
+              <Text style={styles.examClass}>{exam.lopHoc.tenLopHoc}</Text>
+
+              <Text style={styles.examDuration}>{exam.thoiGianLamBai} phút</Text>
             </View>
-          </View>
-        ))
+          ))}
+        </>
       )}
-
-      <View style={styles.legend}>
-        <Text style={styles.legendTitle}>Chú giải</Text>
-        <View style={styles.legendContainer}>
-          <View style={styles.legendItem}>
-            <View style={[styles.circle, { backgroundColor: '#d0ebff' }]} />
-            <Text>Học trực tuyến</Text>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.circle, { backgroundColor: '#f0f0f0' }]} />
-            <Text>Học trực tiếp</Text>
-          </View>
-        </View>
-      </View>
     </ScrollView>
   );
 }
@@ -293,21 +324,21 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   datePickerContainer: {
-    marginTop:20,
+    marginTop: 20,
     flexDirection: 'row',
-    justifyContent:'center'
+    justifyContent: 'center'
   },
   dateButton: {
-    width:310,
+    width: 310,
     padding: 10,
     backgroundColor: '#00bf63',
     borderRadius: 5,
   },
   buttonText: {
-    textAlign:'center',
+    textAlign: 'center',
     color: '#fff',
     fontWeight: 'bold',
-    fontSize:20
+    fontSize: 20
   },
   navigationButton: {
     padding: 10,
@@ -344,6 +375,35 @@ const styles = StyleSheet.create({
   noLessonsText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'gray',
+  },
+  lessonTime: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  examInfo: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 10,
+    backgroundColor: '#f8d7da',
+    marginBottom: 10,
+  },
+  examDate: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  examType: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#721c24',
+  },
+  examClass: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  examDuration: {
+    fontSize: 14,
     color: 'gray',
   },
 });

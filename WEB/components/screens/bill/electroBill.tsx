@@ -1,92 +1,121 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const ElectroBill = ({ bill, paymentDetails }: { bill: any; paymentDetails: any }) => {
-    console.log(paymentDetails);
+    // const contentRef = useRef<HTMLDivElement>(null);
+
+    // const handleExportPDF = async () => {
+    //     if (!contentRef.current) {
+    //         console.error('Content ref is not set');
+    //         return;
+    //     }
+
+    //     try {
+    //         const canvas = await html2canvas(contentRef.current);
+    //         const imgData = canvas.toDataURL('image/png');
+    //         const pdf = new jsPDF();
+
+    //         pdf.addImage(imgData, 'PNG', 10, 10, 190,0); // Điều chỉnh kích thước ảnh trong PDF
+    //         pdf.save(`hoa_don_${bill.idHoaDon}.pdf`);
+    //     } catch (error) {
+    //         console.error('Error generating PDF:', error);
+    //     }
+    // };
+
     const payerInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0].nguoiThanhToan : {};
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.logoContainer}>
-                <Image source={require('../../../image/efy.png')} style={styles.logo} />
-            </View>
-
+            {/* <div ref={contentRef}> */}
+                <View style={styles.logoContainer}>
+                    <Image source={require('../../../image/efy.png')} style={styles.logo} />
+                </View>
+            <View>
             <Text style={styles.header}>HÓA ĐƠN MUA BÁN</Text>
             <Text style={styles.subHeader}>Bản thể hiện của hóa đơn điện tử</Text>
-
-            <View style={styles.infoSection}>
-                <Text style={styles.title}>Thông tin hóa đơn</Text>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Mã hóa đơn:</Text>
-                    <Text style={styles.value}>{bill.idHoaDon}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Ngày lập:</Text>
-                    <Text style={styles.value}>{new Date(bill.ngayLap).toLocaleDateString()}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Người lập:</Text>
-                    <Text style={styles.value}>{bill.nguoiLap.hoTen}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Tổng tiền:</Text>
-                    <Text style={styles.value}>{bill.thanhTien.toLocaleString()} VND</Text>
-                </View>
             </View>
-
-            <View style={styles.infoSection}>
-                <Text style={styles.title}>Thông tin người thanh toán</Text>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Họ tên:</Text>
-                    <Text style={styles.value}>{payerInfo.hoTen || 'Không xác định'}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Số điện thoại:</Text>
-                    <Text style={styles.value}>{payerInfo.sdt || 'Không xác định'}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>{payerInfo.email || 'Không xác định'}</Text>
-                </View>
-            </View>
-
-            <View style={styles.table}>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                    <Text style={[styles.tableCell, styles.center]}>STT</Text>
-                    <Text style={styles.tableCell}>Khóa học</Text>
-                    <Text style={[styles.tableCell, styles.center]}>Lớp học</Text>
-                    <Text style={[styles.tableCell, styles.right]}>Số tiền</Text>
-                </View>
-                {paymentDetails.map((payment: any, index: number) => (
-                    <View style={styles.tableRow} key={payment.idTT || index}>
-                        <Text style={[styles.tableCell, styles.center]}>{index + 1}</Text>
-                        <Text style={styles.tableCell}>{payment.tenKhoaHoc || 'Không xác định'}</Text>
-                        <Text style={[styles.tableCell, styles.center]}>{payment.tenLopHoc || 'Không xác định'}</Text>
-                        <Text style={[styles.tableCell, styles.right]}>
-                            {(payment.soTien || 0).toLocaleString()} VND
-                        </Text>
+                <View style={styles.infoSection}>
+                    <Text style={styles.title}>Thông tin hóa đơn</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Mã hóa đơn:</Text>
+                        <Text style={styles.value}>{bill.idHoaDon}</Text>
                     </View>
-                ))}
-            </View>
-
-            <Text style={styles.footerNote}>
-                Số tiền viết bằng chữ: {convertNumberToWords(bill.thanhTien)} đồng.
-            </Text>
-
-            <View style={styles.signatureSection}>
-                <View style={styles.signatureBlock}>
-                    <Text style={styles.signature}>Người mua hàng</Text>
-                    <Text style={styles.signatureName}>{payerInfo.hoTen || 'Không xác định'}</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Ngày lập:</Text>
+                        <Text style={styles.value}>{new Date(bill.ngayLap).toLocaleDateString()}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Người lập:</Text>
+                        <Text style={styles.value}>{bill.nguoiLap.hoTen}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Tổng tiền:</Text>
+                        <Text style={styles.value}>{bill.thanhTien.toLocaleString()} VND</Text>
+                    </View>
                 </View>
-                <View style={styles.signatureBlock}>
-                    <Text style={styles.signature}>Người bán hàng</Text>
-                    <Text style={styles.signatureName}>{bill.nguoiLap.hoTen || 'Không xác định'}</Text>
+
+                {/* Thông tin người thanh toán */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.title}>Thông tin người thanh toán</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Họ tên:</Text>
+                        <Text style={styles.value}>{payerInfo.hoTen || 'Không xác định'}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Số điện thoại:</Text>
+                        <Text style={styles.value}>{payerInfo.sdt || 'Không xác định'}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Email:</Text>
+                        <Text style={styles.value}>{payerInfo.email || 'Không xác định'}</Text>
+                    </View>
                 </View>
-            </View>
+
+                {/* Bảng chi tiết thanh toán */}
+                <View style={styles.table}>
+                    <View style={[styles.tableRow, styles.tableHeader]}>
+                        <Text style={[styles.tableCell, styles.center]}>STT</Text>
+                        <Text style={styles.tableCell}>Khóa học</Text>
+                        <Text style={[styles.tableCell, styles.center]}>Lớp học</Text>
+                        <Text style={[styles.tableCell, styles.right]}>Số tiền</Text>
+                    </View>
+                    {paymentDetails.map((payment: any, index: number) => (
+                        <View style={styles.tableRow} key={payment.idTT || index}>
+                            <Text style={[styles.tableCell, styles.center]}>{index + 1}</Text>
+                            <Text style={styles.tableCell}>{payment.tenKhoaHoc || 'Không xác định'}</Text>
+                            <Text style={[styles.tableCell, styles.center]}>{payment.tenLopHoc || 'Không xác định'}</Text>
+                            <Text style={[styles.tableCell, styles.right]}>
+                                {(payment.soTien || 0).toLocaleString()} VND
+                            </Text>
+                        </View>
+                    ))}
+                </View>
+
+                {/* Chữ số tiền */}
+                <Text style={styles.footerNote}>
+                    Số tiền viết bằng chữ: {convertNumberToWords(bill.thanhTien)} đồng.
+                </Text>
+
+                {/* Chữ ký */}
+                <View style={styles.signatureSection}>
+                    <View style={styles.signatureBlock}>
+                        <Text style={styles.signature}>Người mua hàng</Text>
+                        <Text style={styles.signatureName}>{payerInfo.hoTen || 'Không xác định'}</Text>
+                    </View>
+                    <View style={styles.signatureBlock}>
+                        <Text style={styles.signature}>Người bán hàng</Text>
+                        <Text style={styles.signatureName}>{bill.nguoiLap.hoTen || 'Không xác định'}</Text>
+                    </View>
+                </View>
+            {/* </div>
+            <TouchableOpacity style={styles.exportButton} onPress={handleExportPDF}>
+                <Text style={styles.exportButtonText}>Xuất PDF</Text>
+            </TouchableOpacity> */}
         </ScrollView>
     );
 };
-
 const convertNumberToWords = (number: number): string => {
     const units = ['', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
     const scales = ['', 'nghìn', 'triệu', 'tỷ'];
@@ -163,6 +192,7 @@ const styles = StyleSheet.create({
     infoSection: {
         marginVertical: 10,
     },
+    
     title: {
         fontWeight: 'bold',
         marginBottom: 5,
@@ -219,9 +249,20 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     signatureName: {
-        marginTop: 10,
+        marginTop: 70,
         fontStyle: 'italic',
         textAlign: 'center',
+    },
+    exportButton: {
+        marginTop: 50,
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    exportButtonText: {
+        color: 'black',
+        fontWeight: 'bold',
     },
 });
 

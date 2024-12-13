@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FontAwesome, Ionicons, MaterialIcons, Entypo, Feather } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons, Entypo, Feather, AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
 
 export default function CourseInfoScreen({ navigation }: { navigation: any }) {
   const [userInfo, setUserInfo] = useState<{
-    u: any; idUser: number; nameUser: string 
-} | null>(null);
+    u: any; idUser: number; nameUser: string
+  } | null>(null);
 
   const fetchUserInfo = async () => {
     try {
@@ -21,7 +21,7 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
       });
 
       if (response.status === 200) {
-        setUserInfo(response.data); 
+        setUserInfo(response.data);
         console.log(response.data)
       } else {
         console.error('Không thể lấy thông tin người dùng');
@@ -70,26 +70,33 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}  onPress={() => {
-            if (userInfo) {
-              navigation.navigate('ScoreBoardScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
-            } else {
-              console.error("Thông tin người dùng chưa sẵn sàng");
-            }
-          }}>
+        <TouchableOpacity style={styles.option} onPress={() => {
+          if (userInfo) {
+            navigation.navigate('ScoreBoardScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+          } else {
+            console.error("Thông tin người dùng chưa sẵn sàng");
+          }
+        }}>
           <View style={styles.optionRow}>
             <FontAwesome name="list-alt" size={24} color="green" />
             <Text style={styles.optionText}>Bảng điểm</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option}
+        onPress={() => {
+          if (userInfo) {
+            navigation.navigate('ProgressScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+          } else {
+            console.error("Thông tin người dùng chưa sẵn sàng");
+          }
+        }}>
           <View style={styles.optionRow}>
-            <Feather name="file-text" size={24} color="purple" />
-            <Text style={styles.optionText}>Tài liệu học tập</Text>
+            <AntDesign name="circledowno" size={24} color="purple" />
+            <Text style={styles.optionText}>Tiến trình học tập</Text>
           </View>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.option}>
           <View style={styles.optionRow}>
             <FontAwesome name="graduation-cap" size={24} color="red" />
@@ -104,7 +111,7 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           </View>
         </TouchableOpacity>
 
-      
+
       </View>
     </ScrollView>
   );

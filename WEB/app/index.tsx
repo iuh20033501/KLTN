@@ -43,6 +43,7 @@ type RootStackParamList = {
   ChangePassword: undefined;
   ResetPassword:undefined;
   EditProfileScreen:undefined;
+  TeacherEditProfileScreen:undefined;
   CourseRegistrationScreen:undefined;
   PaymentScreen:undefined;
   ScheduleScreen: undefined;

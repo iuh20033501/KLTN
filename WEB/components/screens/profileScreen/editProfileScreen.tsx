@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Modal, Scro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from "@/utils/http";
 import * as ImagePicker from "expo-image-picker";
+import { uploadFileToS3, deleteFileFromS3 } from '../client/s3Client';
 
 export default function EditProfileScreen({ navigation }: { navigation: any }) {
     const [phone, setPhone] = useState('');
@@ -14,6 +15,7 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState('');
+    const [role, setRole] = useState('');
 
     const validPhonePrefixes = ['032', '033', '034', '035', '036', '037', '038', '039', '081', '082', '083', '084', '085', '088', '070', '076', '077', '078', '079', '052', '056', '058', '092', '059', '099'];
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -64,7 +66,6 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
 
         return true;
     };
-console.log(selectedAvatar)
     const handleUpdate = async () => {
         if (!validateForm()) {
             return;
@@ -74,15 +75,32 @@ console.log(selectedAvatar)
             const genderValue = gender === 'Nam' ? true : false;
             const formattedBirthday = formatDateForServer(birthday);
             const token = await AsyncStorage.getItem('accessToken');
-            const imageToUpload = selectedAvatar
-            const response = await http.put(`hocvien/update/${user.u.idUser}`, {
+
+            let avatarUrl = user?.u?.image || null;
+            if (selectedAvatar) {
+                if (avatarUrl) {
+                    const oldFileName = avatarUrl.split('/').pop();
+                    if (oldFileName) {
+                        await deleteFileFromS3(`avatars/${oldFileName}`);
+                    }
+                }
+                const fileBlob = await fetch(selectedAvatar).then((res) => res.blob());
+                const fileName = `avatars/avatar-${user.u.idUser}-${Date.now()}.png`;
+                avatarUrl = await uploadFileToS3(fileBlob, fileName);
+            }
+
+            const apiEndpoint = role === 'STUDENT' 
+                ? `hocvien/update/${user.u.idUser}` 
+                : `giangVien/update/${user.u.idUser}`;
+
+            const response = await http.put(apiEndpoint, {
                 idUser: user.u.idUser,
                 hoTen: user.u.hoTen,
                 sdt: phone,
                 email: email,
                 ngaySinh: formattedBirthday,
                 gioiTinh: genderValue,
-                image: imageToUpload
+                image: avatarUrl
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -106,7 +124,6 @@ console.log(selectedAvatar)
             setErrorModalVisible(true);
         }
     };
-
     const getUserInfo = async () => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -124,6 +141,7 @@ console.log(selectedAvatar)
                     setGender(userData.u.gioiTinh === true ? 'Nam' : 'Nữ');
                     setUser(userData);
                     setSelectedAvatar(userData.u.image);
+                    setRole(userData.cvEnum)
                 } else {
                     setErrorMessage('Lấy thông tin người dùng thất bại.');
                     setErrorModalVisible(true);
@@ -153,51 +171,20 @@ console.log(selectedAvatar)
         const [year, month, day] = dateParts;
         return `${day}/${month}/${year}`;
     };
-    const pickImage = async (useLibrary: boolean) => {
-        let result = null;
-        if (useLibrary) {
-            result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                base64: true,
-                quality: 1,
-            });
-        } else {
-            await ImagePicker.requestCameraPermissionsAsync();
-            result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                base64: true,
-                quality: 1,
-            });
-        }
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1,
+        });
 
-        if (result && !result.canceled) {
-            const base64String: string = result.assets[0].base64 || '';
-            setSelectedAvatar(base64String);
-
+        if (!result.canceled) {
+            const uri = result.assets[0].uri;
+            setSelectedAvatar(uri);
         }
     };
-    const getAvatarUri = () => {
-        if (!selectedAvatar) return null;
-        if (selectedAvatar.startsWith("data:image")) {
-          return selectedAvatar; 
-        }
-        const defaultMimeType = "image/png"; 
-        let mimeType = defaultMimeType;
-        if (/^\/9j/.test(selectedAvatar)) {
-            mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
-          } else if (/^iVBOR/.test(selectedAvatar)) {
-            mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
-          } else if (/^R0lGOD/.test(selectedAvatar)) {
-            mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
-          } else if (/^Qk/.test(selectedAvatar)) {
-            mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
-          } else if (/^UklGR/.test(selectedAvatar)) {
-            mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
-          }
-      
-        return `data:${mimeType};base64,${selectedAvatar}`;
-      };
-
+   
     return (
         <ImageBackground
             source={require('../../../image/bglogin.png')}
@@ -212,10 +199,10 @@ console.log(selectedAvatar)
 
                     <View style={styles.avatarSection}>
                         <Image
-                            source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')}
+                            source={selectedAvatar ? selectedAvatar : require('../../../image/efy.png')}
                             style={styles.avatar}
                         />
-                        <TouchableOpacity onPress={() => pickImage(true)}>
+                        <TouchableOpacity onPress={() => pickImage()}>
                             <Text style={styles.editAvatarText}>Đổi ảnh đại diện</Text>
                         </TouchableOpacity>
                     </View>

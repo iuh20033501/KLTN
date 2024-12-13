@@ -15,8 +15,6 @@ import {
     Modal,
 } from 'react-native';
 
-
-
 export default function ChangePassword({navigation}: {navigation: any}) {
     const [confirmOldPassword, setConfirmOldPassword] = useState('');
     const [password, setPassword] = useState('');
@@ -27,105 +25,38 @@ export default function ChangePassword({navigation}: {navigation: any}) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
     const [isPasswordVisible3, setIsPasswordVisible3] = useState(false);
-
     const handleChangePassword = async () => {
         if (oldPassword.length < 6 || oldPassword.length > 32) {
-          setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
-          setModalVisible(true)
-          return;
-        }
-      
-        if (password.length < 6 || password.length > 32) {
-          setErrorMessage('Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
-          setModalVisible(true)
-
-          return;
-        }
-      
-        if (password !== verifyPassword) {
-          setErrorMessage('Mật khẩu mới và xác nhận mật khẩu không khớp.');
-          setModalVisible(true)
-
-          return;
-        }
-      
-        try {
-          const token = await AsyncStorage.getItem('accessToken');
-          if (!token) {
-            setErrorMessage('Token không tồn tại hoặc đã hết hạn. Vui lòng đăng nhập lại.');
-            setModalVisible(true)
+            setErrorMessage('Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
+            setModalVisible(true);
             return;
-          }
-      
-          const response = await http.post(
-            "auth/account/changepass",
-            {
-              newPass: password,
-              oldPass: oldPassword,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-      
-          if (response.status === 200) {
-            console.log(response.data);
-            setErrorMessage('Đổi mật khẩu thành công'); 
-            setModalVisible(true)
-            setTimeout(() => {
-                setModalVisible(false);
-                navigation.navigate('LoginScreen');
-            }, 1250);
-          } else {
-            setErrorMessage('Lỗi đổi mật khẩu');
-          }
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            if (error.response) {
-              console.error("Response error:", error.response.data);
-              setErrorMessage(error.response.data.message || 'Đã có lỗi xảy ra khi đổi mật khẩu.');
-            } else if (error.request) {
-              console.error("Request error:", error.request);
-              setErrorMessage('Không có phản hồi từ máy chủ. Vui lòng kiểm tra kết nối.');
-            }
-          } else if (error instanceof Error) {
-            console.error("General error:", error.message);
-            setErrorMessage('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-          }
         }
     
-        if (password.length < 5 || password.length > 32) {
+        if (password.length < 6 || password.length > 32) {
             setErrorMessage('Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
-            setModalVisible(true); 
+            setModalVisible(true);
             return;
         }
     
         if (password !== verifyPassword) {
             setErrorMessage('Mật khẩu mới và xác nhận mật khẩu không khớp.');
-            setModalVisible(true); 
+            setModalVisible(true);
             return;
         }
     
         try {
-            const oldPassword = await AsyncStorage.getItem('userPassword'); 
             const token = await AsyncStorage.getItem('accessToken');
             if (!token) {
                 setErrorMessage('Token không tồn tại hoặc đã hết hạn. Vui lòng đăng nhập lại.');
                 setModalVisible(true);
                 return;
             }
-            if (oldPassword !== confirmOldPassword) {
-                setErrorMessage('Mật khẩu cũ không chính xác');
-                setModalVisible(true);
-                return;
-            }
+    
             const response = await http.post(
                 "auth/account/changepass",
                 {
                     newPass: password,
-                    oldPass: confirmOldPassword,
+                    oldPass: oldPassword,
                 },
                 {
                     headers: {
@@ -135,35 +66,42 @@ export default function ChangePassword({navigation}: {navigation: any}) {
             );
     
             if (response.status === 200) {
-                console.log(response.data);
-                setErrorMessage('Đổi mật khẩu thành công, trở lại màn hình đăng nhập');
-                setModalVisible(true); 
-                setTimeout(() => {
-                    setModalVisible(false);
-                    navigation.navigate('LoginScreen');
-                }, 1250);
+                if (response.data === 'passChangeSuccess') {
+                    setErrorMessage('Đổi mật khẩu thành công');
+                    setModalVisible(true);
+                    setTimeout(() => {
+                        setModalVisible(false);
+                        navigation.navigate('LoginScreen'); // Điều hướng về màn hình đăng nhập
+                    }, 1250);
+                } else if (response.data === 'passChangeFaile') {
+                    setErrorMessage('Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ.');
+                    setModalVisible(true);
+                } else {
+                    setErrorMessage('Phản hồi không xác định từ máy chủ.');
+                    setModalVisible(true);
+                }
             } else {
-                setErrorMessage('Lỗi đổi mật khẩu, hãy chắc chắn rằng bạn đã nhập đúng mật khẩu cũ');
-                setModalVisible(true); 
+                setErrorMessage('Lỗi đổi mật khẩu. Vui lòng thử lại sau.');
+                setModalVisible(true);
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (error.response) {
                     console.error("Response error:", error.response.data);
                     setErrorMessage(error.response.data.message || 'Đã có lỗi xảy ra khi đổi mật khẩu.');
-                    setModalVisible(true); 
                 } else if (error.request) {
                     console.error("Request error:", error.request);
                     setErrorMessage('Không có phản hồi từ máy chủ. Vui lòng kiểm tra kết nối.');
-                    setModalVisible(true); 
                 }
             } else if (error instanceof Error) {
                 console.error("General error:", error.message);
                 setErrorMessage('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-                setModalVisible(true); 
             }
+            setModalVisible(true);
         }
     };
+    
+   
       const handleBack = () => {
         navigation.goBack()
     };

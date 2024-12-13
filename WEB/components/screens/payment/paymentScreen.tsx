@@ -206,7 +206,7 @@ const PaymentScreen = ({ navigation, route }: { navigation: any; route: any }) =
           <Text style={styles.backButtonText}>Quay về</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>Thanh toán trực tuyến</Text>
+        <Text style={styles.title}>Thanh toán khóa học</Text>
         <Text style={styles.sectionTitle}>Tổng số tiền đã đóng: <Text style={{color:'red'}}>{totalPaid.toLocaleString()} VND</Text></Text>
 
         <Text style={styles.sectionTitle}>Đã thanh toán hoặc đã hủy</Text>

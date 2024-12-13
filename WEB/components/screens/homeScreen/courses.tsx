@@ -28,28 +28,7 @@ const CoursesComponent = () => {
     }
   };
 
-  const getImageCourseUri = (imageData: string) => {
-    if (!imageData) return null;
-    if (imageData.startsWith("data:image")) {
-      return imageData;
-    }
-    const defaultMimeType = "image/png";
-    let mimeType = defaultMimeType;
-
-    if (/^\/9j/.test(imageData)) {
-      mimeType = "image/jpeg";
-    } else if (/^iVBOR/.test(imageData)) {
-      mimeType = "image/png";
-    } else if (/^R0lGOD/.test(imageData)) {
-      mimeType = "image/gif";
-    } else if (/^Qk/.test(imageData)) {
-      mimeType = "image/bmp";
-    } else if (/^UklGR/.test(imageData)) {
-      mimeType = "image/webp";
-    }
-
-    return `data:${mimeType};base64,${imageData}`;
-  };
+ 
   return (
     <View style={styles.screenContainer}>
       <View style={styles.bannerContainer}>
@@ -69,7 +48,7 @@ const CoursesComponent = () => {
         <View style={styles.coursesContainer}>
           {courses.map((item) => (
             <View key={item.idKhoaHoc} style={styles.courseCard}>
-              <Image  source={item.image ? { uri: getImageCourseUri(item.image) } : require('../../../image/efy.png')} style={styles.courseImage} />
+              <Image  source={item.image ? item.image : require('../../../image/efy.png')} style={styles.courseImage} />
               <View style={styles.infoContainer}>
                 <Text style={styles.courseTitle}>{item.tenKhoaHoc}</Text>
                 <Text style={styles.description}>{item.moTa}</Text>

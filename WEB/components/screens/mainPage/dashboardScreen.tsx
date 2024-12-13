@@ -5,8 +5,11 @@ import { useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, Modal } from 'react-native';
 import StudentClassProgressScreen from '../progess/studentClassProgessScreen';
-import StudentClassAssignmentProgressScreen from '../progess/studentClassAssignmentProgessScreen';
 import TeacherClassProgessScreen from '../progess/teacherClassProgessScreen';
+import WeeklyScheduleTotal from '../schedule/studentScheduleTotal';
+import WeeklyExamSchedule from '../schedule/studentExamScheduleTotal';
+import TeacherScheduleTotalScreen from '../schedule/teacherScheduleTotal';
+import TeacherWeeklyExamSchedule from '../schedule/teacherExamScheduleTotal';
 
 const DashboardScreen = ({ navigation }: { navigation: any }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -71,20 +74,36 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     }
   };
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
-  useEffect(() => {
-    if (user && user.u && user.u.idUser) {
-      getStudentClass(user.u.idUser);
-    }
-  }, [user]);
   useFocusEffect(
     React.useCallback(() => {
-      getUserInfo();
+      const fetchUserData = async () => {
+        await getUserInfo();
+      };
+  
+      fetchUserData();
     }, [])
   );
-
+  
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      console.log('DashboardScreen focused, refetching user info...');
+      await getUserInfo();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+  
+  useEffect(() => {
+    const fetchClassData = async () => {
+      if (user && user.u && user.u.idUser) {
+        console.log('Fetching class info for user:', user.u.idUser);
+        await getStudentClass(user.u.idUser);
+      }
+    };
+  
+    fetchClassData();
+  }, [user]); 
+  
   const parseCvEnum = (cvEnum: string): string => {
     switch (cvEnum) {
       case 'STUDENT':
@@ -112,27 +131,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     return <Text>Không tìm thấy thông tin người dùng.</Text>;
   }
 
-  const getAvatarUri = () => {
-    if (!selectedAvatar) return null;
-    if (selectedAvatar.startsWith("data:image")) {
-      return selectedAvatar;
-    }
-    const defaultMimeType = "image/png";
-    let mimeType = defaultMimeType;
-    if (/^\/9j/.test(selectedAvatar)) {
-      mimeType = "image/jpeg"; // JPEG/JPG (dựa vào header base64 của JPEG)
-    } else if (/^iVBOR/.test(selectedAvatar)) {
-      mimeType = "image/png"; // PNG (dựa vào header base64 của PNG)
-    } else if (/^R0lGOD/.test(selectedAvatar)) {
-      mimeType = "image/gif"; // GIF (dựa vào header base64 của GIF)
-    } else if (/^Qk/.test(selectedAvatar)) {
-      mimeType = "image/bmp"; // BMP (dựa vào header base64 của BMP)
-    } else if (/^UklGR/.test(selectedAvatar)) {
-      mimeType = "image/webp"; // WEBP (dựa vào header base64 của WEBP)
-    }
-
-    return `data:${mimeType};base64,${selectedAvatar}`;
-  };
+  
   return (
     <ImageBackground
       source={require('../../../image/bglogin.png')}
@@ -160,7 +159,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
             <Image
               style={styles.profileImageHeader}
-              source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')}
+              source={selectedAvatar ? selectedAvatar : require('../../../image/efy.png')}
             />
           </TouchableOpacity>
         </View>
@@ -169,7 +168,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.studentOverviewContainer}>
           <View style={styles.studentInfoCard}>
             <View style={styles.studentImageContainer}>
-              <Image style={styles.studentImage} source={selectedAvatar ? { uri: getAvatarUri() } : require('../../../image/efy.png')} />
+              <Image style={styles.studentImage} source={selectedAvatar ? selectedAvatar : require('../../../image/efy.png')} />
               <Text style={{ fontSize: 18 }}>{parseCvEnum(user.cvEnum)}</Text>
             </View>
             <View style={styles.studentDetails}>
@@ -199,14 +198,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch dạy trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><TeacherScheduleTotalScreen></TeacherScheduleTotalScreen></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch gác thi trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><TeacherWeeklyExamSchedule></TeacherWeeklyExamSchedule></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
@@ -231,14 +230,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <View style={{ flexDirection: 'row', marginTop: 70, justifyContent: 'center' }}>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch học trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><WeeklyScheduleTotal></WeeklyScheduleTotal></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.scheduleCard2}>
                     <Text style={styles.scheduleTitle}>Lịch thi trong tuần</Text>
-                    <Text style={styles.scheduleNumber}>0</Text>
+                    <Text style={styles.scheduleNumber}><WeeklyExamSchedule></WeeklyExamSchedule></Text>
                     <TouchableOpacity>
                       <Text style={styles.linkText}>Xem chi tiết</Text>
                     </TouchableOpacity>
@@ -303,7 +302,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 navigation.navigate('ResultStudentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen, role: user.cvEnum });
               }}>
                 <AntDesign name="linechart" size={24} color="black" />
-                <Text style={styles.featureText}>Xem điểm bài test</Text>
+                <Text style={styles.featureText}>Xem điểm</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
@@ -317,14 +316,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                   navigation.navigate('BillScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                 }}>
                 <MaterialIcons name="attach-money" size={24} color="black" />
-                <Text style={styles.featureText}>Tra cứu công nợ</Text>
+                <Text style={styles.featureText}>Tra cứu hóa đơn</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.featureCard}
                 onPress={() => {
                   navigation.navigate('PaymentScreen', { idUser: user.u.idUser, nameUser: user.u.hoTen });
                 }}>
                 <AntDesign name="creditcard" size={24} color="black" />
-                <Text style={styles.featureText}>Thanh toán trực tuyến</Text>
+                <Text style={styles.featureText}>Thanh toán khóa học</Text>
               </TouchableOpacity>
             </>
           )}
@@ -360,7 +359,7 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.sectionTitle}>Tiến độ học tập</Text>
                 <View style={styles.classList}>
                  <StudentClassProgressScreen></StudentClassProgressScreen>
-                 <StudentClassAssignmentProgressScreen></StudentClassAssignmentProgressScreen>
+                 {/* <StudentClassAssignmentProgressScreen></StudentClassAssignmentProgressScreen> */}
                 </View>
               </View>
             </>

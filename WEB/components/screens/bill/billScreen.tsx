@@ -161,7 +161,6 @@ const BillScreen = ({ navigation, route }: { navigation: any; route: any }) => {
                     <Text style={[styles.tableHeaderText, styles.columnSTT]}>STT</Text>
                     <Text style={[styles.tableHeaderText, styles.columnMaHD]}>Mã hóa đơn</Text>
                     <Text style={[styles.tableHeaderText, styles.columnSoTien]}>Số tiền</Text>
-                    <Text style={[styles.tableHeaderText, styles.columnTrangThai]}>Trạng thái</Text>
                     <Text style={[styles.tableHeaderText, styles.columnNgayLap]}>Ngày lập</Text>
                     <Text style={[styles.tableHeaderText, styles.columnDonViThu]}>Đơn vị thu</Text>
                     <Text style={[styles.tableHeaderText, styles.columnHDDT]}>Chi tiết</Text>
@@ -174,7 +173,6 @@ const BillScreen = ({ navigation, route }: { navigation: any; route: any }) => {
                             <Text style={[styles.billText, styles.columnSTT]}>{index + 1}</Text>
                             <Text style={[styles.billText, styles.columnMaHD]}>{item.idHoaDon}</Text>
                             <Text style={[styles.billText, styles.columnSoTien]}>{item.thanhTien.toLocaleString()} VND</Text>
-                            <Text style={[styles.billText, styles.columnTrangThai]}>{getBillStatus(item.trangThai)}</Text>
                             <Text style={[styles.billText, styles.columnNgayLap]}>{new Date(item.ngayLap).toLocaleDateString()}</Text>
                             <Text style={[styles.billText, styles.columnDonViThu]}>{item.nguoiLap.hoTen}</Text>
                             <TouchableOpacity

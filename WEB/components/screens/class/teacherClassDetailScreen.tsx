@@ -191,6 +191,29 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
         }
     };
 
+    const fetchAssignmentProgress = async (assignmentId: number): Promise<boolean> => {
+        try {
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) {
+            console.error('Token không tồn tại');
+            return false;
+          }
+      
+          const response = await http.get(`baitap/getTienTrinhofBT/${assignmentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          if (response.status === 200 && Array.isArray(response.data)) {
+            return response.data.length > 0; 
+          }
+          return false;
+        } catch (error) {
+          console.error(`Lỗi khi lấy tiến trình bài tập ${assignmentId}:`, error);
+          return false;
+        }
+      };
+      
+
     const confirmDeleteAssignment = (assignmentId: number, assignmentName: string, sessionId: number) => {
         setSelectedAssignment({ id: assignmentId, name: assignmentName, sessionId });
         setConfirmModalVisible(true);
@@ -224,26 +247,37 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
     const deleteAssignment = async () => {
         if (!selectedAssignment) return;
         const { id, sessionId } = selectedAssignment;
-
+      
         try {
-            const token = await AsyncStorage.getItem('accessToken');
-            if (!token) {
-                console.error('No token found');
-                return;
-            }
-
-            await deleteImagesForAssignment(id);
-            await http.get(`baitap/deleteBtap/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            fetchAssignments(sessionId);
+          const hasProgress = await fetchAssignmentProgress(id);
+      
+          if (hasProgress) {
+            setMessageText(`Bài tập "${selectedAssignment.name}" đã có tiến trình học viên.\n Không thể xóa.`);
+            setMessageModalVisible(true);
+            return;
+          }      
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) {
+            console.error('No token found');
+            return;
+          }
+      
+          await deleteImagesForAssignment(id);
+          await http.get(`baitap/deleteBtap/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchAssignments(sessionId);      
+          setMessageText('Xóa bài tập thành công.');
         } catch (error) {
-            console.error(`Failed to delete assignment ${id}:`, error);
+          console.error(`Failed to delete assignment ${id}:`, error);
+          setMessageText('Lỗi: Không thể xóa bài tập. Vui lòng thử lại.');
         } finally {
-            setConfirmModalVisible(false);
-            setSelectedAssignment(null);
+          setMessageModalVisible(true);
+          setConfirmModalVisible(false);
+          setSelectedAssignment(null);
         }
-    };
+      };
+      
     const fetchDocuments = async (sessionId: number) => {
         try {
             const token = await AsyncStorage.getItem('accessToken');
@@ -255,14 +289,19 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 headers: { Authorization: `Bearer ${token}` },
             });
             const fetchedDocuments = response.data;
-
-            setDocuments((prevDocuments) => [
-                ...prevDocuments,
-                ...fetchedDocuments.map((doc: Document) => ({
-                    ...doc,
-                    sessionId, // Thêm ID buổi học
-                })),
-            ]);
+    
+            setDocuments((prevDocuments) => {
+                const updatedDocuments = prevDocuments.filter(
+                    (doc) => doc.sessionId !== sessionId
+                );
+                return [
+                    ...updatedDocuments,
+                    ...fetchedDocuments.map((doc: Document) => ({
+                        ...doc,
+                        sessionId,
+                    })),
+                ];
+            });
         } catch (error) {
             console.error(`Failed to fetch documents for session ${sessionId}:`, error);
         }
@@ -324,8 +363,8 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                 setMessageModalVisible(true);
                 return;
             }
+    
             const newDocuments = documentsToUpload.filter((doc) => doc.isNew);
-            setDocuments([]);
     
             for (const document of newDocuments) {
                 if (!document.linkLoad) continue;
@@ -349,7 +388,7 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                         linkLoad: uploadedLink,
                         trangThai: document.trangThai,
                     };
-                        const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
+                    const response = await http.post(`taiLieu/create/${sessionId}`, documentData, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     if (response.status === 200) {
@@ -359,14 +398,13 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                     } else {
                         console.error('Failed to create document on the server');
                     }
-    
                 } catch (uploadError) {
                     console.error(`Error uploading or saving document: ${document.tenTaiLieu}`, uploadError);
                 }
             }
+    
             await fetchDocuments(sessionId);
             setMessageModalVisible(true);
-    
         } catch (error) {
             console.error('Error while submitting documents:', error);
             setMessageText('Lỗi: Không thể thêm tài liệu. Vui lòng thử lại.');
@@ -565,14 +603,14 @@ const TeacherClassDetailScreen = ({ navigation, route }: { navigation: any, rout
                                         {documents.filter((doc) => doc.sessionId === session.idBuoiHoc && doc.trangThai).length > 0 ? (
                                             <View style={styles.assignmentList}>
                                                 {documents
-                                                    .filter((doc) => doc.trangThai && doc.sessionId === session.idBuoiHoc)
-                                                    .map((doc, index) => (
-                                                        <View key={index} style={styles.assignmentItemContainer}>
+                                                     .filter((doc) => doc.trangThai && doc.sessionId === session.idBuoiHoc)
+                                                     .map((doc) => (
+                                                        <View key={doc.idTaiLieu} style={styles.assignmentItemContainer}>
                                                             <TouchableOpacity style={styles.assignmentItem}>
                                                                 <Icon name="file-document-outline" size={20} color="#00405d" />
                                                                 <Text
                                                                     style={styles.assignmentText}
-                                                                    onPress={() => handleOpenDocument(doc.linkLoad)} // Gọi hàm với Key
+                                                                    onPress={() => handleOpenDocument(doc.linkLoad)} 
                                                                 >
                                                                     {doc.tenTaiLieu}
                                                                 </Text>
