@@ -15,24 +15,25 @@ export default function ChangePassword({ navigation }: { navigation: any }) {
 
   const backgroundImg = require("../../../image/background/bg7.png");
   const handleChangePassword = async () => {
-    if (oldPassowrd.length < 5 || oldPassowrd.length > 32) {
+    if (oldPassowrd.length < 6 || oldPassowrd.length > 32) {
       Alert.alert('Lỗi', 'Mật khẩu cũ phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
       return;
     }
-
-    if (passWord.length < 5 || passWord.length > 32) {
+  
+    if (passWord.length < 6 || passWord.length > 32) {
       Alert.alert('Lỗi', 'Mật khẩu mới phải có ít nhất 6 ký tự và tối đa 32 ký tự.');
       return;
     }
-
+  
     if (passWord !== verifyPassWord) {
       Alert.alert('Lỗi', 'Mật khẩu mới và xác nhận mật khẩu không khớp.');
       return;
     }
-
+  
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const response = await http.post("auth/account/changepass",
+      const response = await http.post(
+        'auth/account/changepass',
         {
           newPass: passWord,
           oldPass: oldPassowrd,
@@ -41,24 +42,32 @@ export default function ChangePassword({ navigation }: { navigation: any }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        console.log('Token:', token);
-        console.log({
-          oldPassword: oldPassowrd,
-          newPassword: passWord,
-        });
+        }
+      );
+  
       if (response.status === 200) {
-        console.log(response.data);
-        navigation.navigate('MainTabs');
-        Alert.alert('Thành công', 'Mật khẩu đã được thay đổi thành công!');
+        const result = response.data;
+        if (result === 'passChangeSuccess') {
+          Alert.alert('Thành công', 'Mật khẩu đã được thay đổi thành công!', [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('LoginScreen'), 
+            },
+          ]);
+        } else if (result === 'passChangeFaile') {
+          Alert.alert('Thất bại', 'Mật khẩu cũ không đúng.');
+        } else {
+          Alert.alert('Lỗi', 'Không thể xác định được kết quả. Vui lòng thử lại.');
+        }
       } else {
-        throw new Error("Lỗi đổi mật khẩu");
+        throw new Error('Lỗi không xác định từ server.');
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra trong quá trình đổi mật khẩu:", error);
+      console.error('Có lỗi xảy ra trong quá trình đổi mật khẩu:', error);
       Alert.alert('Thất bại', 'Đã có lỗi xảy ra khi đổi mật khẩu.');
     }
   };
+  
 
   return (
     <ImageBackground

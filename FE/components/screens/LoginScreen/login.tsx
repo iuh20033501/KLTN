@@ -111,7 +111,7 @@ export default function LoginScreen({navigation}: {navigation: any}) {
         <Text style={styles.termsText}>
           Bằng việc tiếp tục, bạn đã chấp nhận và đồng ý với những 
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('TermsAndConditions')}>
             <Text style={styles.linkText}>điều kiện và điều khoản sử dụng ứng dụng.</Text>
           </TouchableOpacity>
         </View>

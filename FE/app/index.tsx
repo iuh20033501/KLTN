@@ -35,6 +35,11 @@ import StudentExamClassesScreen from "@/components/screens/exam/studentExamClass
 import StudentExamScreen from "@/components/screens/exam/studentExamScreen";
 import ExamScreen from "@/components/screens/exam/examScreen";
 import ProgressScreen from "@/components/screens/detailScreen/progessScreen";
+import YouTubeScreen from "@/components/screens/youtube/youtubeScreen";
+import CourseInfomationScreen from "@/components/screens/detailScreen/courseInfomationScreen";
+import LeaderboardScreen from "@/components/screens/detailScreen/leaderBoardScreen";
+import YouTubeScreen2 from "@/components/screens/youtube/youtubeScreen2";
+import FAQScreen from "@/components/screens/detailScreen/faqScreen";
 
 type RootStackParamList = {
   Home: undefined; 
@@ -62,6 +67,12 @@ type RootStackParamList = {
   StudentExamScreen:undefined;
   ExamScreen:undefined;
   ProgressScreen:undefined;
+  YouTubeScreen:undefined;
+  CourseInfomationScreen:undefined;
+  LeaderboardScreen:undefined;
+  YouTubeScreen2:undefined;
+  FAQScreen:undefined;
+  TermsAndConditions: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -156,6 +167,13 @@ export default function Router() {
         <Stack.Screen name="StudentExamScreen" component={StudentExamScreen} />
         <Stack.Screen name="ExamScreen" component={ExamScreen} />
         <Stack.Screen name="ProgressScreen" component={ProgressScreen} /> 
+        <Stack.Screen name="YouTubeScreen" component={YouTubeScreen} />
+        <Stack.Screen name="YouTubeScreen2" component={YouTubeScreen2} />
+        <Stack.Screen name="CourseInfomationScreen" component={CourseInfomationScreen} />
+        <Stack.Screen name="LeaderboardScreen" component={LeaderboardScreen} />
+        <Stack.Screen name="FAQScreen" component={FAQScreen} />
+        <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
+
       </Stack.Navigator>
     </NavigationContainer>
    

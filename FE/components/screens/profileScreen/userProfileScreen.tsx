@@ -72,7 +72,7 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Tùy chọn người dùng</Text>
             </View>
-            <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/1.png')} style={styles.image} />
+            <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/efy.png')} style={styles.image} />
             <View style={styles.userInfoContainer}>
                 <Text style={styles.username}>{user?.u?.hoTen}</Text>
                 <Text style={styles.phone}>{vietHoaRole(user?.cvEnum)}</Text>
@@ -96,21 +96,16 @@ export default function UserProfileScreen({ navigation }: { navigation: any }) {
                     </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
-                    <View style={styles.optionRow}>
-                        <AntDesign name="bells" size={24} color="gold" />
-                        <Text style={styles.optionText}>Cài đặt thông báo</Text>
-                    </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option}
+                  onPress={() => navigation.navigate('FAQScreen')}>
                     <View style={styles.optionRow}>
                         <AntDesign name="questioncircleo" size={24} color="blue" />
                         <Text style={styles.optionText}>Câu hỏi thường gặp</Text>
                     </View>
                 </TouchableOpacity>
-
-                <TouchableOpacity style={styles.option}>
+                
+                <TouchableOpacity style={styles.option}
+                 onPress={() => navigation.navigate('TermsAndConditions')}>
                     <View style={styles.optionRow}>
                         <AntDesign name="filetext1" size={24} color="purple" />
                         <Text style={styles.optionText}>Điều khoản sử dụng</Text>

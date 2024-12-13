@@ -92,7 +92,7 @@ export default function UserInfoScreen({ navigation }: { navigation: any }) {
       </View>
 
       <View style={styles.infoContainer}>
-        <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/1.png')} style={styles.image} />
+        <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/efy.png')} style={styles.image} />
         
         <View style={styles.row}>
           <FontAwesome name="user" size={24} color="#00bf63" />

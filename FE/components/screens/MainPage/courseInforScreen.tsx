@@ -4,7 +4,7 @@ import { FontAwesome, Ionicons, MaterialIcons, Entypo, Feather, AntDesign } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '@/utils/http';
 
-export default function CourseInfoScreen({ navigation }: { navigation: any }) {
+export default function CourseInfomationScreen({ navigation }: { navigation: any }) {
   const [userInfo, setUserInfo] = useState<{
     u: any; idUser: number; nameUser: string
   } | null>(null);
@@ -47,9 +47,13 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
           <View style={styles.infoRow}>
             <Entypo name="location-pin" size={24} color="black" />
             <Text style={styles.infoText}>
-              12 Nguyễn Văn Bảo, Phường 4, Gò Vấp, Hồ Chí Minh
+              12 Nguyễn Văn Bảo, Phường 4, Gò Vấp,     Hồ Chí Minh
             </Text>
           </View>
+          <View style={styles.infoRow}>
+            <FontAwesome name="phone" size={24} color="black" />
+              <Text style={styles.infoText}>Hotline: 0909090900</Text>
+            </View>
         </View>
       </View>
 
@@ -84,27 +88,41 @@ export default function CourseInfoScreen({ navigation }: { navigation: any }) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.option}
-        onPress={() => {
-          if (userInfo) {
-            navigation.navigate('ProgressScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
-          } else {
-            console.error("Thông tin người dùng chưa sẵn sàng");
-          }
-        }}>
+          onPress={() => {
+            if (userInfo) {
+              navigation.navigate('ProgressScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+            } else {
+              console.error("Thông tin người dùng chưa sẵn sàng");
+            }
+          }}>
           <View style={styles.optionRow}>
             <AntDesign name="circledowno" size={24} color="purple" />
             <Text style={styles.optionText}>Tiến trình học tập</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option}
+          onPress={() => {
+            if (userInfo) {
+              navigation.navigate('CourseInfomationScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+            } else {
+              console.error("Thông tin người dùng chưa sẵn sàng");
+            }
+          }}>
           <View style={styles.optionRow}>
-            <FontAwesome name="graduation-cap" size={24} color="red" />
-            <Text style={styles.optionText}>Chứng nhận</Text>
+          <Feather name="file" size={24} color="red" />
+          <Text style={styles.optionText}>Thông tin khóa học</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option}
+         onPress={() => {
+            if (userInfo) {
+              navigation.navigate('LeaderboardScreen', { idUser: userInfo.u.idUser, nameUser: userInfo.nameUser });
+            } else {
+              console.error("Thông tin người dùng chưa sẵn sàng");
+            }
+          }}>
           <View style={styles.optionRow}>
             <FontAwesome name="trophy" size={24} color="gold" />
             <Text style={styles.optionText}>Bảng xếp hạng</Text>

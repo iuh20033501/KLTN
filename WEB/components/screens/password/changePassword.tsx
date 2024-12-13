@@ -71,7 +71,7 @@ export default function ChangePassword({navigation}: {navigation: any}) {
                     setModalVisible(true);
                     setTimeout(() => {
                         setModalVisible(false);
-                        navigation.navigate('LoginScreen'); // Điều hướng về màn hình đăng nhập
+                        navigation.navigate('LoginScreen'); 
                     }, 1250);
                 } else if (response.data === 'passChangeFaile') {
                     setErrorMessage('Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ.');

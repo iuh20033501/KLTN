@@ -146,7 +146,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
                 image: user?.u?.i
               })}
             >
-              <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/1.png')} style={styles.avatar} />
+              <Image source={selectedAvatar ? selectedAvatar : require('../../../image/avatar/efy.png')} style={styles.avatar} />
             </TouchableOpacity>
 
             <View style={styles.userInfo}>
@@ -189,11 +189,13 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
 
 
       <View style={styles.practiceArea}>
-        <TouchableOpacity style={styles.practiceCard}>
+        <TouchableOpacity style={styles.practiceCard}
+         onPress={() => navigation.navigate('YouTubeScreen2')}>
           <Image source={require('../../../image/logo/EFY.png')} style={styles.practiceImage} />
-          <Text style={styles.practiceText}>Luyện tập lý thuyết</Text>
+          <Text style={styles.practiceText}>Học từ vựng theo chủ đề</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.practiceCard}>
+        <TouchableOpacity style={styles.practiceCard}
+        onPress={() => navigation.navigate('YouTubeScreen')}>
           <Image source={require('../../../image/logo/EFY.png')} style={styles.practiceImage} />
           <Text style={styles.practiceText}>Luyện nghe</Text>
         </TouchableOpacity>
