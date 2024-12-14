@@ -14,7 +14,6 @@ export default function HomeScreen({navigation}: {navigation: any}) {
   return (
    <ScrollView>
       <HeaderComponent navigation={navigation}></HeaderComponent>
-      <BannerComponent  navigation={navigation}></BannerComponent>
       <SectionComponent></SectionComponent>
       <CoursesComponent navigation={navigation}></CoursesComponent>
       <FooterComponent></FooterComponent>
