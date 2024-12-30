@@ -7,7 +7,7 @@ const BannerComponent = ({navigation}: {navigation: any}) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../../image/banner.png')} 
+        source={{uri:'/image/banner.png'}} 
         style={styles.backgroundImage}
       />
       <View style={styles.contentContainer}>

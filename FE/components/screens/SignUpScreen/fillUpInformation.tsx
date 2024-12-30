@@ -108,8 +108,8 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
       Alert.alert('Lỗi nhập', 'Vui lòng nhập đúng định dạng Gmail (@gmail.com)');
     } else if (!birthday.trim()) {
       Alert.alert('Ngày sinh không được để trống');
-    } else if (calculateAge(birthday) < 8) {
-      Alert.alert('Người dùng phải trên 8 tuổi');
+    } else if (calculateAge(birthday) < 11) {
+      Alert.alert('Người dùng phải trên 11 tuổi');
     } else {
       handlePost();
     }
@@ -185,7 +185,7 @@ export default function FillUpInformation({ navigation, route }: { navigation: a
           <Text style={styles.terms}>
             Bằng việc tiếp tục, bạn đã chấp nhận và đồng ý với những
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsAndConditions')}>
             <Text style={styles.link}>điều kiện và điều khoản sử dụng ứng dụng.</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button}

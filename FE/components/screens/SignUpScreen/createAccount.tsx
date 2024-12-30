@@ -88,7 +88,7 @@ export default function CreateAccount({ navigation, route }: { navigation: any, 
           <Text style={styles.terms}>
             Bằng việc tiếp tục, bạn đã chấp nhận và đồng ý với những
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsAndConditions')}>
             <Text style={styles.link}>điều kiện và điều khoản sử dụng ứng dụng.</Text>
           </TouchableOpacity>
 
