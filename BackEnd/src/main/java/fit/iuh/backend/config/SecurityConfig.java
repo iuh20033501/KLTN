@@ -96,13 +96,24 @@ public class SecurityConfig {
         };
     }
 
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+//        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://192.168.1.13:8081","https://us-central1-texttospeech.googleapis.com"));
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+//        configuration.setAllowedHeaders(Collections.singletonList("*"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://192.168.1.13:8081","https://us-central1-texttospeech.googleapis.com"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setAllowedOrigins(Collections.singletonList("*")); // Cho phép tất cả origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Cho phép tất cả header
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // Nếu cần expose header
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

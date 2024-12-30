@@ -3049,11 +3049,11 @@ public class Menu extends javax.swing.JFrame {
                 String gioKetThuc = txtGioKetThuc.getText() + ":" + txtPhutKetThuc.getText();
                 Boolean kqua = false;
                 int soBuoi = buoiHocService.getAllBuoiByLopAllApi(accessTokenLogin, idLopOutClass).size();
-                LopHoc soBuoiLop = lopHocService.loadLopHocById(accessTokenLogin, (Long) cbLopHoc.getSelectedItem());
-                if (soBuoi >= soBuoiLop.getKhoaHoc().getSoBuoi()) {
-                    JOptionPane.showMessageDialog(null, "Đã đủ số buổi của lớp không thể thêm!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+//                LopHoc soBuoiLop = lopHocService.loadLopHocById(accessTokenLogin, (Long)cbLopHoc.getSelectedItem());
+//                if (soBuoi >= soBuoiLop.getKhoaHoc().getSoBuoi()) {
+//                    JOptionPane.showMessageDialog(null, "Đã đủ số buổi của lớp không thể thêm!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+//                    return;
+//                }
                 if (buoi == null) {
                     kqua = themBuoiHoc(accessTokenLogin, new BuoiHoc(), true, txtChuDe, dateChooserNgayHoc, chkHocOnl, txtGioHoc, txtGioKetThuc, txtPhutHoc, txtPhutKetThuc, cbLopHoc);
                 } else {
@@ -3081,10 +3081,10 @@ public class Menu extends javax.swing.JFrame {
         try {
             ArrayList<BuoiHoc> listBuoiHoc = (ArrayList<BuoiHoc>) lopHocService.getAllBuoiHocByLopApi(accessTokenLogin, idLop);
 
-            if (listBuoiHoc == null || listBuoiHoc.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Không có buổi học nào cần duyệt");
-                return;
-            }
+//            if (listBuoiHoc == null || listBuoiHoc.isEmpty()) {
+//                JOptionPane.showMessageDialog(null, "Không có buổi học nào cần duyệt");
+//                return;
+//            }
 
             JDialog dialogListBuoiHoc = new JDialog();
             dialogListBuoiHoc.setTitle("Thông tin buổi học cần duyệt");
@@ -3555,8 +3555,10 @@ public class Menu extends javax.swing.JFrame {
         buttonPanel.add(btnSaveLop);
         if (lop != null) {
             buttonPanel.add(btnLoadTest);
+             buttonPanel.add(btnBuoiHoc);
         }
-        buttonPanel.add(btnBuoiHoc);
+        
+       
         buttonPanel.add(btnCancel);
 
         dialogLop.add(buttonPanel, BorderLayout.SOUTH);
@@ -3728,10 +3730,10 @@ public class Menu extends javax.swing.JFrame {
 //            return false;
 //        }
         Date currentDate = new Date();
-        if (thoiGianDienRa.before(currentDate)) {
-            JOptionPane.showMessageDialog(null, "Thời gian diễn ra phải là ngày trong tương lai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+//        if (thoiGianDienRa.before(currentDate)) {
+//            JOptionPane.showMessageDialog(null, "Thời gian diễn ra phải là ngày trong tương lai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
 
         String giaTienPattern = "\\d+";
         if (!giaTien.matches(giaTienPattern)) {

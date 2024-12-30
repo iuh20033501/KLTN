@@ -31,7 +31,7 @@ public class TaiKhoanService {
     private Gson gson = new Gson();
 
     public List<TaiKhoanLogin> getAllTKhoanApi(String token) throws Exception {
-        String profileUrl = "http://54.169.251.110:8081/auth/noauth/findAll"; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.254.94.80:8080/auth/noauth/findAll"; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -64,7 +64,7 @@ public class TaiKhoanService {
     }
 
     public List<TaiKhoanLogin> getAllTKhoanLikeNameApi(String token, String name) throws Exception {
-        String profileUrl = "http://54.169.251.110:8081/auth/findTKhoan/" + name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.254.94.80:8080/auth/findTKhoan/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -97,7 +97,7 @@ public class TaiKhoanService {
     }
 
     public List<TaiKhoanLogin> getAllTKhoanAcTiveLikeNameApi(String token, String name) throws Exception {
-        String profileUrl = "http://54.169.251.110:8081/auth/findTKhoanActiveLikeName/" + name; // Đảm bảo URL này đúng
+        String profileUrl = "http://54.254.94.80:8080/auth/findTKhoanActiveLikeName/" + name; // Đảm bảo URL này đúng
         URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -130,7 +130,7 @@ public class TaiKhoanService {
     }
 
     public TaiKhoanLogin callFindByIdtaiKhoanApi(String token, Long id) throws Exception {
-        String apiUrl = "http://54.169.251.110:8081/auth/findById/" + id; // URL API
+        String apiUrl = "http://54.254.94.80:8080/auth/findById/" + id; // URL API
         URL url = new URL(apiUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -167,7 +167,7 @@ public class TaiKhoanService {
     }
 
     public List<TaiKhoanLogin> callFindByRoleTKApi(String token, String role) throws Exception {
-        String profileUrl = "http://54.169.251.110:8081/auth/findTKhoanByroleDestop/"+role; // URL chính xác của API
+        String profileUrl = "http://54.254.94.80:8080/auth/findTKhoanByroleDestop/"+role; // URL chính xác của API
          URL url = new URL(profileUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
